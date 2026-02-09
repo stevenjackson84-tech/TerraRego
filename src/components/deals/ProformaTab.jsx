@@ -19,6 +19,8 @@ export default function ProformaTab({ proforma, onSave, isLoading }) {
     direct_cost_per_unit: "",
     contingency_percentage: 5,
     sales_commission_percentage: 3,
+    entitlement_start_date: "",
+    entitlement_approval_date: "",
     development_start_date: "",
     development_completion_date: "",
     first_home_start: "",
@@ -270,7 +272,34 @@ export default function ProformaTab({ proforma, onSave, isLoading }) {
             </CardContent>
           </Card>
 
-          {/* Timeline & Absorption */}
+          {/* Entitlement Timeline */}
+          <Card className="border-0 shadow-sm">
+            <CardHeader>
+              <CardTitle className="text-base">Entitlement Timeline</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Label htmlFor="entitlement_start_date">Entitlement Start Date</Label>
+                <Input
+                  id="entitlement_start_date"
+                  type="date"
+                  value={formData.entitlement_start_date}
+                  onChange={(e) => handleChange("entitlement_start_date", e.target.value)}
+                />
+              </div>
+              <div>
+                <Label htmlFor="entitlement_approval_date">Entitlement Approval Date</Label>
+                <Input
+                  id="entitlement_approval_date"
+                  type="date"
+                  value={formData.entitlement_approval_date}
+                  onChange={(e) => handleChange("entitlement_approval_date", e.target.value)}
+                />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Development Timeline */}
           <Card className="border-0 shadow-sm">
             <CardHeader>
               <CardTitle className="text-base">Development Timeline</CardTitle>
@@ -547,10 +576,22 @@ export default function ProformaTab({ proforma, onSave, isLoading }) {
         <div className="md:col-span-2">
           <Card className="border-0 shadow-sm">
             <CardHeader>
-              <CardTitle className="text-base">Development & Sales Timeline</CardTitle>
+              <CardTitle className="text-base">Project Timeline</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                {proforma.entitlement_start_date && (
+                  <div>
+                    <p className="text-xs text-slate-500 mb-1">Entitlement Start</p>
+                    <p className="text-sm font-medium">{new Date(proforma.entitlement_start_date).toLocaleDateString()}</p>
+                  </div>
+                )}
+                {proforma.entitlement_approval_date && (
+                  <div>
+                    <p className="text-xs text-slate-500 mb-1">Entitlement Approval</p>
+                    <p className="text-sm font-medium">{new Date(proforma.entitlement_approval_date).toLocaleDateString()}</p>
+                  </div>
+                )}
                 {proforma.development_start_date && (
                   <div>
                     <p className="text-xs text-slate-500 mb-1">Development Start</p>
