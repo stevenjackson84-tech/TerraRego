@@ -172,6 +172,7 @@ export default function DealForm({ deal, open, onClose, onSave, isLoading }) {
                   <SelectItem value="loi">LOI</SelectItem>
                   <SelectItem value="controlled_not_approved">Controlled/Not Approved</SelectItem>
                   <SelectItem value="controlled_approved">Controlled/Approved</SelectItem>
+                  <SelectItem value="owned">Owned</SelectItem>
                   <SelectItem value="entitlements">Entitlements</SelectItem>
                   <SelectItem value="development">Development</SelectItem>
                   <SelectItem value="closed">Closed</SelectItem>
