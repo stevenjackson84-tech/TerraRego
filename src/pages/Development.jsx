@@ -36,7 +36,7 @@ const categoryIcons = {
 };
 
 const defaultUpdate = {
-  project_id: "",
+  phase_id: "",
   milestone: "",
   description: "",
   status: "planned",
@@ -60,14 +60,14 @@ export default function Development() {
     queryFn: () => base44.entities.DevelopmentUpdate.list('-created_date')
   });
 
-  const { data: projects = [] } = useQuery({
-    queryKey: ['projects'],
-    queryFn: () => base44.entities.Project.list()
-  });
-
   const { data: projectPhases = [] } = useQuery({
     queryKey: ['projectPhases'],
     queryFn: () => base44.entities.ProjectPhase.list()
+  });
+
+  const { data: projects = [] } = useQuery({
+    queryKey: ['projects'],
+    queryFn: () => base44.entities.Project.list()
   });
 
   const createMutation = useMutation({
@@ -119,9 +119,11 @@ export default function Development() {
     }
   };
 
-  const getProjectName = (projectId) => {
-    const project = projects.find(p => p.id === projectId);
-    return project?.name || 'Unknown Project';
+  const getPhaseName = (phaseId) => {
+    const phase = projectPhases.find(p => p.id === phaseId);
+    if (!phase) return 'Unknown Phase';
+    const project = projects.find(p => p.id === phase.project_id);
+    return `${project?.name || 'Unknown Project'} - ${phase.name}`;
   };
 
   // Group phases by project
@@ -302,7 +304,7 @@ export default function Development() {
                         <span className="text-2xl">{categoryIcons[update.category]}</span>
                         <div>
                           <h3 className="text-lg font-semibold text-slate-900">{update.milestone}</h3>
-                          <p className="text-sm text-amber-600 font-medium">{getProjectName(update.project_id)}</p>
+                          <p className="text-sm text-amber-600 font-medium">{getPhaseName(update.phase_id)}</p>
                         </div>
                       </div>
                       {update.description && (
@@ -383,15 +385,20 @@ export default function Development() {
             
             <div className="space-y-4">
               <div>
-                <Label>Related Project *</Label>
-                <Select value={formData.project_id} onValueChange={(v) => setFormData({...formData, project_id: v})}>
+                <Label>Related Phase *</Label>
+                <Select value={formData.phase_id} onValueChange={(v) => setFormData({...formData, phase_id: v})}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select project" />
+                    <SelectValue placeholder="Select phase" />
                   </SelectTrigger>
                   <SelectContent>
-                    {projects.map(project => (
-                      <SelectItem key={project.id} value={project.id}>{project.name}</SelectItem>
-                    ))}
+                    {projectPhases.map(phase => {
+                      const project = projects.find(p => p.id === phase.project_id);
+                      return (
+                        <SelectItem key={phase.id} value={phase.id}>
+                          {project?.name} - {phase.name}
+                        </SelectItem>
+                      );
+                    })}
                   </SelectContent>
                 </Select>
               </div>
@@ -495,7 +502,7 @@ export default function Development() {
               <Button variant="outline" onClick={() => setShowForm(false)}>Cancel</Button>
               <Button 
                 onClick={handleSave} 
-                disabled={!formData.project_id || !formData.milestone}
+                disabled={!formData.phase_id || !formData.milestone}
                 className="bg-slate-900 hover:bg-slate-800"
               >
                 {editingUpdate ? "Update" : "Create"}

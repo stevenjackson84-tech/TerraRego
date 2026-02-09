@@ -53,7 +53,7 @@ const defaultMilestones = [
   { milestone: "Mailboxes", category: "infrastructure", status: "planned" }
 ];
 
-export default function DevelopmentTab({ projectId, developmentUpdates, onSave, onDelete }) {
+export default function DevelopmentTab({ phaseId, developmentUpdates, onSave, onDelete }) {
   const queryClient = useQueryClient();
   const [showForm, setShowForm] = useState(false);
   const [editingUpdate, setEditingUpdate] = useState(null);
@@ -62,7 +62,7 @@ export default function DevelopmentTab({ projectId, developmentUpdates, onSave, 
     mutationFn: async () => {
       const milestones = defaultMilestones.map(m => ({
         ...m,
-        project_id: projectId,
+        phase_id: phaseId,
         description: "",
         progress_percentage: 0,
         target_date: "",
@@ -72,12 +72,12 @@ export default function DevelopmentTab({ projectId, developmentUpdates, onSave, 
       await base44.entities.DevelopmentUpdate.bulkCreate(milestones);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['developmentUpdates', projectId] });
+      queryClient.invalidateQueries({ queryKey: ['developmentUpdates'] });
     }
   });
 
   const [formData, setFormData] = useState({
-    project_id: projectId,
+    phase_id: phaseId,
     milestone: "",
     description: "",
     status: "planned",
@@ -97,7 +97,7 @@ export default function DevelopmentTab({ projectId, developmentUpdates, onSave, 
     setShowForm(false);
     setEditingUpdate(null);
     setFormData({
-      project_id: projectId,
+      phase_id: phaseId,
       milestone: "",
       description: "",
       status: "planned",
@@ -133,7 +133,7 @@ export default function DevelopmentTab({ projectId, developmentUpdates, onSave, 
           <Button onClick={() => {
           setEditingUpdate(null);
           setFormData({
-            project_id: projectId,
+            phase_id: phaseId,
             milestone: "",
             description: "",
             status: "planned",
@@ -241,7 +241,7 @@ export default function DevelopmentTab({ projectId, developmentUpdates, onSave, 
         if (!open) {
           setEditingUpdate(null);
           setFormData({
-            project_id: projectId,
+            phase_id: phaseId,
             milestone: "",
             description: "",
             status: "planned",

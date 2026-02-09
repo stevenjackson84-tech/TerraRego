@@ -70,9 +70,9 @@ export default function ProjectDetails() {
     enabled: !!projectId
   });
 
-  const { data: developmentUpdates = [] } = useQuery({
-    queryKey: ['developmentUpdates', projectId],
-    queryFn: () => base44.entities.DevelopmentUpdate.filter({ project_id: projectId }),
+  const { data: allDevelopmentUpdates = [] } = useQuery({
+    queryKey: ['developmentUpdates'],
+    queryFn: () => base44.entities.DevelopmentUpdate.list(),
     enabled: !!projectId
   });
 
@@ -142,13 +142,13 @@ export default function ProjectDetails() {
       ? base44.entities.DevelopmentUpdate.update(id, data)
       : base44.entities.DevelopmentUpdate.create(data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['developmentUpdates', projectId] });
+      queryClient.invalidateQueries({ queryKey: ['developmentUpdates'] });
     }
   });
 
   const deleteDevUpdate = useMutation({
     mutationFn: (id) => base44.entities.DevelopmentUpdate.delete(id),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['developmentUpdates', projectId] })
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['developmentUpdates'] })
   });
 
   if (isLoading) {
@@ -241,7 +241,6 @@ export default function ProjectDetails() {
             <TabsTrigger value="timeline">Timeline</TabsTrigger>
             <TabsTrigger value="phases">Phases ({phases.length})</TabsTrigger>
             <TabsTrigger value="milestones">Milestones ({milestones.length})</TabsTrigger>
-            <TabsTrigger value="development">Development ({developmentUpdates.length})</TabsTrigger>
             <TabsTrigger value="budget">Budget & Expenses</TabsTrigger>
             <TabsTrigger value="documents">Documents</TabsTrigger>
             <TabsTrigger value="team">Team</TabsTrigger>
@@ -263,44 +262,57 @@ export default function ProjectDetails() {
               </Button>
             </div>
             <div className="space-y-4">
-              {phases.sort((a, b) => (a.order || 0) - (b.order || 0)).map(phase => (
-                <Card key={phase.id} className="border-0 shadow-sm">
-                  <CardContent className="p-6">
-                    <div className="flex items-start justify-between mb-4">
-                      <div>
-                        <h3 className="font-semibold text-slate-900">{phase.name}</h3>
-                        {phase.description && (
-                          <p className="text-sm text-slate-600 mt-1">{phase.description}</p>
-                        )}
-                        <div className="flex gap-2 mt-2">
-                          <Badge variant="outline">{phase.status}</Badge>
-                          {phase.assigned_to && (
-                            <Badge variant="secondary">{phase.assigned_to}</Badge>
+              {phases.sort((a, b) => (a.order || 0) - (b.order || 0)).map(phase => {
+                const phaseDevelopmentUpdates = allDevelopmentUpdates.filter(update => update.phase_id === phase.id);
+                return (
+                  <Card key={phase.id} className="border-0 shadow-sm">
+                    <CardContent className="p-6">
+                      <div className="flex items-start justify-between mb-4">
+                        <div>
+                          <h3 className="font-semibold text-slate-900">{phase.name}</h3>
+                          {phase.description && (
+                            <p className="text-sm text-slate-600 mt-1">{phase.description}</p>
                           )}
+                          <div className="flex gap-2 mt-2">
+                            <Badge variant="outline">{phase.status}</Badge>
+                            {phase.assigned_to && (
+                              <Badge variant="secondary">{phase.assigned_to}</Badge>
+                            )}
+                          </div>
+                        </div>
+                        <div className="flex gap-1">
+                          <Button variant="ghost" size="icon" onClick={() => {
+                            setEditingPhase(phase);
+                            setShowPhaseForm(true);
+                          }}>
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button variant="ghost" size="icon" className="text-red-500" onClick={() => deletePhase.mutate(phase.id)}>
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
                         </div>
                       </div>
-                      <div className="flex gap-1">
-                        <Button variant="ghost" size="icon" onClick={() => {
-                          setEditingPhase(phase);
-                          setShowPhaseForm(true);
-                        }}>
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button variant="ghost" size="icon" className="text-red-500" onClick={() => deletePhase.mutate(phase.id)}>
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                      {(phase.start_date || phase.end_date) && (
+                        <div className="text-sm text-slate-500 mb-4">
+                          {phase.start_date && format(new Date(phase.start_date), 'MMM d, yyyy')}
+                          {phase.start_date && phase.end_date && ' — '}
+                          {phase.end_date && format(new Date(phase.end_date), 'MMM d, yyyy')}
+                        </div>
+                      )}
+                      
+                      {/* Development Tab for this Phase */}
+                      <div className="mt-6 pt-6 border-t border-slate-200">
+                        <DevelopmentTab 
+                          phaseId={phase.id}
+                          developmentUpdates={phaseDevelopmentUpdates}
+                          onSave={({ id, data }) => devUpdateMutation.mutate({ id, data })}
+                          onDelete={(id) => deleteDevUpdate.mutate(id)}
+                        />
                       </div>
-                    </div>
-                    {(phase.start_date || phase.end_date) && (
-                      <div className="text-sm text-slate-500">
-                        {phase.start_date && format(new Date(phase.start_date), 'MMM d, yyyy')}
-                        {phase.start_date && phase.end_date && ' — '}
-                        {phase.end_date && format(new Date(phase.end_date), 'MMM d, yyyy')}
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              ))}
+                    </CardContent>
+                  </Card>
+                );
+              })}
               {phases.length === 0 && (
                 <p className="text-center py-8 text-slate-500">No phases added yet</p>
               )}
@@ -454,15 +466,6 @@ export default function ProjectDetails() {
                 )}
               </div>
             </div>
-          </TabsContent>
-
-          <TabsContent value="development">
-            <DevelopmentTab 
-              projectId={projectId}
-              developmentUpdates={developmentUpdates}
-              onSave={({ id, data }) => devUpdateMutation.mutate({ id, data })}
-              onDelete={(id) => deleteDevUpdate.mutate(id)}
-            />
           </TabsContent>
 
           <TabsContent value="documents">
