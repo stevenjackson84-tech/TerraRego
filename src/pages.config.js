@@ -57,6 +57,8 @@ import Entitlements from './pages/Entitlements';
 import Reports from './pages/Reports';
 import Tasks from './pages/Tasks';
 import BusinessPlan from './pages/BusinessPlan';
+import Projects from './pages/Projects';
+import ProjectDetails from './pages/ProjectDetails';
 import __Layout from './Layout.jsx';
 
 
@@ -71,6 +73,8 @@ export const PAGES = {
     "Reports": Reports,
     "Tasks": Tasks,
     "BusinessPlan": BusinessPlan,
+    "Projects": Projects,
+    "ProjectDetails": ProjectDetails,
 }
 
 export const pagesConfig = {
