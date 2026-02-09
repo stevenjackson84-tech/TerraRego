@@ -10,7 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   ArrowLeft, MapPin, Calendar, DollarSign, User, Building2, Edit, 
   Plus, FileText, ClipboardList, MessageSquare, Trash2, HardHat, 
-  CheckCircle2, Clock, AlertCircle, TrendingUp
+  CheckCircle2, Clock, AlertCircle, TrendingUp, Folder
 } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
@@ -286,6 +286,26 @@ export default function DealDetails() {
     }
   });
 
+  const convertToProjectMutation = useMutation({
+    mutationFn: async () => {
+      const project = await base44.entities.Project.create({
+        name: deal.name,
+        description: deal.notes || `Project created from deal: ${deal.name}`,
+        deal_id: dealId,
+        status: "planning",
+        priority: deal.priority || "medium",
+        start_date: deal.contract_date || "",
+        budget: deal.purchase_price || null,
+        project_manager: deal.assigned_to || "",
+        team_members: []
+      });
+      return project;
+    },
+    onSuccess: (project) => {
+      window.location.href = createPageUrl("ProjectDetails") + "?id=" + project.id;
+    }
+  });
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
@@ -327,10 +347,20 @@ export default function DealDetails() {
               </div>
             )}
           </div>
-          <Button onClick={() => setShowDealForm(true)} variant="outline">
-            <Edit className="h-4 w-4 mr-2" />
-            Edit Deal
-          </Button>
+          <div className="flex gap-2">
+            <Button 
+              onClick={() => convertToProjectMutation.mutate()} 
+              disabled={convertToProjectMutation.isPending}
+              variant="outline"
+            >
+              <Folder className="h-4 w-4 mr-2" />
+              {convertToProjectMutation.isPending ? "Converting..." : "Convert to Project"}
+            </Button>
+            <Button onClick={() => setShowDealForm(true)} variant="outline">
+              <Edit className="h-4 w-4 mr-2" />
+              Edit Deal
+            </Button>
+          </div>
         </div>
 
         {/* Key Info Cards */}
