@@ -94,7 +94,7 @@ export default function Deals() {
               <TabsList className="bg-white border">
                 <TabsTrigger value="all">All</TabsTrigger>
                 <TabsTrigger value="prospecting">Prospecting</TabsTrigger>
-                <TabsTrigger value="under_contract">Contract</TabsTrigger>
+                <TabsTrigger value="controlled_approved">Controlled</TabsTrigger>
                 <TabsTrigger value="entitlements">Entitlements</TabsTrigger>
               </TabsList>
             </Tabs>
