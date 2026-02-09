@@ -24,6 +24,7 @@ const navigation = [
   { name: "Tasks", icon: ClipboardList, page: "Tasks" },
   { name: "Entitlements", icon: FileCheck, page: "Entitlements" },
   { name: "Development", icon: HardHat, page: "Development" },
+  { name: "Business Plan", icon: FileText, page: "BusinessPlan" },
   { name: "Analytics", icon: TrendingUp, page: "Analytics" },
   { name: "Reports", icon: FileText, page: "Reports" },
 ];
