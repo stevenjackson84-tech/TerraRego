@@ -63,6 +63,7 @@ export default function ProformaTab({ proforma, onSave, isLoading }) {
   const salesCommissionPct = parseFloat(formData.sales_commission_percentage) || 3;
 
   const totalDirectCosts = directCostPerUnit * numUnits;
+  const devCostPerUnit = numUnits > 0 ? devCosts / numUnits : 0;
   const contingency = (purchasePrice + devCosts + softCosts + totalDirectCosts) * (contingencyPct / 100);
   const totalCosts = purchasePrice + devCosts + softCosts + financingCosts + totalDirectCosts + contingency;
   
@@ -515,6 +516,10 @@ export default function ProformaTab({ proforma, onSave, isLoading }) {
             <div className="flex justify-between text-sm">
               <span className="text-slate-600">Development Costs</span>
               <span className="font-medium">{formatCurrency(devCosts)}</span>
+            </div>
+            <div className="flex justify-between text-sm pl-4">
+              <span className="text-slate-500 text-xs">Per Unit</span>
+              <span className="font-medium text-xs">{formatCurrency(devCostPerUnit)}</span>
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-slate-600">Soft Costs</span>
