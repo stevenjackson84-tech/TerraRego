@@ -3,8 +3,8 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 
 
 const stageColors = {
   prospecting: "#94a3b8",
-  due_diligence: "#60a5fa",
-  under_contract: "#f59e0b",
+  controlled_not_approved: "#60a5fa",
+  controlled_approved: "#f59e0b",
   entitlements: "#a855f7",
   development: "#22c55e",
   closed: "#10b981",
@@ -13,8 +13,8 @@ const stageColors = {
 
 const stageLabels = {
   prospecting: "Prospecting",
-  due_diligence: "Due Diligence",
-  under_contract: "Under Contract",
+  controlled_not_approved: "Controlled/Not Approved",
+  controlled_approved: "Controlled/Approved",
   entitlements: "Entitlements",
   development: "Development",
   closed: "Closed",
