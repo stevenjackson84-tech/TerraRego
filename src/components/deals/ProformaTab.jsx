@@ -1,0 +1,392 @@
+import { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Edit, DollarSign, TrendingUp, Calculator } from "lucide-react";
+import { cn } from "@/lib/utils";
+
+export default function ProformaTab({ proforma, onSave, isLoading }) {
+  const [isEditing, setIsEditing] = useState(!proforma);
+  const [formData, setFormData] = useState(proforma || {
+    purchase_price: "",
+    development_costs: "",
+    soft_costs: "",
+    financing_costs: "",
+    number_of_units: "",
+    sales_price_per_unit: "",
+    direct_cost_per_unit: "",
+    contingency_percentage: 5,
+    sales_commission_percentage: 3,
+    notes: ""
+  });
+
+  const handleChange = (field, value) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleSave = () => {
+    const data = {
+      ...formData,
+      purchase_price: formData.purchase_price ? parseFloat(formData.purchase_price) : null,
+      development_costs: formData.development_costs ? parseFloat(formData.development_costs) : null,
+      soft_costs: formData.soft_costs ? parseFloat(formData.soft_costs) : null,
+      financing_costs: formData.financing_costs ? parseFloat(formData.financing_costs) : null,
+      number_of_units: formData.number_of_units ? parseFloat(formData.number_of_units) : null,
+      sales_price_per_unit: formData.sales_price_per_unit ? parseFloat(formData.sales_price_per_unit) : null,
+      direct_cost_per_unit: formData.direct_cost_per_unit ? parseFloat(formData.direct_cost_per_unit) : null,
+      contingency_percentage: formData.contingency_percentage ? parseFloat(formData.contingency_percentage) : 5,
+      sales_commission_percentage: formData.sales_commission_percentage ? parseFloat(formData.sales_commission_percentage) : 3,
+    };
+    onSave(data);
+    setIsEditing(false);
+  };
+
+  // Calculations
+  const purchasePrice = parseFloat(formData.purchase_price) || 0;
+  const devCosts = parseFloat(formData.development_costs) || 0;
+  const softCosts = parseFloat(formData.soft_costs) || 0;
+  const financingCosts = parseFloat(formData.financing_costs) || 0;
+  const numUnits = parseFloat(formData.number_of_units) || 0;
+  const salesPricePerUnit = parseFloat(formData.sales_price_per_unit) || 0;
+  const directCostPerUnit = parseFloat(formData.direct_cost_per_unit) || 0;
+  const contingencyPct = parseFloat(formData.contingency_percentage) || 5;
+  const salesCommissionPct = parseFloat(formData.sales_commission_percentage) || 3;
+
+  const totalDirectCosts = directCostPerUnit * numUnits;
+  const contingency = (purchasePrice + devCosts + softCosts + totalDirectCosts) * (contingencyPct / 100);
+  const totalCosts = purchasePrice + devCosts + softCosts + financingCosts + totalDirectCosts + contingency;
+  
+  const grossRevenue = salesPricePerUnit * numUnits;
+  const salesCommission = grossRevenue * (salesCommissionPct / 100);
+  const netRevenue = grossRevenue - salesCommission;
+  
+  const profit = netRevenue - totalCosts;
+  const roi = totalCosts > 0 ? (profit / totalCosts) * 100 : 0;
+  const profitMargin = grossRevenue > 0 ? (profit / grossRevenue) * 100 : 0;
+
+  const formatCurrency = (value) => {
+    return new Intl.NumberFormat('en-US', { 
+      style: 'currency', 
+      currency: 'USD',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    }).format(value);
+  };
+
+  if (isEditing) {
+    return (
+      <div className="space-y-6">
+        <div className="flex justify-between items-center">
+          <h2 className="text-lg font-semibold text-slate-900">Edit Proforma</h2>
+          <div className="flex gap-2">
+            {proforma && (
+              <Button variant="outline" onClick={() => {
+                setFormData(proforma);
+                setIsEditing(false);
+              }}>
+                Cancel
+              </Button>
+            )}
+            <Button onClick={handleSave} disabled={isLoading} className="bg-slate-900 hover:bg-slate-800">
+              {isLoading ? "Saving..." : "Save Proforma"}
+            </Button>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Acquisition Costs */}
+          <Card className="border-0 shadow-sm">
+            <CardHeader>
+              <CardTitle className="text-base">Acquisition & Development</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Label htmlFor="purchase_price">Purchase Price</Label>
+                <Input
+                  id="purchase_price"
+                  type="number"
+                  value={formData.purchase_price}
+                  onChange={(e) => handleChange("purchase_price", e.target.value)}
+                  placeholder="0"
+                />
+              </div>
+              <div>
+                <Label htmlFor="development_costs">Development Costs</Label>
+                <Input
+                  id="development_costs"
+                  type="number"
+                  value={formData.development_costs}
+                  onChange={(e) => handleChange("development_costs", e.target.value)}
+                  placeholder="0"
+                />
+              </div>
+              <div>
+                <Label htmlFor="soft_costs">Soft Costs</Label>
+                <Input
+                  id="soft_costs"
+                  type="number"
+                  value={formData.soft_costs}
+                  onChange={(e) => handleChange("soft_costs", e.target.value)}
+                  placeholder="0"
+                />
+              </div>
+              <div>
+                <Label htmlFor="financing_costs">Financing Costs</Label>
+                <Input
+                  id="financing_costs"
+                  type="number"
+                  value={formData.financing_costs}
+                  onChange={(e) => handleChange("financing_costs", e.target.value)}
+                  placeholder="0"
+                />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Unit Economics */}
+          <Card className="border-0 shadow-sm">
+            <CardHeader>
+              <CardTitle className="text-base">Unit Economics</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Label htmlFor="number_of_units">Number of Units</Label>
+                <Input
+                  id="number_of_units"
+                  type="number"
+                  value={formData.number_of_units}
+                  onChange={(e) => handleChange("number_of_units", e.target.value)}
+                  placeholder="0"
+                />
+              </div>
+              <div>
+                <Label htmlFor="sales_price_per_unit">Sales Price per Unit</Label>
+                <Input
+                  id="sales_price_per_unit"
+                  type="number"
+                  value={formData.sales_price_per_unit}
+                  onChange={(e) => handleChange("sales_price_per_unit", e.target.value)}
+                  placeholder="0"
+                />
+              </div>
+              <div>
+                <Label htmlFor="direct_cost_per_unit">Direct Cost per Unit</Label>
+                <Input
+                  id="direct_cost_per_unit"
+                  type="number"
+                  value={formData.direct_cost_per_unit}
+                  onChange={(e) => handleChange("direct_cost_per_unit", e.target.value)}
+                  placeholder="0"
+                />
+              </div>
+              <div>
+                <Label htmlFor="contingency_percentage">Contingency %</Label>
+                <Input
+                  id="contingency_percentage"
+                  type="number"
+                  step="0.1"
+                  value={formData.contingency_percentage}
+                  onChange={(e) => handleChange("contingency_percentage", e.target.value)}
+                  placeholder="5"
+                />
+              </div>
+              <div>
+                <Label htmlFor="sales_commission_percentage">Sales Commission %</Label>
+                <Input
+                  id="sales_commission_percentage"
+                  type="number"
+                  step="0.1"
+                  value={formData.sales_commission_percentage}
+                  onChange={(e) => handleChange("sales_commission_percentage", e.target.value)}
+                  placeholder="3"
+                />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Notes */}
+          <div className="md:col-span-2">
+            <Card className="border-0 shadow-sm">
+              <CardHeader>
+                <CardTitle className="text-base">Notes</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Textarea
+                  value={formData.notes}
+                  onChange={(e) => handleChange("notes", e.target.value)}
+                  rows={3}
+                  placeholder="Add any notes or assumptions..."
+                />
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!proforma) {
+    return (
+      <div className="text-center py-12">
+        <Calculator className="h-12 w-12 text-slate-300 mx-auto mb-4" />
+        <h3 className="text-lg font-semibold text-slate-900 mb-2">No Proforma Yet</h3>
+        <p className="text-slate-500 mb-4">Create a financial proforma to analyze this deal</p>
+        <Button onClick={() => setIsEditing(true)} className="bg-slate-900 hover:bg-slate-800">
+          Create Proforma
+        </Button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <h2 className="text-lg font-semibold text-slate-900">Financial Proforma</h2>
+        <Button onClick={() => setIsEditing(true)} variant="outline">
+          <Edit className="h-4 w-4 mr-2" />
+          Edit
+        </Button>
+      </div>
+
+      {/* Summary Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <Card className="border-0 shadow-sm">
+          <CardContent className="p-6">
+            <div className="flex items-center gap-2 text-slate-500 text-sm mb-2">
+              <DollarSign className="h-4 w-4" />
+              <span>Total Revenue</span>
+            </div>
+            <p className="text-2xl font-bold text-slate-900">{formatCurrency(netRevenue)}</p>
+            <p className="text-xs text-slate-500 mt-1">After {salesCommissionPct}% commission</p>
+          </CardContent>
+        </Card>
+
+        <Card className="border-0 shadow-sm">
+          <CardContent className="p-6">
+            <div className="flex items-center gap-2 text-slate-500 text-sm mb-2">
+              <DollarSign className="h-4 w-4" />
+              <span>Total Costs</span>
+            </div>
+            <p className="text-2xl font-bold text-slate-900">{formatCurrency(totalCosts)}</p>
+            <p className="text-xs text-slate-500 mt-1">With {contingencyPct}% contingency</p>
+          </CardContent>
+        </Card>
+
+        <Card className={cn("border-0 shadow-sm", profit >= 0 ? "bg-emerald-50" : "bg-red-50")}>
+          <CardContent className="p-6">
+            <div className="flex items-center gap-2 text-slate-500 text-sm mb-2">
+              <TrendingUp className="h-4 w-4" />
+              <span>Net Profit</span>
+            </div>
+            <p className={cn("text-2xl font-bold", profit >= 0 ? "text-emerald-700" : "text-red-700")}>
+              {formatCurrency(profit)}
+            </p>
+            <p className="text-xs text-slate-500 mt-1">{profitMargin.toFixed(1)}% margin</p>
+          </CardContent>
+        </Card>
+
+        <Card className={cn("border-0 shadow-sm", roi >= 0 ? "bg-emerald-50" : "bg-red-50")}>
+          <CardContent className="p-6">
+            <div className="flex items-center gap-2 text-slate-500 text-sm mb-2">
+              <TrendingUp className="h-4 w-4" />
+              <span>ROI</span>
+            </div>
+            <p className={cn("text-2xl font-bold", roi >= 0 ? "text-emerald-700" : "text-red-700")}>
+              {roi.toFixed(1)}%
+            </p>
+            <p className="text-xs text-slate-500 mt-1">Return on investment</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Detailed Breakdown */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Costs Breakdown */}
+        <Card className="border-0 shadow-sm">
+          <CardHeader>
+            <CardTitle className="text-base">Cost Breakdown</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="flex justify-between text-sm">
+              <span className="text-slate-600">Purchase Price</span>
+              <span className="font-medium">{formatCurrency(purchasePrice)}</span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-slate-600">Development Costs</span>
+              <span className="font-medium">{formatCurrency(devCosts)}</span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-slate-600">Soft Costs</span>
+              <span className="font-medium">{formatCurrency(softCosts)}</span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-slate-600">Financing Costs</span>
+              <span className="font-medium">{formatCurrency(financingCosts)}</span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-slate-600">Direct Costs ({numUnits} units)</span>
+              <span className="font-medium">{formatCurrency(totalDirectCosts)}</span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-slate-600">Contingency ({contingencyPct}%)</span>
+              <span className="font-medium">{formatCurrency(contingency)}</span>
+            </div>
+            <div className="border-t pt-3 flex justify-between font-semibold">
+              <span>Total Costs</span>
+              <span>{formatCurrency(totalCosts)}</span>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Revenue Breakdown */}
+        <Card className="border-0 shadow-sm">
+          <CardHeader>
+            <CardTitle className="text-base">Revenue Breakdown</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="flex justify-between text-sm">
+              <span className="text-slate-600">Units</span>
+              <span className="font-medium">{numUnits}</span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-slate-600">Price per Unit</span>
+              <span className="font-medium">{formatCurrency(salesPricePerUnit)}</span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-slate-600">Gross Revenue</span>
+              <span className="font-medium">{formatCurrency(grossRevenue)}</span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-slate-600">Sales Commission ({salesCommissionPct}%)</span>
+              <span className="font-medium text-red-600">-{formatCurrency(salesCommission)}</span>
+            </div>
+            <div className="border-t pt-3 flex justify-between font-semibold">
+              <span>Net Revenue</span>
+              <span>{formatCurrency(netRevenue)}</span>
+            </div>
+            <div className="border-t pt-3 flex justify-between text-lg font-bold">
+              <span className={profit >= 0 ? "text-emerald-700" : "text-red-700"}>Net Profit</span>
+              <span className={profit >= 0 ? "text-emerald-700" : "text-red-700"}>{formatCurrency(profit)}</span>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Notes */}
+        {proforma.notes && (
+          <div className="md:col-span-2">
+            <Card className="border-0 shadow-sm">
+              <CardHeader>
+                <CardTitle className="text-base">Notes</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-slate-600 whitespace-pre-wrap">{proforma.notes}</p>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

@@ -24,6 +24,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import ProformaTab from "@/components/deals/ProformaTab";
 
 const stageStyles = {
   prospecting: "bg-slate-100 text-slate-700",
@@ -114,6 +115,15 @@ export default function DealDetails() {
     enabled: !!dealId
   });
 
+  const { data: proforma } = useQuery({
+    queryKey: ['proforma', dealId],
+    queryFn: async () => {
+      const proformas = await base44.entities.Proforma.filter({ deal_id: dealId });
+      return proformas[0];
+    },
+    enabled: !!dealId
+  });
+
   const { data: allDeals = [] } = useQuery({
     queryKey: ['deals'],
     queryFn: () => base44.entities.Deal.list()
@@ -187,6 +197,15 @@ export default function DealDetails() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['developmentUpdates', dealId] });
       queryClient.invalidateQueries({ queryKey: ['developmentUpdates'] });
+    }
+  });
+
+  const proformaMutation = useMutation({
+    mutationFn: (data) => proforma 
+      ? base44.entities.Proforma.update(proforma.id, data)
+      : base44.entities.Proforma.create({ ...data, deal_id: dealId }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['proforma', dealId] });
     }
   });
 
@@ -271,6 +290,7 @@ export default function DealDetails() {
         <Tabs defaultValue="overview" className="space-y-6">
           <TabsList className="bg-white border">
             <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="proforma">Proforma</TabsTrigger>
             <TabsTrigger value="development">
               <HardHat className="h-4 w-4 mr-1.5" />
               Development ({developmentUpdates.length})
@@ -383,6 +403,14 @@ export default function DealDetails() {
                 </Card>
               )}
             </div>
+          </TabsContent>
+
+          <TabsContent value="proforma">
+            <ProformaTab 
+              proforma={proforma} 
+              onSave={(data) => proformaMutation.mutate(data)}
+              isLoading={proformaMutation.isPending}
+            />
           </TabsContent>
 
           <TabsContent value="development">
