@@ -10,6 +10,7 @@ import {
   ClipboardList, 
   FileCheck,
   HardHat,
+  TrendingUp,
   Menu,
   X,
   ChevronRight
@@ -22,6 +23,7 @@ const navigation = [
   { name: "Tasks", icon: ClipboardList, page: "Tasks" },
   { name: "Entitlements", icon: FileCheck, page: "Entitlements" },
   { name: "Development", icon: HardHat, page: "Development" },
+  { name: "Analytics", icon: TrendingUp, page: "Analytics" },
 ];
 
 export default function Layout({ children, currentPageName }) {
