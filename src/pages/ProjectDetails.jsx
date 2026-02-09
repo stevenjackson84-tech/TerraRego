@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
-import { ArrowLeft, Edit, Plus, Trash2 } from "lucide-react";
+import { ArrowLeft, Edit, Plus, Trash2, CheckCircle2, Clock, AlertCircle, TrendingUp, Calendar } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import ProjectForm from "@/components/projects/ProjectForm.jsx";
@@ -17,6 +17,7 @@ import MilestoneForm from "@/components/projects/MilestoneForm.jsx";
 import ExpenseForm from "@/components/projects/ExpenseForm.jsx";
 import GanttChart from "@/components/projects/GanttChart.jsx";
 import DocumentList from "@/components/documents/DocumentList";
+import DevelopmentTab from "@/components/projects/DevelopmentTab";
 
 const statusConfig = {
   planning: { color: "bg-slate-100 text-slate-700" },
@@ -37,6 +38,8 @@ export default function ProjectDetails() {
   const [editingPhase, setEditingPhase] = useState(null);
   const [editingMilestone, setEditingMilestone] = useState(null);
   const [editingExpense, setEditingExpense] = useState(null);
+  const [showDevForm, setShowDevForm] = useState(false);
+  const [editingDevUpdate, setEditingDevUpdate] = useState(null);
 
   const queryClient = useQueryClient();
 
@@ -64,6 +67,12 @@ export default function ProjectDetails() {
   const { data: expenses = [] } = useQuery({
     queryKey: ['projectExpenses', projectId],
     queryFn: () => base44.entities.ProjectExpense.filter({ project_id: projectId }),
+    enabled: !!projectId
+  });
+
+  const { data: developmentUpdates = [] } = useQuery({
+    queryKey: ['developmentUpdates', projectId],
+    queryFn: () => base44.entities.DevelopmentUpdate.filter({ project_id: projectId }),
     enabled: !!projectId
   });
 
@@ -126,6 +135,20 @@ export default function ProjectDetails() {
   const deleteExpense = useMutation({
     mutationFn: (id) => base44.entities.ProjectExpense.delete(id),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['projectExpenses', projectId] })
+  });
+
+  const devUpdateMutation = useMutation({
+    mutationFn: ({ id, data }) => id
+      ? base44.entities.DevelopmentUpdate.update(id, data)
+      : base44.entities.DevelopmentUpdate.create(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['developmentUpdates', projectId] });
+    }
+  });
+
+  const deleteDevUpdate = useMutation({
+    mutationFn: (id) => base44.entities.DevelopmentUpdate.delete(id),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['developmentUpdates', projectId] })
   });
 
   if (isLoading) {
@@ -218,6 +241,7 @@ export default function ProjectDetails() {
             <TabsTrigger value="timeline">Timeline</TabsTrigger>
             <TabsTrigger value="phases">Phases ({phases.length})</TabsTrigger>
             <TabsTrigger value="milestones">Milestones ({milestones.length})</TabsTrigger>
+            <TabsTrigger value="development">Development ({developmentUpdates.length})</TabsTrigger>
             <TabsTrigger value="budget">Budget & Expenses</TabsTrigger>
             <TabsTrigger value="documents">Documents</TabsTrigger>
             <TabsTrigger value="team">Team</TabsTrigger>
@@ -430,6 +454,15 @@ export default function ProjectDetails() {
                 )}
               </div>
             </div>
+          </TabsContent>
+
+          <TabsContent value="development">
+            <DevelopmentTab 
+              projectId={projectId}
+              developmentUpdates={developmentUpdates}
+              onSave={({ id, data }) => devUpdateMutation.mutate({ id, data })}
+              onDelete={(id) => deleteDevUpdate.mutate(id)}
+            />
           </TabsContent>
 
           <TabsContent value="documents">
