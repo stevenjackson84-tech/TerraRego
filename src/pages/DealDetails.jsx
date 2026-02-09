@@ -27,6 +27,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 
 const stageStyles = {
   prospecting: "bg-slate-100 text-slate-700",
+  loi: "bg-indigo-100 text-indigo-700",
   due_diligence: "bg-blue-100 text-blue-700",
   under_contract: "bg-amber-100 text-amber-700",
   entitlements: "bg-purple-100 text-purple-700",
