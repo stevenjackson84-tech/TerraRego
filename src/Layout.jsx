@@ -11,6 +11,7 @@ import {
   FileCheck,
   HardHat,
   TrendingUp,
+  FileText,
   Menu,
   X,
   ChevronRight
@@ -24,6 +25,7 @@ const navigation = [
   { name: "Entitlements", icon: FileCheck, page: "Entitlements" },
   { name: "Development", icon: HardHat, page: "Development" },
   { name: "Analytics", icon: TrendingUp, page: "Analytics" },
+  { name: "Reports", icon: FileText, page: "Reports" },
 ];
 
 export default function Layout({ children, currentPageName }) {

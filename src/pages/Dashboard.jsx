@@ -6,6 +6,8 @@ import StatsCard from "@/components/dashboard/StatsCard";
 import DealPipelineChart from "@/components/dashboard/DealPipelineChart";
 import RecentActivity from "@/components/dashboard/RecentActivity";
 import UpcomingTasks from "@/components/dashboard/UpcomingTasks";
+import QuarterlyDealsWidget from "@/components/dashboard/QuarterlyDealsWidget";
+import AvgProfitByTypeWidget from "@/components/dashboard/AvgProfitByTypeWidget";
 
 export default function Dashboard() {
   const queryClient = useQueryClient();
@@ -33,6 +35,11 @@ export default function Dashboard() {
   const { data: entitlements = [] } = useQuery({
     queryKey: ['entitlements'],
     queryFn: () => base44.entities.Entitlement.list('-created_date')
+  });
+
+  const { data: proformas = [] } = useQuery({
+    queryKey: ['proformas'],
+    queryFn: () => base44.entities.Proforma.list()
   });
 
   const updateTaskMutation = useMutation({
@@ -92,6 +99,12 @@ export default function Dashboard() {
             icon={ClipboardList}
             subtitle={`${pendingEntitlements} entitlements in progress`}
           />
+        </div>
+
+        {/* KPI Widgets */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+          <QuarterlyDealsWidget deals={deals} />
+          <AvgProfitByTypeWidget deals={deals} proformas={proformas} />
         </div>
 
         {/* Charts and Activity */}
