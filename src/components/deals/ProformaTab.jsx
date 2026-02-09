@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Edit, DollarSign, TrendingUp, Calculator } from "lucide-react";
+import { Edit, DollarSign, TrendingUp, Calculator, Plus, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export default function ProformaTab({ proforma, onSave, isLoading }) {
@@ -14,9 +14,7 @@ export default function ProformaTab({ proforma, onSave, isLoading }) {
     development_costs: "",
     soft_costs: "",
     financing_costs: "",
-    number_of_units: "",
-    sales_price_per_unit: "",
-    direct_cost_per_unit: "",
+    product_types: [],
     contingency_percentage: 5,
     sales_commission_percentage: 3,
     entitlement_start_date: "",
@@ -34,6 +32,32 @@ export default function ProformaTab({ proforma, onSave, isLoading }) {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
+  const addProductType = () => {
+    setFormData(prev => ({
+      ...prev,
+      product_types: [
+        ...(prev.product_types || []),
+        { name: "", number_of_units: "", sales_price_per_unit: "", direct_cost_per_unit: "" }
+      ]
+    }));
+  };
+
+  const removeProductType = (index) => {
+    setFormData(prev => ({
+      ...prev,
+      product_types: prev.product_types.filter((_, i) => i !== index)
+    }));
+  };
+
+  const updateProductType = (index, field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      product_types: prev.product_types.map((pt, i) => 
+        i === index ? { ...pt, [field]: value } : pt
+      )
+    }));
+  };
+
   const handleSave = () => {
     const data = {
       ...formData,
@@ -41,9 +65,12 @@ export default function ProformaTab({ proforma, onSave, isLoading }) {
       development_costs: formData.development_costs ? parseFloat(formData.development_costs) : null,
       soft_costs: formData.soft_costs ? parseFloat(formData.soft_costs) : null,
       financing_costs: formData.financing_costs ? parseFloat(formData.financing_costs) : null,
-      number_of_units: formData.number_of_units ? parseFloat(formData.number_of_units) : null,
-      sales_price_per_unit: formData.sales_price_per_unit ? parseFloat(formData.sales_price_per_unit) : null,
-      direct_cost_per_unit: formData.direct_cost_per_unit ? parseFloat(formData.direct_cost_per_unit) : null,
+      product_types: (formData.product_types || []).map(pt => ({
+        name: pt.name,
+        number_of_units: pt.number_of_units ? parseFloat(pt.number_of_units) : 0,
+        sales_price_per_unit: pt.sales_price_per_unit ? parseFloat(pt.sales_price_per_unit) : 0,
+        direct_cost_per_unit: pt.direct_cost_per_unit ? parseFloat(pt.direct_cost_per_unit) : 0
+      })),
       contingency_percentage: formData.contingency_percentage ? parseFloat(formData.contingency_percentage) : 5,
       sales_commission_percentage: formData.sales_commission_percentage ? parseFloat(formData.sales_commission_percentage) : 3,
     };
@@ -56,19 +83,24 @@ export default function ProformaTab({ proforma, onSave, isLoading }) {
   const devCosts = parseFloat(formData.development_costs) || 0;
   const softCosts = parseFloat(formData.soft_costs) || 0;
   const financingCosts = parseFloat(formData.financing_costs) || 0;
-  const numUnits = parseFloat(formData.number_of_units) || 0;
-  const salesPricePerUnit = parseFloat(formData.sales_price_per_unit) || 0;
-  const directCostPerUnit = parseFloat(formData.direct_cost_per_unit) || 0;
   const contingencyPct = parseFloat(formData.contingency_percentage) || 5;
   const salesCommissionPct = parseFloat(formData.sales_commission_percentage) || 3;
 
-  const totalDirectCosts = directCostPerUnit * numUnits;
+  const productTypes = formData.product_types || [];
+  
+  const numUnits = productTypes.reduce((sum, pt) => sum + (parseFloat(pt.number_of_units) || 0), 0);
+  const totalDirectCosts = productTypes.reduce((sum, pt) => 
+    sum + ((parseFloat(pt.number_of_units) || 0) * (parseFloat(pt.direct_cost_per_unit) || 0)), 0
+  );
+  const grossRevenue = productTypes.reduce((sum, pt) => 
+    sum + ((parseFloat(pt.number_of_units) || 0) * (parseFloat(pt.sales_price_per_unit) || 0)), 0
+  );
+
   const purchasePricePerUnit = numUnits > 0 ? purchasePrice / numUnits : 0;
   const devCostPerUnit = numUnits > 0 ? devCosts / numUnits : 0;
   const contingency = (purchasePrice + devCosts + softCosts + totalDirectCosts) * (contingencyPct / 100);
   const totalCosts = purchasePrice + devCosts + softCosts + financingCosts + totalDirectCosts + contingency;
   
-  const grossRevenue = salesPricePerUnit * numUnits;
   const salesCommission = grossRevenue * (salesCommissionPct / 100);
   const netRevenue = grossRevenue - salesCommission;
   
@@ -77,7 +109,6 @@ export default function ProformaTab({ proforma, onSave, isLoading }) {
   const profitMargin = grossRevenue > 0 ? (profit / grossRevenue) * 100 : 0;
   const grossMargin = grossRevenue > 0 ? ((grossRevenue - totalCosts) / grossRevenue) * 100 : 0;
 
-  // RONA - Return on Net Assets (excluding financing costs for unlevered calculation)
   const netAssets = purchasePrice + devCosts + softCosts + totalDirectCosts + contingency;
   const rona = netAssets > 0 ? (profit / netAssets) * 100 : 0;
 
@@ -100,7 +131,8 @@ export default function ProformaTab({ proforma, onSave, isLoading }) {
     const monthsToSellOut = Math.ceil(numUnits / absorptionPace);
     
     // Revenue cash flows from sales (spread over absorption period)
-    const revenuePerMonth = (salesPricePerUnit * absorptionPace) - (salesPricePerUnit * absorptionPace * (salesCommissionPct / 100));
+    const avgSalesPrice = numUnits > 0 ? grossRevenue / numUnits : 0;
+    const revenuePerMonth = (avgSalesPrice * absorptionPace) - (avgSalesPrice * absorptionPace * (salesCommissionPct / 100));
     
     for (let i = 1; i <= monthsToSellOut; i++) {
       cashFlows.push(revenuePerMonth);
@@ -214,63 +246,96 @@ export default function ProformaTab({ proforma, onSave, isLoading }) {
             </CardContent>
           </Card>
 
-          {/* Unit Economics */}
-          <Card className="border-0 shadow-sm">
+          {/* Product Types */}
+          <Card className="border-0 shadow-sm md:col-span-2">
             <CardHeader>
-              <CardTitle className="text-base">Unit Economics</CardTitle>
+              <div className="flex justify-between items-center">
+                <CardTitle className="text-base">Product Types</CardTitle>
+                <Button onClick={addProductType} variant="outline" size="sm">
+                  <Plus className="h-4 w-4 mr-1" />
+                  Add Product Type
+                </Button>
+              </div>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div>
-                <Label htmlFor="number_of_units">Number of Units</Label>
-                <Input
-                  id="number_of_units"
-                  type="number"
-                  value={formData.number_of_units}
-                  onChange={(e) => handleChange("number_of_units", e.target.value)}
-                  placeholder="0"
-                />
-              </div>
-              <div>
-                <Label htmlFor="sales_price_per_unit">Sales Price per Unit</Label>
-                <Input
-                  id="sales_price_per_unit"
-                  type="number"
-                  value={formData.sales_price_per_unit}
-                  onChange={(e) => handleChange("sales_price_per_unit", e.target.value)}
-                  placeholder="0"
-                />
-              </div>
-              <div>
-                <Label htmlFor="direct_cost_per_unit">Direct Cost per Unit</Label>
-                <Input
-                  id="direct_cost_per_unit"
-                  type="number"
-                  value={formData.direct_cost_per_unit}
-                  onChange={(e) => handleChange("direct_cost_per_unit", e.target.value)}
-                  placeholder="0"
-                />
-              </div>
-              <div>
-                <Label htmlFor="contingency_percentage">Contingency %</Label>
-                <Input
-                  id="contingency_percentage"
-                  type="number"
-                  step="0.1"
-                  value={formData.contingency_percentage}
-                  onChange={(e) => handleChange("contingency_percentage", e.target.value)}
-                  placeholder="5"
-                />
-              </div>
-              <div>
-                <Label htmlFor="sales_commission_percentage">Sales Commission %</Label>
-                <Input
-                  id="sales_commission_percentage"
-                  type="number"
-                  step="0.1"
-                  value={formData.sales_commission_percentage}
-                  onChange={(e) => handleChange("sales_commission_percentage", e.target.value)}
-                  placeholder="3"
-                />
+              {productTypes.map((pt, index) => (
+                <div key={index} className="border border-slate-200 rounded-lg p-4">
+                  <div className="flex justify-between items-start mb-3">
+                    <Label className="text-sm font-medium">Product Type {index + 1}</Label>
+                    <Button variant="ghost" size="icon" className="h-6 w-6 text-red-500" onClick={() => removeProductType(index)}>
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="col-span-2">
+                      <Label className="text-xs">Product Name</Label>
+                      <Input
+                        value={pt.name}
+                        onChange={(e) => updateProductType(index, "name", e.target.value)}
+                        placeholder="e.g., Single Family"
+                        className="h-9"
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-xs">Units</Label>
+                      <Input
+                        type="number"
+                        value={pt.number_of_units}
+                        onChange={(e) => updateProductType(index, "number_of_units", e.target.value)}
+                        placeholder="0"
+                        className="h-9"
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-xs">Sales Price/Unit</Label>
+                      <Input
+                        type="number"
+                        value={pt.sales_price_per_unit}
+                        onChange={(e) => updateProductType(index, "sales_price_per_unit", e.target.value)}
+                        placeholder="0"
+                        className="h-9"
+                      />
+                    </div>
+                    <div className="col-span-2">
+                      <Label className="text-xs">Direct Cost/Unit</Label>
+                      <Input
+                        type="number"
+                        value={pt.direct_cost_per_unit}
+                        onChange={(e) => updateProductType(index, "direct_cost_per_unit", e.target.value)}
+                        placeholder="0"
+                        className="h-9"
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
+              {productTypes.length === 0 && (
+                <p className="text-sm text-slate-500 text-center py-4">No product types added yet</p>
+              )}
+              
+              <div className="grid grid-cols-2 gap-4 pt-4 border-t border-slate-200">
+                <div>
+                  <Label htmlFor="contingency_percentage">Contingency %</Label>
+                  <Input
+                    id="contingency_percentage"
+                    type="number"
+                    step="0.1"
+                    value={formData.contingency_percentage}
+                    onChange={(e) => handleChange("contingency_percentage", e.target.value)}
+                    placeholder="5"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="sales_commission_percentage">Sales Commission %</Label>
+                  <Input
+                    id="sales_commission_percentage"
+                    type="number"
+                    step="0.1"
+                    value={formData.sales_commission_percentage}
+                    onChange={(e) => handleChange("sales_commission_percentage", e.target.value)}
+                    placeholder="3"
+                  />
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -569,13 +634,20 @@ export default function ProformaTab({ proforma, onSave, isLoading }) {
             <CardTitle className="text-base">Revenue Breakdown</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            <div className="flex justify-between text-sm">
-              <span className="text-slate-600">Units</span>
+            {productTypes.map((pt, i) => (
+              <div key={i} className="pb-3 border-b border-slate-100">
+                <div className="flex justify-between text-sm mb-1">
+                  <span className="text-slate-700 font-medium">{pt.name || `Product ${i + 1}`}</span>
+                </div>
+                <div className="flex justify-between text-xs text-slate-500 pl-3">
+                  <span>{pt.number_of_units} units @ {formatCurrency(pt.sales_price_per_unit)}</span>
+                  <span className="font-medium">{formatCurrency((pt.number_of_units || 0) * (pt.sales_price_per_unit || 0))}</span>
+                </div>
+              </div>
+            ))}
+            <div className="flex justify-between text-sm pt-2">
+              <span className="text-slate-600">Total Units</span>
               <span className="font-medium">{numUnits}</span>
-            </div>
-            <div className="flex justify-between text-sm">
-              <span className="text-slate-600">Price per Unit</span>
-              <span className="font-medium">{formatCurrency(salesPricePerUnit)}</span>
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-slate-600">Gross Revenue</span>
