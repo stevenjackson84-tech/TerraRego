@@ -26,6 +26,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import ProformaTab from "@/components/deals/ProformaTab";
+import DocumentList from "@/components/documents/DocumentList";
 
 const stageStyles = {
   prospecting: "bg-slate-100 text-slate-700",
@@ -404,6 +405,7 @@ export default function DealDetails() {
             </TabsTrigger>
             <TabsTrigger value="entitlements">Entitlements ({entitlements.length})</TabsTrigger>
             <TabsTrigger value="tasks">Tasks ({tasks.length})</TabsTrigger>
+            <TabsTrigger value="documents">Documents</TabsTrigger>
             <TabsTrigger value="activity">Activity</TabsTrigger>
           </TabsList>
 
@@ -732,6 +734,10 @@ export default function DealDetails() {
                 </div>
               )}
             </div>
+          </TabsContent>
+
+          <TabsContent value="documents">
+            <DocumentList entityType="deal" entityId={dealId} />
           </TabsContent>
 
           <TabsContent value="activity">

@@ -16,6 +16,7 @@ import PhaseForm from "@/components/projects/PhaseForm.jsx";
 import MilestoneForm from "@/components/projects/MilestoneForm.jsx";
 import ExpenseForm from "@/components/projects/ExpenseForm.jsx";
 import GanttChart from "@/components/projects/GanttChart.jsx";
+import DocumentList from "@/components/documents/DocumentList";
 
 const statusConfig = {
   planning: { color: "bg-slate-100 text-slate-700" },
@@ -218,6 +219,7 @@ export default function ProjectDetails() {
             <TabsTrigger value="phases">Phases ({phases.length})</TabsTrigger>
             <TabsTrigger value="milestones">Milestones ({milestones.length})</TabsTrigger>
             <TabsTrigger value="budget">Budget & Expenses</TabsTrigger>
+            <TabsTrigger value="documents">Documents</TabsTrigger>
             <TabsTrigger value="team">Team</TabsTrigger>
           </TabsList>
 
@@ -428,6 +430,10 @@ export default function ProjectDetails() {
                 )}
               </div>
             </div>
+          </TabsContent>
+
+          <TabsContent value="documents">
+            <DocumentList entityType="project" entityId={projectId} />
           </TabsContent>
 
           <TabsContent value="team">
