@@ -19,6 +19,12 @@ export default function ProformaTab({ proforma, onSave, isLoading }) {
     direct_cost_per_unit: "",
     contingency_percentage: 5,
     sales_commission_percentage: 3,
+    development_start_date: "",
+    development_completion_date: "",
+    first_home_start: "",
+    first_home_sale: "",
+    first_home_closing: "",
+    absorption_pace: "",
     notes: ""
   });
 
@@ -206,6 +212,79 @@ export default function ProformaTab({ proforma, onSave, isLoading }) {
             </CardContent>
           </Card>
 
+          {/* Timeline & Absorption */}
+          <Card className="border-0 shadow-sm">
+            <CardHeader>
+              <CardTitle className="text-base">Development Timeline</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Label htmlFor="development_start_date">Development Start Date</Label>
+                <Input
+                  id="development_start_date"
+                  type="date"
+                  value={formData.development_start_date}
+                  onChange={(e) => handleChange("development_start_date", e.target.value)}
+                />
+              </div>
+              <div>
+                <Label htmlFor="development_completion_date">Development Completion Date</Label>
+                <Input
+                  id="development_completion_date"
+                  type="date"
+                  value={formData.development_completion_date}
+                  onChange={(e) => handleChange("development_completion_date", e.target.value)}
+                />
+              </div>
+              <div>
+                <Label htmlFor="first_home_start">First Home Start</Label>
+                <Input
+                  id="first_home_start"
+                  type="date"
+                  value={formData.first_home_start}
+                  onChange={(e) => handleChange("first_home_start", e.target.value)}
+                />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-0 shadow-sm">
+            <CardHeader>
+              <CardTitle className="text-base">Sales Timeline</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Label htmlFor="first_home_sale">First Home Sale</Label>
+                <Input
+                  id="first_home_sale"
+                  type="date"
+                  value={formData.first_home_sale}
+                  onChange={(e) => handleChange("first_home_sale", e.target.value)}
+                />
+              </div>
+              <div>
+                <Label htmlFor="first_home_closing">First Home Closing</Label>
+                <Input
+                  id="first_home_closing"
+                  type="date"
+                  value={formData.first_home_closing}
+                  onChange={(e) => handleChange("first_home_closing", e.target.value)}
+                />
+              </div>
+              <div>
+                <Label htmlFor="absorption_pace">Absorption Pace (units/month)</Label>
+                <Input
+                  id="absorption_pace"
+                  type="number"
+                  step="0.1"
+                  value={formData.absorption_pace}
+                  onChange={(e) => handleChange("absorption_pace", e.target.value)}
+                  placeholder="0"
+                />
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Notes */}
           <div className="md:col-span-2">
             <Card className="border-0 shadow-sm">
@@ -372,6 +451,55 @@ export default function ProformaTab({ proforma, onSave, isLoading }) {
             </div>
           </CardContent>
         </Card>
+
+        {/* Timeline & Absorption */}
+        <div className="md:col-span-2">
+          <Card className="border-0 shadow-sm">
+            <CardHeader>
+              <CardTitle className="text-base">Development & Sales Timeline</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                {proforma.development_start_date && (
+                  <div>
+                    <p className="text-xs text-slate-500 mb-1">Development Start</p>
+                    <p className="text-sm font-medium">{new Date(proforma.development_start_date).toLocaleDateString()}</p>
+                  </div>
+                )}
+                {proforma.development_completion_date && (
+                  <div>
+                    <p className="text-xs text-slate-500 mb-1">Development Completion</p>
+                    <p className="text-sm font-medium">{new Date(proforma.development_completion_date).toLocaleDateString()}</p>
+                  </div>
+                )}
+                {proforma.first_home_start && (
+                  <div>
+                    <p className="text-xs text-slate-500 mb-1">First Home Start</p>
+                    <p className="text-sm font-medium">{new Date(proforma.first_home_start).toLocaleDateString()}</p>
+                  </div>
+                )}
+                {proforma.first_home_sale && (
+                  <div>
+                    <p className="text-xs text-slate-500 mb-1">First Home Sale</p>
+                    <p className="text-sm font-medium">{new Date(proforma.first_home_sale).toLocaleDateString()}</p>
+                  </div>
+                )}
+                {proforma.first_home_closing && (
+                  <div>
+                    <p className="text-xs text-slate-500 mb-1">First Home Closing</p>
+                    <p className="text-sm font-medium">{new Date(proforma.first_home_closing).toLocaleDateString()}</p>
+                  </div>
+                )}
+                {proforma.absorption_pace && (
+                  <div>
+                    <p className="text-xs text-slate-500 mb-1">Absorption Pace</p>
+                    <p className="text-sm font-medium">{proforma.absorption_pace} units/month</p>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
 
         {/* Notes */}
         {proforma.notes && (
