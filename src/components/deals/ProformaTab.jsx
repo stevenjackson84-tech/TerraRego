@@ -75,6 +75,7 @@ export default function ProformaTab({ proforma, onSave, isLoading }) {
   const profit = netRevenue - totalCosts;
   const roi = totalCosts > 0 ? (profit / totalCosts) * 100 : 0;
   const profitMargin = grossRevenue > 0 ? (profit / grossRevenue) * 100 : 0;
+  const grossMargin = grossRevenue > 0 ? ((grossRevenue - totalCosts) / grossRevenue) * 100 : 0;
 
   // RONA - Return on Net Assets (excluding financing costs for unlevered calculation)
   const netAssets = purchasePrice + devCosts + softCosts + totalDirectCosts + contingency;
@@ -470,7 +471,20 @@ export default function ProformaTab({ proforma, onSave, isLoading }) {
       </div>
 
       {/* Advanced Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Card className={cn("border-0 shadow-sm", grossMargin >= 0 ? "bg-purple-50" : "bg-red-50")}>
+          <CardContent className="p-6">
+            <div className="flex items-center gap-2 text-slate-500 text-sm mb-2">
+              <TrendingUp className="h-4 w-4" />
+              <span>Gross Margin</span>
+            </div>
+            <p className={cn("text-2xl font-bold", grossMargin >= 0 ? "text-purple-700" : "text-red-700")}>
+              {grossMargin.toFixed(1)}%
+            </p>
+            <p className="text-xs text-slate-500 mt-1">(Revenue - Total Costs) / Revenue</p>
+          </CardContent>
+        </Card>
+
         <Card className={cn("border-0 shadow-sm", rona >= 0 ? "bg-blue-50" : "bg-red-50")}>
           <CardContent className="p-6">
             <div className="flex items-center gap-2 text-slate-500 text-sm mb-2">
