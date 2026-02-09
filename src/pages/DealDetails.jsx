@@ -101,6 +101,14 @@ export default function DealDetails() {
     { milestone: "Mailboxes", category: "infrastructure", status: "planned" }
   ];
 
+  const defaultEntitlements = [
+    { name: "Zoning Approval", type: "zoning_change", status: "not_started" },
+    { name: "DRC Approval", type: "other", status: "not_started" },
+    { name: "Preliminary Plat Approval", type: "subdivision", status: "not_started" },
+    { name: "Final Plat/Engineering Approval", type: "subdivision", status: "not_started" },
+    { name: "Plat Recorded", type: "other", status: "not_started" }
+  ];
+
   const createDefaultMilestones = useMutation({
     mutationFn: async () => {
       const milestones = defaultMilestones.map(m => ({
@@ -116,6 +124,28 @@ export default function DealDetails() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['developmentUpdates', dealId] });
+    }
+  });
+
+  const createDefaultEntitlements = useMutation({
+    mutationFn: async () => {
+      const entitlements = defaultEntitlements.map(e => ({
+        ...e,
+        deal_id: dealId,
+        agency: "",
+        submission_date: "",
+        approval_date: "",
+        expiration_date: "",
+        estimated_cost: null,
+        actual_cost: null,
+        assigned_to: "",
+        notes: "",
+        documents: []
+      }));
+      await base44.entities.Entitlement.bulkCreate(entitlements);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['entitlements', dealId] });
     }
   });
 
@@ -580,10 +610,21 @@ export default function DealDetails() {
           <TabsContent value="entitlements">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-lg font-semibold text-slate-900">Entitlements & Permits</h2>
-              <Button onClick={() => setShowEntitlementForm(true)} className="bg-slate-900 hover:bg-slate-800">
-                <Plus className="h-4 w-4 mr-2" />
-                Add Entitlement
-              </Button>
+              <div className="flex gap-2">
+                {entitlements.length === 0 && (
+                  <Button 
+                    onClick={() => createDefaultEntitlements.mutate()} 
+                    disabled={createDefaultEntitlements.isPending}
+                    variant="outline"
+                  >
+                    {createDefaultEntitlements.isPending ? "Adding..." : "Add Default Entitlements"}
+                  </Button>
+                )}
+                <Button onClick={() => setShowEntitlementForm(true)} className="bg-slate-900 hover:bg-slate-800">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Entitlement
+                </Button>
+              </div>
             </div>
             <div className="grid gap-4">
               {entitlements.map(ent => (
