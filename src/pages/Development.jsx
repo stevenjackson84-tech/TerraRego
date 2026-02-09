@@ -65,6 +65,16 @@ export default function Development() {
     queryFn: () => base44.entities.Deal.list()
   });
 
+  const { data: projects = [] } = useQuery({
+    queryKey: ['projects'],
+    queryFn: () => base44.entities.Project.list()
+  });
+
+  const { data: projectPhases = [] } = useQuery({
+    queryKey: ['projectPhases'],
+    queryFn: () => base44.entities.ProjectPhase.list()
+  });
+
   const createMutation = useMutation({
     mutationFn: (data) => base44.entities.DevelopmentUpdate.create(data),
     onSuccess: () => {
@@ -118,6 +128,31 @@ export default function Development() {
     const deal = deals.find(d => d.id === dealId);
     return deal?.name || 'Unknown Deal';
   };
+
+  // Group phases by project
+  const projectsWithPhases = projects
+    .filter(p => p.status === 'active' || p.status === 'planning')
+    .map(project => {
+      const phases = projectPhases.filter(phase => phase.project_id === project.id);
+      const totalPhases = phases.length;
+      const completedPhases = phases.filter(p => p.status === 'completed').length;
+      const avgProgress = totalPhases > 0
+        ? phases.reduce((sum, p) => {
+            if (p.status === 'completed') return sum + 100;
+            if (p.status === 'in_progress') return sum + 50;
+            return sum;
+          }, 0) / totalPhases
+        : 0;
+
+      return {
+        ...project,
+        phases,
+        totalPhases,
+        completedPhases,
+        avgProgress: Math.round(avgProgress)
+      };
+    })
+    .sort((a, b) => b.avgProgress - a.avgProgress);
 
   // Calculate overall stats
   const totalUpdates = updates.length;
@@ -185,8 +220,67 @@ export default function Development() {
           </Card>
         </div>
 
+        {/* Projects by Phase */}
+        {projectsWithPhases.length > 0 && (
+          <div className="mb-8">
+            <h2 className="text-xl font-semibold text-slate-900 mb-4">Active Projects</h2>
+            <div className="space-y-4">
+              {projectsWithPhases.map(project => (
+                <Card key={project.id} className="border-0 shadow-sm">
+                  <CardHeader className="border-b border-slate-100 pb-4">
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <CardTitle className="text-lg">{project.name}</CardTitle>
+                        <p className="text-sm text-slate-500 mt-1">
+                          {project.completedPhases} of {project.totalPhases} phases completed
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-2xl font-bold text-slate-900">{project.avgProgress}%</p>
+                        <p className="text-xs text-slate-500">Overall Progress</p>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="p-6">
+                    {project.phases.length > 0 ? (
+                      <div className="space-y-4">
+                        {project.phases.sort((a, b) => (a.order || 0) - (b.order || 0)).map(phase => {
+                          const phaseProgress = phase.status === 'completed' ? 100 
+                            : phase.status === 'in_progress' ? 50 
+                            : phase.status === 'blocked' ? 0
+                            : 0;
+                          
+                          return (
+                            <div key={phase.id} className="flex items-center gap-4">
+                              <div className="flex-1">
+                                <div className="flex items-center justify-between mb-2">
+                                  <div className="flex items-center gap-2">
+                                    <span className="font-medium text-slate-900">{phase.name}</span>
+                                    <Badge variant="outline" className="text-xs">
+                                      {phase.status.replace('_', ' ')}
+                                    </Badge>
+                                  </div>
+                                  <span className="text-sm font-bold text-slate-700">{phaseProgress}%</span>
+                                </div>
+                                <Progress value={phaseProgress} className="h-2" />
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <p className="text-sm text-slate-500 text-center py-4">No phases defined yet</p>
+                    )}
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Filters */}
         <div className="mb-6">
+          <h2 className="text-xl font-semibold text-slate-900 mb-4">Deal Development Milestones</h2>
           <Tabs value={filterStatus} onValueChange={setFilterStatus}>
             <TabsList className="bg-white border">
               <TabsTrigger value="all">All</TabsTrigger>
