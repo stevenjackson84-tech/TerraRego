@@ -14,12 +14,14 @@ import {
   FileText,
   Menu,
   X,
-  ChevronRight
+  ChevronRight,
+  Folder
 } from "lucide-react";
 
 const navigation = [
   { name: "Dashboard", icon: LayoutDashboard, page: "Dashboard" },
   { name: "Deals", icon: Building2, page: "Deals" },
+  { name: "Projects", icon: Folder, page: "Projects" },
   { name: "Contacts", icon: Users, page: "Contacts" },
   { name: "Tasks", icon: ClipboardList, page: "Tasks" },
   { name: "Entitlements", icon: FileCheck, page: "Entitlements" },
