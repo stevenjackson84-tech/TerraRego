@@ -53,6 +53,7 @@ import DealDetails from './pages/DealDetails';
 import Contacts from './pages/Contacts';
 import Tasks from './pages/Tasks';
 import Entitlements from './pages/Entitlements';
+import Development from './pages/Development';
 import __Layout from './Layout.jsx';
 
 
@@ -63,6 +64,7 @@ export const PAGES = {
     "Contacts": Contacts,
     "Tasks": Tasks,
     "Entitlements": Entitlements,
+    "Development": Development,
 }
 
 export const pagesConfig = {

@@ -6,7 +6,6 @@ import StatsCard from "@/components/dashboard/StatsCard";
 import DealPipelineChart from "@/components/dashboard/DealPipelineChart";
 import RecentActivity from "@/components/dashboard/RecentActivity";
 import UpcomingTasks from "@/components/dashboard/UpcomingTasks";
-import DevelopmentUpdates from "@/components/dashboard/DevelopmentUpdates";
 
 export default function Dashboard() {
   const queryClient = useQueryClient();
@@ -34,11 +33,6 @@ export default function Dashboard() {
   const { data: entitlements = [] } = useQuery({
     queryKey: ['entitlements'],
     queryFn: () => base44.entities.Entitlement.list('-created_date')
-  });
-
-  const { data: developmentUpdates = [] } = useQuery({
-    queryKey: ['developmentUpdates'],
-    queryFn: () => base44.entities.DevelopmentUpdate.list('-created_date')
   });
 
   const updateTaskMutation = useMutation({
@@ -110,10 +104,9 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Tasks and Development Updates */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+        {/* Tasks Section */}
+        <div className="mt-6">
           <UpcomingTasks tasks={tasks} deals={deals} onToggleTask={handleToggleTask} />
-          <DevelopmentUpdates updates={developmentUpdates} deals={deals} />
         </div>
       </div>
     </div>

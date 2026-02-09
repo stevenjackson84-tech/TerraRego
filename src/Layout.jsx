@@ -9,6 +9,7 @@ import {
   Users, 
   ClipboardList, 
   FileCheck,
+  HardHat,
   Menu,
   X,
   ChevronRight
@@ -20,6 +21,7 @@ const navigation = [
   { name: "Contacts", icon: Users, page: "Contacts" },
   { name: "Tasks", icon: ClipboardList, page: "Tasks" },
   { name: "Entitlements", icon: FileCheck, page: "Entitlements" },
+  { name: "Development", icon: HardHat, page: "Development" },
 ];
 
 export default function Layout({ children, currentPageName }) {
