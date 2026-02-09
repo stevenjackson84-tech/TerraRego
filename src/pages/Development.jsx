@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, Calendar, CheckCircle2, Clock, AlertCircle, TrendingUp, Edit, Trash2 } from "lucide-react";
+import { Plus, Calendar, CheckCircle2, Clock, AlertCircle, TrendingUp, Edit, Trash2, FileText } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 
@@ -184,6 +184,65 @@ export default function Development() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Business Plan Section */}
+        <Card className="border-0 shadow-sm mb-8 bg-gradient-to-br from-slate-50 to-white">
+          <CardHeader className="border-b border-slate-100">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-slate-900">
+                  <FileText className="h-5 w-5 text-white" />
+                </div>
+                <div>
+                  <CardTitle className="text-lg">Business Plan</CardTitle>
+                  <p className="text-sm text-slate-500 mt-1">Strategic overview and project planning</p>
+                </div>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="p-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <h4 className="font-semibold text-slate-900 mb-3">Key Objectives</h4>
+                <ul className="space-y-2 text-sm text-slate-600">
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-emerald-600 mt-0.5 shrink-0" />
+                    <span>Define development timeline and milestones</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-emerald-600 mt-0.5 shrink-0" />
+                    <span>Establish budget and financial projections</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-emerald-600 mt-0.5 shrink-0" />
+                    <span>Identify stakeholders and team structure</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-emerald-600 mt-0.5 shrink-0" />
+                    <span>Assess market conditions and risks</span>
+                  </li>
+                </ul>
+              </div>
+              <div>
+                <h4 className="font-semibold text-slate-900 mb-3">Planning Resources</h4>
+                <div className="space-y-3">
+                  <div className="p-3 rounded-lg border border-slate-200 bg-white">
+                    <p className="text-sm font-medium text-slate-900">Executive Summary</p>
+                    <p className="text-xs text-slate-500 mt-1">High-level project overview and goals</p>
+                  </div>
+                  <div className="p-3 rounded-lg border border-slate-200 bg-white">
+                    <p className="text-sm font-medium text-slate-900">Financial Analysis</p>
+                    <p className="text-xs text-slate-500 mt-1">Cost projections and ROI calculations</p>
+                  </div>
+                  <div className="p-3 rounded-lg border border-slate-200 bg-white">
+                    <p className="text-sm font-medium text-slate-900">Risk Assessment</p>
+                    <p className="text-xs text-slate-500 mt-1">Potential challenges and mitigation strategies</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Filters */}
         <div className="mb-6">
