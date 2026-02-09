@@ -29,8 +29,8 @@ import ProformaTab from "@/components/deals/ProformaTab";
 const stageStyles = {
   prospecting: "bg-slate-100 text-slate-700",
   loi: "bg-indigo-100 text-indigo-700",
-  due_diligence: "bg-blue-100 text-blue-700",
-  under_contract: "bg-amber-100 text-amber-700",
+  controlled_not_approved: "bg-blue-100 text-blue-700",
+  controlled_approved: "bg-amber-100 text-amber-700",
   entitlements: "bg-purple-100 text-purple-700",
   development: "bg-emerald-100 text-emerald-700",
   closed: "bg-green-100 text-green-700",
