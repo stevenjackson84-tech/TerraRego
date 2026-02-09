@@ -60,6 +60,7 @@ export default function Dashboard() {
   // Calculate stats
   const activeDeals = deals.filter(d => !['closed', 'dead'].includes(d.stage));
   const totalPipelineValue = activeDeals.reduce((sum, d) => sum + (d.estimated_value || 0), 0);
+  const totalPipelineLots = activeDeals.reduce((sum, d) => sum + (d.number_of_lots || 0), 0);
   const pendingTasks = tasks.filter(t => t.status !== 'completed').length;
   const pendingEntitlements = entitlements.filter(e => !['approved', 'denied', 'expired'].includes(e.status)).length;
 
@@ -73,7 +74,7 @@ export default function Dashboard() {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
           <StatsCard
             title="Active Deals"
             value={activeDeals.length}
@@ -86,6 +87,12 @@ export default function Dashboard() {
             icon={DollarSign}
             trend="12%"
             trendDirection="up"
+          />
+          <StatsCard
+            title="Pipeline Lots"
+            value={totalPipelineLots.toLocaleString()}
+            icon={TrendingUp}
+            subtitle="Total lot count"
           />
           <StatsCard
             title="Contacts"
