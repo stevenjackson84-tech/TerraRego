@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { base44 } from "@/api/base44Client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -32,9 +34,48 @@ const categoryIcons = {
   other: "📌"
 };
 
+const defaultMilestones = [
+  { milestone: "Pre-Con Meeting", category: "permits", status: "planned" },
+  { milestone: "Site Clearing", category: "site_work", status: "planned" },
+  { milestone: "Mass Grading", category: "site_work", status: "planned" },
+  { milestone: "Land Drain (Optional)", category: "utilities", status: "planned" },
+  { milestone: "Sewer", category: "utilities", status: "planned" },
+  { milestone: "Culinary Water", category: "utilities", status: "planned" },
+  { milestone: "Storm Drain", category: "utilities", status: "planned" },
+  { milestone: "Secondary Water", category: "utilities", status: "planned" },
+  { milestone: "Curb and Gutter", category: "infrastructure", status: "planned" },
+  { milestone: "Roadway", category: "infrastructure", status: "planned" },
+  { milestone: "Sidewalk", category: "infrastructure", status: "planned" },
+  { milestone: "Power", category: "utilities", status: "planned" },
+  { milestone: "Gas", category: "utilities", status: "planned" },
+  { milestone: "Street Lights", category: "infrastructure", status: "planned" },
+  { milestone: "Street Signs", category: "infrastructure", status: "planned" },
+  { milestone: "Mailboxes", category: "infrastructure", status: "planned" }
+];
+
 export default function DevelopmentTab({ projectId, developmentUpdates, onSave, onDelete }) {
+  const queryClient = useQueryClient();
   const [showForm, setShowForm] = useState(false);
   const [editingUpdate, setEditingUpdate] = useState(null);
+
+  const createDefaultMilestones = useMutation({
+    mutationFn: async () => {
+      const milestones = defaultMilestones.map(m => ({
+        ...m,
+        project_id: projectId,
+        description: "",
+        progress_percentage: 0,
+        target_date: "",
+        completion_date: "",
+        notes: ""
+      }));
+      await base44.entities.DevelopmentUpdate.bulkCreate(milestones);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['developmentUpdates', projectId] });
+    }
+  });
+
   const [formData, setFormData] = useState({
     project_id: projectId,
     milestone: "",
@@ -79,7 +120,17 @@ export default function DevelopmentTab({ projectId, developmentUpdates, onSave, 
           <h2 className="text-lg font-semibold text-slate-900">Development Progress</h2>
           <p className="text-sm text-slate-500 mt-1">Track construction milestones and progress</p>
         </div>
-        <Button onClick={() => {
+        <div className="flex gap-2">
+          {developmentUpdates.length === 0 && (
+            <Button 
+              onClick={() => createDefaultMilestones.mutate()} 
+              disabled={createDefaultMilestones.isPending}
+              variant="outline"
+            >
+              {createDefaultMilestones.isPending ? "Adding..." : "Add Default Milestones"}
+            </Button>
+          )}
+          <Button onClick={() => {
           setEditingUpdate(null);
           setFormData({
             project_id: projectId,
@@ -94,9 +145,10 @@ export default function DevelopmentTab({ projectId, developmentUpdates, onSave, 
           });
           setShowForm(true);
         }} className="bg-slate-900 hover:bg-slate-800">
-          <Plus className="h-4 w-4 mr-2" />
-          Add Milestone
-        </Button>
+            <Plus className="h-4 w-4 mr-2" />
+            Add Milestone
+          </Button>
+        </div>
       </div>
 
       {developmentUpdates.length > 0 && (
