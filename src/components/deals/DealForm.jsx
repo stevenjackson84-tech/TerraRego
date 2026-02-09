@@ -13,6 +13,7 @@ const defaultDeal = {
   city: "",
   state: "",
   parcel_number: "",
+  lot_number: "",
   acreage: "",
   zoning_current: "",
   zoning_target: "",
@@ -103,6 +104,15 @@ export default function DealForm({ deal, open, onClose, onSave, isLoading }) {
                 id="parcel_number"
                 value={formData.parcel_number}
                 onChange={(e) => handleChange("parcel_number", e.target.value)}
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="lot_number">Lot Number</Label>
+              <Input
+                id="lot_number"
+                value={formData.lot_number}
+                onChange={(e) => handleChange("lot_number", e.target.value)}
               />
             </div>
 

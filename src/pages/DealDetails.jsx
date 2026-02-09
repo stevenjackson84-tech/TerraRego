@@ -301,6 +301,10 @@ export default function DealDetails() {
                       <p className="font-medium">{deal.parcel_number || '—'}</p>
                     </div>
                     <div>
+                      <p className="text-slate-500">Lot Number</p>
+                      <p className="font-medium">{deal.lot_number || '—'}</p>
+                    </div>
+                    <div>
                       <p className="text-slate-500">Lead Source</p>
                       <p className="font-medium">{deal.lead_source || '—'}</p>
                     </div>
