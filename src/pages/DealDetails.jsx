@@ -18,6 +18,7 @@ import DealForm from "@/components/deals/DealForm";
 import EntitlementCard from "@/components/entitlements/EntitlementCard";
 import EntitlementForm from "@/components/entitlements/EntitlementForm";
 import TaskForm from "@/components/tasks/TaskForm";
+import TaskCard from "@/components/deals/TaskCard";
 import { Progress } from "@/components/ui/progress";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -234,6 +235,14 @@ export default function DealDetails() {
 
   const deleteTaskMutation = useMutation({
     mutationFn: (id) => base44.entities.Task.delete(id),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['tasks', dealId] })
+  });
+
+  const updateTaskStatusMutation = useMutation({
+    mutationFn: ({ id, status }) => base44.entities.Task.update(id, { 
+      status,
+      completed_date: status === 'completed' ? new Date().toISOString().split('T')[0] : null
+    }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['tasks', dealId] })
   });
 
@@ -646,48 +655,51 @@ export default function DealDetails() {
           </TabsContent>
 
           <TabsContent value="tasks">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-semibold text-slate-900">Tasks</h2>
-              <Button onClick={() => setShowTaskForm(true)} className="bg-slate-900 hover:bg-slate-800">
+            <div className="flex justify-between items-center mb-6">
+              <div>
+                <h2 className="text-lg font-semibold text-slate-900">Tasks</h2>
+                <p className="text-sm text-slate-500 mt-1">
+                  {tasks.filter(t => t.status === 'completed').length} of {tasks.length} completed
+                </p>
+              </div>
+              <Button onClick={() => {
+                setEditingTask(null);
+                setShowTaskForm(true);
+              }} className="bg-slate-900 hover:bg-slate-800">
                 <Plus className="h-4 w-4 mr-2" />
                 Add Task
               </Button>
             </div>
             <div className="space-y-3">
-              {tasks.map(task => (
-                <Card key={task.id} className="border-0 shadow-sm p-4">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <h3 className={cn("font-medium", task.status === 'completed' && "text-slate-400 line-through")}>
-                        {task.title}
-                      </h3>
-                      {task.description && (
-                        <p className="text-sm text-slate-500 mt-1">{task.description}</p>
-                      )}
-                      <div className="flex items-center gap-2 mt-2">
-                        <Badge variant="outline" className="text-xs">{task.category}</Badge>
-                        <Badge variant="secondary" className="text-xs">{task.priority}</Badge>
-                        {task.due_date && (
-                          <span className="text-xs text-slate-500">{format(new Date(task.due_date), 'MMM d')}</span>
-                        )}
-                      </div>
-                    </div>
-                    <div className="flex gap-1">
-                      <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => {
-                        setEditingTask(task);
-                        setShowTaskForm(true);
-                      }}>
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      <Button variant="ghost" size="icon" className="h-8 w-8 text-red-500" onClick={() => deleteTaskMutation.mutate(task.id)}>
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                </Card>
-              ))}
+              {tasks
+                .sort((a, b) => {
+                  // Sort: incomplete first, then by due date, then by priority
+                  if (a.status === 'completed' && b.status !== 'completed') return 1;
+                  if (a.status !== 'completed' && b.status === 'completed') return -1;
+                  if (a.due_date && b.due_date) {
+                    return new Date(a.due_date) - new Date(b.due_date);
+                  }
+                  const priorityOrder = { urgent: 0, high: 1, medium: 2, low: 3 };
+                  return (priorityOrder[a.priority] || 2) - (priorityOrder[b.priority] || 2);
+                })
+                .map(task => (
+                  <TaskCard
+                    key={task.id}
+                    task={task}
+                    onEdit={(t) => {
+                      setEditingTask(t);
+                      setShowTaskForm(true);
+                    }}
+                    onDelete={(id) => deleteTaskMutation.mutate(id)}
+                    onStatusChange={(t, status) => updateTaskStatusMutation.mutate({ id: t.id, status })}
+                  />
+                ))}
               {tasks.length === 0 && (
-                <p className="text-center py-8 text-slate-500">No tasks added yet</p>
+                <div className="text-center py-12">
+                  <ClipboardList className="h-12 w-12 text-slate-300 mx-auto mb-3" />
+                  <p className="text-slate-500 font-medium">No tasks yet</p>
+                  <p className="text-sm text-slate-400 mt-1">Create your first task to get started</p>
+                </div>
               )}
             </div>
           </TabsContent>
