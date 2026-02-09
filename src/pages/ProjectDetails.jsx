@@ -11,11 +11,11 @@ import { Progress } from "@/components/ui/progress";
 import { ArrowLeft, Edit, Plus, Trash2 } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
-import ProjectForm from "@/components/projects/ProjectForm";
-import PhaseForm from "@/components/projects/PhaseForm";
-import MilestoneForm from "@/components/projects/MilestoneForm";
-import ExpenseForm from "@/components/projects/ExpenseForm";
-import GanttChart from "@/components/projects/GanttChart";
+import ProjectForm from "@/components/projects/ProjectForm.jsx";
+import PhaseForm from "@/components/projects/PhaseForm.jsx";
+import MilestoneForm from "@/components/projects/MilestoneForm.jsx";
+import ExpenseForm from "@/components/projects/ExpenseForm.jsx";
+import GanttChart from "@/components/projects/GanttChart.jsx";
 
 const statusConfig = {
   planning: { color: "bg-slate-100 text-slate-700" },

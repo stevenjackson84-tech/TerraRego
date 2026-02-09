@@ -8,7 +8,7 @@ import { Plus, Folder, Calendar, DollarSign, Users, TrendingUp } from "lucide-re
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { cn } from "@/lib/utils";
-import ProjectForm from "@/components/projects/ProjectForm";
+import ProjectForm from "@/components/projects/ProjectForm.jsx";
 
 const statusConfig = {
   planning: { color: "bg-slate-100 text-slate-700", label: "Planning" },
