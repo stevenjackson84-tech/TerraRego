@@ -13,7 +13,7 @@ const defaultDeal = {
   city: "",
   state: "",
   parcel_number: "",
-  lot_number: "",
+  number_of_lots: "",
   acreage: "",
   zoning_current: "",
   zoning_target: "",
@@ -41,6 +41,7 @@ export default function DealForm({ deal, open, onClose, onSave, isLoading }) {
     const data = {
       ...formData,
       acreage: formData.acreage ? parseFloat(formData.acreage) : null,
+      number_of_lots: formData.number_of_lots ? parseFloat(formData.number_of_lots) : null,
       asking_price: formData.asking_price ? parseFloat(formData.asking_price) : null,
       offer_price: formData.offer_price ? parseFloat(formData.offer_price) : null,
       estimated_value: formData.estimated_value ? parseFloat(formData.estimated_value) : null,
@@ -108,11 +109,12 @@ export default function DealForm({ deal, open, onClose, onSave, isLoading }) {
             </div>
 
             <div>
-              <Label htmlFor="lot_number">Lot Number</Label>
+              <Label htmlFor="number_of_lots">Number of Lots</Label>
               <Input
-                id="lot_number"
-                value={formData.lot_number}
-                onChange={(e) => handleChange("lot_number", e.target.value)}
+                id="number_of_lots"
+                type="number"
+                value={formData.number_of_lots}
+                onChange={(e) => handleChange("number_of_lots", e.target.value)}
               />
             </div>
 
