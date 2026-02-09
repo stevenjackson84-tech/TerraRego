@@ -157,6 +157,7 @@ export default function DealForm({ deal, open, onClose, onSave, isLoading }) {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="prospecting">Prospecting</SelectItem>
+                  <SelectItem value="loi">LOI</SelectItem>
                   <SelectItem value="due_diligence">Due Diligence</SelectItem>
                   <SelectItem value="under_contract">Under Contract</SelectItem>
                   <SelectItem value="entitlements">Entitlements</SelectItem>

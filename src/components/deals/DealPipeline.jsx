@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 
 const stages = [
   { id: "prospecting", label: "Prospecting", color: "bg-slate-500" },
+  { id: "loi", label: "LOI", color: "bg-indigo-500" },
   { id: "due_diligence", label: "Due Diligence", color: "bg-blue-500" },
   { id: "under_contract", label: "Under Contract", color: "bg-amber-500" },
   { id: "entitlements", label: "Entitlements", color: "bg-purple-500" },
