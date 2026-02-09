@@ -13,10 +13,11 @@ import { cn } from "@/lib/utils";
 const stageColors = {
   prospecting: "#94a3b8",
   loi: "#3b82f6",
-  due_diligence: "#f59e0b",
-  under_contract: "#8b5cf6",
-  entitlements: "#ec4899",
-  development: "#06b6d4",
+  controlled_not_approved: "#60a5fa",
+  controlled_approved: "#f59e0b",
+  owned: "#06b6d4",
+  entitlements: "#a855f7",
+  development: "#22c55e",
   closed: "#10b981",
   dead: "#ef4444"
 };
@@ -24,8 +25,9 @@ const stageColors = {
 const stageLabels = {
   prospecting: "Prospecting",
   loi: "LOI",
-  due_diligence: "Due Diligence",
-  under_contract: "Under Contract",
+  controlled_not_approved: "Controlled/Not Approved",
+  controlled_approved: "Controlled/Approved",
+  owned: "Owned",
   entitlements: "Entitlements",
   development: "Development",
   closed: "Closed",
@@ -36,6 +38,8 @@ export default function Analytics() {
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
   const [dealTypeFilter, setDealTypeFilter] = useState("all");
+  const [propertyTypeFilter, setPropertyTypeFilter] = useState("all");
+  const [assignedToFilter, setAssignedToFilter] = useState("all");
 
   const { data: deals = [], isLoading } = useQuery({
     queryKey: ['deals'],
@@ -57,17 +61,35 @@ export default function Analytics() {
       // Deal type filter
       if (dealTypeFilter !== "all" && deal.deal_type !== dealTypeFilter) return false;
       
+      // Property type filter
+      if (propertyTypeFilter !== "all" && deal.property_type !== propertyTypeFilter) return false;
+      
+      // Assigned to filter
+      if (assignedToFilter !== "all" && deal.assigned_to !== assignedToFilter) return false;
+      
       return true;
     });
-  }, [deals, dateFrom, dateTo, dealTypeFilter]);
+  }, [deals, dateFrom, dateTo, dealTypeFilter, propertyTypeFilter, assignedToFilter]);
+
+  // Get unique assigned users
+  const assignedUsers = useMemo(() => {
+    const users = new Set();
+    deals.forEach(deal => {
+      if (deal.assigned_to) users.add(deal.assigned_to);
+    });
+    return Array.from(users).sort();
+  }, [deals]);
 
   // Calculate metrics
   const metrics = useMemo(() => {
     const valueByStage = {};
     const dealsByStage = {};
     const leadSources = {};
+    const stageVelocity = {};
     let totalClosingTime = 0;
     let closedDealsCount = 0;
+    let wonDeals = 0;
+    let lostDeals = 0;
 
     filteredDeals.forEach(deal => {
       // Value by stage
@@ -91,7 +113,38 @@ export default function Analytics() {
           closedDealsCount++;
         }
       }
+
+      // Win/Loss tracking
+      if (deal.stage === 'closed') wonDeals++;
+      if (deal.stage === 'dead') lostDeals++;
+
+      // Stage velocity (time in current stage)
+      if (deal.updated_date && deal.created_date) {
+        const updated = new Date(deal.updated_date);
+        const created = new Date(deal.created_date);
+        const daysInStage = Math.floor((updated - created) / (1000 * 60 * 60 * 24));
+        if (!stageVelocity[stage]) {
+          stageVelocity[stage] = { totalDays: 0, count: 0 };
+        }
+        stageVelocity[stage].totalDays += daysInStage;
+        stageVelocity[stage].count++;
+      }
     });
+
+    // Calculate average days per stage
+    const avgDaysByStage = {};
+    Object.entries(stageVelocity).forEach(([stage, data]) => {
+      avgDaysByStage[stage] = data.count > 0 ? Math.round(data.totalDays / data.count) : 0;
+    });
+
+    // Calculate average deal value per stage
+    const avgValueByStage = {};
+    Object.entries(valueByStage).forEach(([stage, value]) => {
+      avgValueByStage[stage] = dealsByStage[stage] > 0 ? value / dealsByStage[stage] : 0;
+    });
+
+    const totalCompletedDeals = wonDeals + lostDeals;
+    const winRate = totalCompletedDeals > 0 ? (wonDeals / totalCompletedDeals) * 100 : 0;
 
     return {
       valueByStage,
@@ -100,7 +153,12 @@ export default function Analytics() {
       avgClosingTime: closedDealsCount > 0 ? Math.round(totalClosingTime / closedDealsCount) : 0,
       totalValue: Object.values(valueByStage).reduce((sum, val) => sum + val, 0),
       totalDeals: filteredDeals.length,
-      activeDeals: filteredDeals.filter(d => !['closed', 'dead'].includes(d.stage)).length
+      activeDeals: filteredDeals.filter(d => !['closed', 'dead'].includes(d.stage)).length,
+      wonDeals,
+      lostDeals,
+      winRate,
+      avgDaysByStage,
+      avgValueByStage
     };
   }, [filteredDeals]);
 
@@ -163,7 +221,7 @@ export default function Analytics() {
       {/* Filters */}
       <Card className="border-0 shadow-sm">
         <CardContent className="p-6">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
             <div>
               <Label htmlFor="dateFrom">Date From</Label>
               <Input
@@ -197,6 +255,37 @@ export default function Analytics() {
                 </SelectContent>
               </Select>
             </div>
+            <div>
+              <Label htmlFor="propertyType">Property Type</Label>
+              <Select value={propertyTypeFilter} onValueChange={setPropertyTypeFilter}>
+                <SelectTrigger id="propertyType">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Properties</SelectItem>
+                  <SelectItem value="land">Land</SelectItem>
+                  <SelectItem value="residential">Residential</SelectItem>
+                  <SelectItem value="commercial">Commercial</SelectItem>
+                  <SelectItem value="industrial">Industrial</SelectItem>
+                  <SelectItem value="mixed_use">Mixed Use</SelectItem>
+                  <SelectItem value="multifamily">Multifamily</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label htmlFor="assignedTo">Assigned To</Label>
+              <Select value={assignedToFilter} onValueChange={setAssignedToFilter}>
+                <SelectTrigger id="assignedTo">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Users</SelectItem>
+                  {assignedUsers.map(user => (
+                    <SelectItem key={user} value={user}>{user}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
             <div className="flex items-end">
               <Button 
                 variant="outline" 
@@ -204,6 +293,8 @@ export default function Analytics() {
                   setDateFrom("");
                   setDateTo("");
                   setDealTypeFilter("all");
+                  setPropertyTypeFilter("all");
+                  setAssignedToFilter("all");
                 }}
                 className="w-full"
               >
@@ -215,7 +306,7 @@ export default function Analytics() {
       </Card>
 
       {/* Key Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
         <Card className="border-0 shadow-sm">
           <CardContent className="p-6">
             <div className="flex items-center gap-2 text-slate-500 text-sm mb-2">
@@ -224,6 +315,17 @@ export default function Analytics() {
             </div>
             <p className="text-2xl font-bold text-slate-900">{formatCurrency(metrics.totalValue)}</p>
             <p className="text-xs text-slate-500 mt-1">{metrics.totalDeals} total deals</p>
+          </CardContent>
+        </Card>
+
+        <Card className="border-0 shadow-sm">
+          <CardContent className="p-6">
+            <div className="flex items-center gap-2 text-slate-500 text-sm mb-2">
+              <Target className="h-4 w-4" />
+              <span>Win Rate</span>
+            </div>
+            <p className="text-2xl font-bold text-slate-900">{metrics.winRate.toFixed(1)}%</p>
+            <p className="text-xs text-slate-500 mt-1">{metrics.wonDeals} won / {metrics.lostDeals} lost</p>
           </CardContent>
         </Card>
 
@@ -380,13 +482,71 @@ export default function Analytics() {
         </CardContent>
       </Card>
 
+      {/* Stage Velocity (Time in Each Stage) */}
+      <Card className="border-0 shadow-sm">
+        <CardHeader>
+          <CardTitle className="text-base">Stage Velocity (Avg Days)</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart 
+              data={Object.entries(metrics.avgDaysByStage)
+                .filter(([stage]) => !['closed', 'dead'].includes(stage))
+                .map(([stage, days]) => ({
+                  stage: stageLabels[stage] || stage,
+                  days,
+                  fill: stageColors[stage]
+                }))}
+            >
+              <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+              <XAxis dataKey="stage" tick={{ fontSize: 12 }} />
+              <YAxis tick={{ fontSize: 12 }} label={{ value: 'Days', angle: -90, position: 'insideLeft' }} />
+              <Tooltip 
+                formatter={(value) => [`${value} days`, 'Avg Time in Stage']}
+                contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0' }}
+              />
+              <Bar dataKey="days" radius={[8, 8, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </CardContent>
+      </Card>
+
+      {/* Average Deal Value by Stage */}
+      <Card className="border-0 shadow-sm">
+        <CardHeader>
+          <CardTitle className="text-base">Average Deal Value by Stage</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart 
+              data={Object.entries(metrics.avgValueByStage)
+                .filter(([stage]) => !['closed', 'dead'].includes(stage))
+                .map(([stage, value]) => ({
+                  stage: stageLabels[stage] || stage,
+                  value,
+                  fill: stageColors[stage]
+                }))}
+            >
+              <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+              <XAxis dataKey="stage" tick={{ fontSize: 12 }} />
+              <YAxis tick={{ fontSize: 12 }} tickFormatter={(value) => `$${(value / 1000000).toFixed(1)}M`} />
+              <Tooltip 
+                formatter={(value) => [formatCurrency(value), 'Avg Value']}
+                contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0' }}
+              />
+              <Bar dataKey="value" radius={[8, 8, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </CardContent>
+      </Card>
+
       {/* Deal Count by Stage */}
       <Card className="border-0 shadow-sm">
         <CardHeader>
           <CardTitle className="text-base">Deal Count by Stage</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
             {Object.entries(metrics.dealsByStage).map(([stage, count]) => (
               <div key={stage} className="p-4 rounded-lg border border-slate-200">
                 <div 
