@@ -72,6 +72,64 @@ export default function ProformaTab({ proforma, onSave, isLoading }) {
   const roi = totalCosts > 0 ? (profit / totalCosts) * 100 : 0;
   const profitMargin = grossRevenue > 0 ? (profit / grossRevenue) * 100 : 0;
 
+  // RONA - Return on Net Assets (excluding financing costs for unlevered calculation)
+  const netAssets = purchasePrice + devCosts + softCosts + totalDirectCosts + contingency;
+  const rona = netAssets > 0 ? (profit / netAssets) * 100 : 0;
+
+  // Unlevered IRR calculation
+  const calculateUnleveredIRR = () => {
+    if (!formData.development_start_date || !formData.absorption_pace || numUnits === 0) return null;
+    
+    const startDate = new Date(formData.development_start_date);
+    const absorptionPace = parseFloat(formData.absorption_pace) || 0;
+    
+    if (absorptionPace === 0) return null;
+    
+    // Build cash flow array
+    const cashFlows = [];
+    
+    // Initial investment (negative cash flow at time 0)
+    cashFlows.push(-netAssets);
+    
+    // Calculate number of months to sell all units
+    const monthsToSellOut = Math.ceil(numUnits / absorptionPace);
+    
+    // Revenue cash flows from sales (spread over absorption period)
+    const revenuePerMonth = (salesPricePerUnit * absorptionPace) - (salesPricePerUnit * absorptionPace * (salesCommissionPct / 100));
+    
+    for (let i = 1; i <= monthsToSellOut; i++) {
+      cashFlows.push(revenuePerMonth);
+    }
+    
+    // Simple IRR approximation using Newton's method
+    const npv = (rate, flows) => {
+      return flows.reduce((sum, flow, t) => sum + flow / Math.pow(1 + rate, t), 0);
+    };
+    
+    let rate = 0.1; // Initial guess 10%
+    const maxIterations = 100;
+    const tolerance = 0.0001;
+    
+    for (let i = 0; i < maxIterations; i++) {
+      const npvValue = npv(rate, cashFlows);
+      const npvDerivative = cashFlows.reduce((sum, flow, t) => 
+        sum - (t * flow) / Math.pow(1 + rate, t + 1), 0);
+      
+      const newRate = rate - npvValue / npvDerivative;
+      
+      if (Math.abs(newRate - rate) < tolerance) {
+        // Annualize the monthly IRR
+        return (Math.pow(1 + newRate, 12) - 1) * 100;
+      }
+      
+      rate = newRate;
+    }
+    
+    return null;
+  };
+
+  const unleveredIRR = calculateUnleveredIRR();
+
   const formatCurrency = (value) => {
     return new Intl.NumberFormat('en-US', { 
       style: 'currency', 
@@ -376,6 +434,39 @@ export default function ProformaTab({ proforma, onSave, isLoading }) {
               {roi.toFixed(1)}%
             </p>
             <p className="text-xs text-slate-500 mt-1">Return on investment</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Advanced Metrics */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <Card className={cn("border-0 shadow-sm", rona >= 0 ? "bg-blue-50" : "bg-red-50")}>
+          <CardContent className="p-6">
+            <div className="flex items-center gap-2 text-slate-500 text-sm mb-2">
+              <TrendingUp className="h-4 w-4" />
+              <span>RONA</span>
+            </div>
+            <p className={cn("text-2xl font-bold", rona >= 0 ? "text-blue-700" : "text-red-700")}>
+              {rona.toFixed(1)}%
+            </p>
+            <p className="text-xs text-slate-500 mt-1">Return on Net Assets (unlevered)</p>
+          </CardContent>
+        </Card>
+
+        <Card className={cn("border-0 shadow-sm", unleveredIRR && unleveredIRR >= 0 ? "bg-blue-50" : "bg-slate-50")}>
+          <CardContent className="p-6">
+            <div className="flex items-center gap-2 text-slate-500 text-sm mb-2">
+              <TrendingUp className="h-4 w-4" />
+              <span>Unlevered IRR</span>
+            </div>
+            <p className={cn("text-2xl font-bold", 
+              unleveredIRR ? (unleveredIRR >= 0 ? "text-blue-700" : "text-red-700") : "text-slate-400"
+            )}>
+              {unleveredIRR ? `${unleveredIRR.toFixed(1)}%` : '—'}
+            </p>
+            <p className="text-xs text-slate-500 mt-1">
+              {unleveredIRR ? 'Annualized return' : 'Add timeline data to calculate'}
+            </p>
           </CardContent>
         </Card>
       </div>
