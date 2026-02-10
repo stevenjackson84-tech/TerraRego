@@ -37,7 +37,7 @@ export default function ProformaTab({ proforma, onSave, isLoading }) {
       ...prev,
       product_types: [
         ...(prev.product_types || []),
-        { name: "", number_of_units: "", sales_price_per_unit: "", direct_cost_per_unit: "" }
+        { name: "", number_of_units: "", sales_price_per_unit: "", direct_cost_per_unit: "", absorption_pace: "" }
       ]
     }));
   };
@@ -69,7 +69,8 @@ export default function ProformaTab({ proforma, onSave, isLoading }) {
         name: pt.name,
         number_of_units: pt.number_of_units ? parseFloat(pt.number_of_units) : 0,
         sales_price_per_unit: pt.sales_price_per_unit ? parseFloat(pt.sales_price_per_unit) : 0,
-        direct_cost_per_unit: pt.direct_cost_per_unit ? parseFloat(pt.direct_cost_per_unit) : 0
+        direct_cost_per_unit: pt.direct_cost_per_unit ? parseFloat(pt.direct_cost_per_unit) : 0,
+        absorption_pace: pt.absorption_pace ? parseFloat(pt.absorption_pace) : 0
       })),
       contingency_percentage: formData.contingency_percentage ? parseFloat(formData.contingency_percentage) : 5,
       sales_commission_percentage: formData.sales_commission_percentage ? parseFloat(formData.sales_commission_percentage) : 3,
@@ -95,6 +96,7 @@ export default function ProformaTab({ proforma, onSave, isLoading }) {
   const grossRevenue = productTypes.reduce((sum, pt) => 
     sum + ((parseFloat(pt.number_of_units) || 0) * (parseFloat(pt.sales_price_per_unit) || 0)), 0
   );
+  const totalAbsorptionPace = productTypes.reduce((sum, pt) => sum + (parseFloat(pt.absorption_pace) || 0), 0);
 
   const purchasePricePerUnit = numUnits > 0 ? purchasePrice / numUnits : 0;
   const devCostPerUnit = numUnits > 0 ? devCosts / numUnits : 0;
@@ -114,12 +116,7 @@ export default function ProformaTab({ proforma, onSave, isLoading }) {
 
   // Unlevered IRR calculation
   const calculateUnleveredIRR = () => {
-    if (!formData.development_start_date || !formData.absorption_pace || numUnits === 0) return null;
-    
-    const startDate = new Date(formData.development_start_date);
-    const absorptionPace = parseFloat(formData.absorption_pace) || 0;
-    
-    if (absorptionPace === 0) return null;
+    if (!formData.development_start_date || totalAbsorptionPace === 0 || numUnits === 0) return null;
     
     // Build cash flow array
     const cashFlows = [];
@@ -127,16 +124,35 @@ export default function ProformaTab({ proforma, onSave, isLoading }) {
     // Initial investment (negative cash flow at time 0)
     cashFlows.push(-netAssets);
     
-    // Calculate number of months to sell all units
-    const monthsToSellOut = Math.ceil(numUnits / absorptionPace);
+    // Calculate cash flows by product type
+    let currentMonth = 1;
+    const maxMonths = 240; // 20 years max
+    const productFlows = productTypes.map(pt => ({
+      units: parseFloat(pt.number_of_units) || 0,
+      salesPrice: parseFloat(pt.sales_price_per_unit) || 0,
+      pace: parseFloat(pt.absorption_pace) || 0,
+      unitsSold: 0
+    }));
     
-    // Revenue cash flows from sales (spread over absorption period)
-    const avgSalesPrice = numUnits > 0 ? grossRevenue / numUnits : 0;
-    const revenuePerMonth = (avgSalesPrice * absorptionPace) - (avgSalesPrice * absorptionPace * (salesCommissionPct / 100));
-    
-    for (let i = 1; i <= monthsToSellOut; i++) {
-      cashFlows.push(revenuePerMonth);
+    // Generate monthly cash flows until all units sold
+    while (currentMonth <= maxMonths && productFlows.some(pf => pf.unitsSold < pf.units)) {
+      let monthlyRevenue = 0;
+      
+      for (const pf of productFlows) {
+        if (pf.unitsSold < pf.units) {
+          const unitsToSell = Math.min(pf.pace, pf.units - pf.unitsSold);
+          const revenue = unitsToSell * pf.salesPrice;
+          const commission = revenue * (salesCommissionPct / 100);
+          monthlyRevenue += (revenue - commission);
+          pf.unitsSold += unitsToSell;
+        }
+      }
+      
+      cashFlows.push(monthlyRevenue);
+      currentMonth++;
     }
+    
+    if (cashFlows.length <= 1) return null;
     
     // Simple IRR approximation using Newton's method
     const npv = (rate, flows) => {
@@ -296,12 +312,23 @@ export default function ProformaTab({ proforma, onSave, isLoading }) {
                         className="h-9"
                       />
                     </div>
-                    <div className="col-span-2">
+                    <div>
                       <Label className="text-xs">Direct Cost/Unit</Label>
                       <Input
                         type="number"
                         value={pt.direct_cost_per_unit}
                         onChange={(e) => updateProductType(index, "direct_cost_per_unit", e.target.value)}
+                        placeholder="0"
+                        className="h-9"
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-xs">Absorption (units/mo)</Label>
+                      <Input
+                        type="number"
+                        step="0.1"
+                        value={pt.absorption_pace}
+                        onChange={(e) => updateProductType(index, "absorption_pace", e.target.value)}
                         placeholder="0"
                         className="h-9"
                       />
@@ -424,17 +451,6 @@ export default function ProformaTab({ proforma, onSave, isLoading }) {
                   type="date"
                   value={formData.first_home_closing}
                   onChange={(e) => handleChange("first_home_closing", e.target.value)}
-                />
-              </div>
-              <div>
-                <Label htmlFor="absorption_pace">Absorption Pace (units/month)</Label>
-                <Input
-                  id="absorption_pace"
-                  type="number"
-                  step="0.1"
-                  value={formData.absorption_pace}
-                  onChange={(e) => handleChange("absorption_pace", e.target.value)}
-                  placeholder="0"
                 />
               </div>
             </CardContent>
@@ -718,10 +734,10 @@ export default function ProformaTab({ proforma, onSave, isLoading }) {
                     <p className="text-sm font-medium">{new Date(proforma.first_home_closing).toLocaleDateString()}</p>
                   </div>
                 )}
-                {proforma.absorption_pace && (
+                {totalAbsorptionPace > 0 && (
                   <div>
-                    <p className="text-xs text-slate-500 mb-1">Absorption Pace</p>
-                    <p className="text-sm font-medium">{proforma.absorption_pace} units/month</p>
+                    <p className="text-xs text-slate-500 mb-1">Total Absorption Pace</p>
+                    <p className="text-sm font-medium">{totalAbsorptionPace.toFixed(1)} units/month</p>
                   </div>
                 )}
               </div>
