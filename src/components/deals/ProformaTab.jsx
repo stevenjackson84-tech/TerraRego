@@ -37,7 +37,7 @@ export default function ProformaTab({ proforma, onSave, isLoading }) {
       ...prev,
       product_types: [
         ...(prev.product_types || []),
-        { name: "", number_of_units: "", sales_price_per_unit: "", direct_cost_per_unit: "", absorption_pace: "" }
+        { name: "", number_of_units: "", sales_price_per_unit: "", direct_cost_per_unit: "", building_permit_cost: "", absorption_pace: "" }
       ]
     }));
   };
@@ -70,6 +70,7 @@ export default function ProformaTab({ proforma, onSave, isLoading }) {
         number_of_units: pt.number_of_units ? parseFloat(pt.number_of_units) : 0,
         sales_price_per_unit: pt.sales_price_per_unit ? parseFloat(pt.sales_price_per_unit) : 0,
         direct_cost_per_unit: pt.direct_cost_per_unit ? parseFloat(pt.direct_cost_per_unit) : 0,
+        building_permit_cost: pt.building_permit_cost ? parseFloat(pt.building_permit_cost) : 0,
         absorption_pace: pt.absorption_pace ? parseFloat(pt.absorption_pace) : 0
       })),
       contingency_percentage: formData.contingency_percentage ? parseFloat(formData.contingency_percentage) : 5,
@@ -93,6 +94,9 @@ export default function ProformaTab({ proforma, onSave, isLoading }) {
   const totalDirectCosts = productTypes.reduce((sum, pt) => 
     sum + ((parseFloat(pt.number_of_units) || 0) * (parseFloat(pt.direct_cost_per_unit) || 0)), 0
   );
+  const totalPermitCosts = productTypes.reduce((sum, pt) => 
+    sum + ((parseFloat(pt.number_of_units) || 0) * (parseFloat(pt.building_permit_cost) || 0)), 0
+  );
   const grossRevenue = productTypes.reduce((sum, pt) => 
     sum + ((parseFloat(pt.number_of_units) || 0) * (parseFloat(pt.sales_price_per_unit) || 0)), 0
   );
@@ -100,8 +104,8 @@ export default function ProformaTab({ proforma, onSave, isLoading }) {
 
   const purchasePricePerUnit = numUnits > 0 ? purchasePrice / numUnits : 0;
   const devCostPerUnit = numUnits > 0 ? devCosts / numUnits : 0;
-  const contingency = (purchasePrice + devCosts + softCosts + totalDirectCosts) * (contingencyPct / 100);
-  const totalCosts = purchasePrice + devCosts + softCosts + financingCosts + totalDirectCosts + contingency;
+  const contingency = (purchasePrice + devCosts + softCosts + totalDirectCosts + totalPermitCosts) * (contingencyPct / 100);
+  const totalCosts = purchasePrice + devCosts + softCosts + financingCosts + totalDirectCosts + totalPermitCosts + contingency;
   
   const salesCommission = grossRevenue * (salesCommissionPct / 100);
   const netRevenue = grossRevenue - salesCommission;
@@ -111,7 +115,7 @@ export default function ProformaTab({ proforma, onSave, isLoading }) {
   const profitMargin = grossRevenue > 0 ? (profit / grossRevenue) * 100 : 0;
   const grossMargin = grossRevenue > 0 ? ((grossRevenue - totalCosts) / grossRevenue) * 100 : 0;
 
-  const netAssets = purchasePrice + devCosts + softCosts + totalDirectCosts + contingency;
+  const netAssets = purchasePrice + devCosts + softCosts + totalDirectCosts + totalPermitCosts + contingency;
   const rona = netAssets > 0 ? (profit / netAssets) * 100 : 0;
 
   // Unlevered IRR calculation
@@ -323,6 +327,16 @@ export default function ProformaTab({ proforma, onSave, isLoading }) {
                       />
                     </div>
                     <div>
+                      <Label className="text-xs">Building Permit Cost/Unit</Label>
+                      <Input
+                        type="number"
+                        value={pt.building_permit_cost}
+                        onChange={(e) => updateProductType(index, "building_permit_cost", e.target.value)}
+                        placeholder="0"
+                        className="h-9"
+                      />
+                    </div>
+                    <div className="col-span-2">
                       <Label className="text-xs">Absorption (units/mo)</Label>
                       <Input
                         type="number"
@@ -632,6 +646,10 @@ export default function ProformaTab({ proforma, onSave, isLoading }) {
             <div className="flex justify-between text-sm">
               <span className="text-slate-600">Direct Costs ({numUnits} units)</span>
               <span className="font-medium">{formatCurrency(totalDirectCosts)}</span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-slate-600">Building Permit Costs</span>
+              <span className="font-medium">{formatCurrency(totalPermitCosts)}</span>
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-slate-600">Contingency ({contingencyPct}%)</span>
