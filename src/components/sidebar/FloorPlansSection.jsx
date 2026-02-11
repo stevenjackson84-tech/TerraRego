@@ -168,7 +168,6 @@ export default function FloorPlansSection() {
                 <Label htmlFor="square_footage">Square Footage</Label>
                 <Input
                   id="square_footage"
-                  type="number"
                   value={formData.square_footage}
                   onChange={(e) => setFormData({ ...formData, square_footage: e.target.value })}
                   placeholder="0"
@@ -187,7 +186,6 @@ export default function FloorPlansSection() {
                 <Label htmlFor="bedrooms">Bedrooms</Label>
                 <Input
                   id="bedrooms"
-                  type="number"
                   value={formData.bedrooms}
                   onChange={(e) => setFormData({ ...formData, bedrooms: e.target.value })}
                   placeholder="0"
@@ -197,8 +195,6 @@ export default function FloorPlansSection() {
                 <Label htmlFor="bathrooms">Bathrooms</Label>
                 <Input
                   id="bathrooms"
-                  type="number"
-                  step="0.5"
                   value={formData.bathrooms}
                   onChange={(e) => setFormData({ ...formData, bathrooms: e.target.value })}
                   placeholder="0"
@@ -208,7 +204,6 @@ export default function FloorPlansSection() {
                 <Label htmlFor="garage_count">Garage Spaces</Label>
                 <Input
                   id="garage_count"
-                  type="number"
                   value={formData.garage_count}
                   onChange={(e) => setFormData({ ...formData, garage_count: e.target.value })}
                   placeholder="0"
