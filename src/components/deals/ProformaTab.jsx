@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Edit, DollarSign, TrendingUp, Calculator, Plus, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { format } from "date-fns";
 
 export default function ProformaTab({ proforma, onSave, isLoading }) {
   const [isEditing, setIsEditing] = useState(!proforma);
