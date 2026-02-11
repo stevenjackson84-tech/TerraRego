@@ -13,11 +13,12 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { 
   FileText, Download, Trash2, MoreVertical, Upload, Search, 
-  History, Filter, File
+  History, Filter, File, Eye
 } from "lucide-react";
 import { format } from "date-fns";
 import { toast } from "sonner";
 import DocumentUpload from "./DocumentUpload";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 const categoryColors = {
   contract: "bg-blue-100 text-blue-700",
@@ -36,6 +37,7 @@ export default function DocumentList({ entityType, entityId }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterCategory, setFilterCategory] = useState("all");
   const [showVersions, setShowVersions] = useState({});
+  const [previewDoc, setPreviewDoc] = useState(null);
 
   const queryClient = useQueryClient();
 
@@ -185,6 +187,10 @@ export default function DocumentList({ entityType, entityId }) {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
+                          <DropdownMenuItem onClick={() => setPreviewDoc(doc)}>
+                            <Eye className="h-4 w-4 mr-2" />
+                            Preview
+                          </DropdownMenuItem>
                           <DropdownMenuItem asChild>
                             <a href={doc.file_url} target="_blank" rel="noopener noreferrer" className="cursor-pointer">
                               <Download className="h-4 w-4 mr-2" />
@@ -281,6 +287,24 @@ export default function DocumentList({ entityType, entityId }) {
         onSuccess={() => queryClient.invalidateQueries({ queryKey: ['documents', entityType, entityId] })}
         existingDocument={uploadingVersion}
       />
+
+      {/* Preview Dialog */}
+      <Dialog open={!!previewDoc} onOpenChange={(open) => !open && setPreviewDoc(null)}>
+        <DialogContent className="max-w-5xl h-[90vh]">
+          <DialogHeader>
+            <DialogTitle>{previewDoc?.name}</DialogTitle>
+          </DialogHeader>
+          <div className="flex-1 overflow-hidden">
+            {previewDoc && (
+              <iframe
+                src={previewDoc.file_url}
+                className="w-full h-full border-0 rounded-lg"
+                title={previewDoc.name}
+              />
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
