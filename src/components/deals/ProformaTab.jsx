@@ -38,7 +38,7 @@ export default function ProformaTab({ proforma, onSave, isLoading }) {
       ...prev,
       product_types: [
         ...(prev.product_types || []),
-        { name: "", number_of_units: "", sales_price_per_unit: "", direct_cost_per_unit: "", building_permit_cost: "", absorption_pace: "" }
+        { name: "", number_of_units: "", sales_price_per_unit: "", direct_cost_per_unit: "", building_permit_cost: "", absorption_pace: "", average_sqft: "" }
       ]
     }));
   };
@@ -72,7 +72,8 @@ export default function ProformaTab({ proforma, onSave, isLoading }) {
         sales_price_per_unit: pt.sales_price_per_unit ? parseFloat(pt.sales_price_per_unit) : 0,
         direct_cost_per_unit: pt.direct_cost_per_unit ? parseFloat(pt.direct_cost_per_unit) : 0,
         building_permit_cost: pt.building_permit_cost ? parseFloat(pt.building_permit_cost) : 0,
-        absorption_pace: pt.absorption_pace ? parseFloat(pt.absorption_pace) : 0
+        absorption_pace: pt.absorption_pace ? parseFloat(pt.absorption_pace) : 0,
+        average_sqft: pt.average_sqft ? parseFloat(pt.average_sqft) : null
       })),
       contingency_percentage: formData.contingency_percentage ? parseFloat(formData.contingency_percentage) : 5,
       sales_commission_percentage: formData.sales_commission_percentage ? parseFloat(formData.sales_commission_percentage) : 3,
@@ -343,6 +344,16 @@ export default function ProformaTab({ proforma, onSave, isLoading }) {
                         type="number"
                         value={pt.building_permit_cost}
                         onChange={(e) => updateProductType(index, "building_permit_cost", e.target.value)}
+                        placeholder="0"
+                        className="h-9"
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-xs">Avg Sq Ft</Label>
+                      <Input
+                        type="number"
+                        value={pt.average_sqft}
+                        onChange={(e) => updateProductType(index, "average_sqft", e.target.value)}
                         placeholder="0"
                         className="h-9"
                       />
@@ -698,7 +709,7 @@ export default function ProformaTab({ proforma, onSave, isLoading }) {
                   <span className="text-slate-700 font-medium">{pt.name || `Product ${i + 1}`}</span>
                 </div>
                 <div className="flex justify-between text-xs text-slate-500 pl-3">
-                  <span>{pt.number_of_units} units @ {formatCurrency(pt.sales_price_per_unit)}</span>
+                  <span>{pt.number_of_units} units @ {formatCurrency(pt.sales_price_per_unit)}{pt.average_sqft ? ` (${pt.average_sqft.toLocaleString()} sqft)` : ''}</span>
                   <span className="font-medium">{formatCurrency((pt.number_of_units || 0) * (pt.sales_price_per_unit || 0))}</span>
                 </div>
               </div>
