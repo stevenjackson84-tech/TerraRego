@@ -17,6 +17,7 @@ import {
   ChevronRight,
   Folder
 } from "lucide-react";
+import FloorPlansSection from "@/components/sidebar/FloorPlansSection";
 
 const navigation = [
   { name: "Dashboard", icon: LayoutDashboard, page: "Dashboard" },
@@ -88,6 +89,8 @@ export default function Layout({ children, currentPageName }) {
             );
           })}
         </nav>
+
+        <FloorPlansSection />
       </aside>
 
       {/* Main content */}
