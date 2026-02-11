@@ -26,6 +26,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import ProformaTab from "@/components/deals/ProformaTab";
+import TimelineTab from "@/components/deals/TimelineTab";
 import DocumentList from "@/components/documents/DocumentList";
 
 const stageStyles = {
@@ -312,6 +313,7 @@ export default function DealDetails() {
           <TabsList className="bg-white border">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="proforma">Proforma</TabsTrigger>
+            <TabsTrigger value="timeline">Timeline</TabsTrigger>
             <TabsTrigger value="entitlements">Entitlements ({entitlements.length})</TabsTrigger>
             <TabsTrigger value="tasks">Tasks ({tasks.length})</TabsTrigger>
             <TabsTrigger value="documents">Documents</TabsTrigger>
@@ -425,6 +427,14 @@ export default function DealDetails() {
 
           <TabsContent value="proforma">
             <ProformaTab 
+              proforma={proforma} 
+              onSave={(data) => proformaMutation.mutate(data)}
+              isLoading={proformaMutation.isPending}
+            />
+          </TabsContent>
+
+          <TabsContent value="timeline">
+            <TimelineTab 
               proforma={proforma} 
               onSave={(data) => proformaMutation.mutate(data)}
               isLoading={proformaMutation.isPending}
