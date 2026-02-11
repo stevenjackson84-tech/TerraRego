@@ -103,6 +103,16 @@ export default function ProformaTab({ proforma, onSave, isLoading }) {
   );
   const totalAbsorptionPace = productTypes.reduce((sum, pt) => sum + (parseFloat(pt.absorption_pace) || 0), 0);
 
+  // Calculate final home closing date
+  const calculateFinalHomeClosing = () => {
+    if (!formData.first_home_closing || totalAbsorptionPace === 0 || numUnits === 0) return null;
+    const firstClosing = new Date(formData.first_home_closing);
+    const monthsToSellOut = Math.ceil(numUnits / totalAbsorptionPace);
+    const finalClosing = new Date(firstClosing);
+    finalClosing.setMonth(finalClosing.getMonth() + monthsToSellOut - 1);
+    return finalClosing.toISOString().split('T')[0];
+  };
+
   const purchasePricePerUnit = numUnits > 0 ? purchasePrice / numUnits : 0;
   const devCostPerUnit = numUnits > 0 ? devCosts / numUnits : 0;
   const contingency = (purchasePrice + devCosts + softCosts + totalDirectCosts + totalPermitCosts) * (contingencyPct / 100);
