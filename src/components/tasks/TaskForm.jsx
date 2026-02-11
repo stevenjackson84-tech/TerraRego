@@ -1,10 +1,14 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Checkbox } from "@/components/ui/checkbox";
+import { toast } from "sonner";
 
 const defaultTask = {
   title: "",
@@ -24,9 +28,27 @@ export default function TaskForm({ task, deals, open, onClose, onSave, isLoading
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     onSave(formData);
+    
+    // Send notification email if assignee is set and notify is checked
+    if (notifyAssignee && formData.assigned_to) {
+      try {
+        const assignedUser = users.find(u => u.email === formData.assigned_to);
+        if (assignedUser) {
+          const dealName = formData.deal_id ? deals.find(d => d.id === formData.deal_id)?.name : '';
+          await base44.integrations.Core.SendEmail({
+            to: formData.assigned_to,
+            subject: `New Task Assigned: ${formData.title}`,
+            body: `Hello ${assignedUser.full_name},\n\nYou have been assigned a new task:\n\nTask: ${formData.title}\n${formData.description ? `Description: ${formData.description}\n` : ''}${dealName ? `Deal: ${dealName}\n` : ''}Priority: ${formData.priority}\nDue Date: ${formData.due_date ? new Date(formData.due_date).toLocaleDateString() : 'Not set'}\n\nPlease log in to the system to view and update the task.`
+          });
+          toast.success('Task saved and assignee notified');
+        }
+      } catch (error) {
+        toast.error('Task saved but notification failed');
+      }
+    }
   };
 
   return (
