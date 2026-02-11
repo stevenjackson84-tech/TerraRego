@@ -27,6 +27,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import ProformaTab from "@/components/deals/ProformaTab";
 import TimelineTab from "@/components/deals/TimelineTab";
+import MarketAnalysisTab from "@/components/deals/MarketAnalysisTab";
 import DocumentList from "@/components/documents/DocumentList";
 
 const stageStyles = {
@@ -314,6 +315,7 @@ export default function DealDetails() {
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="proforma">Proforma</TabsTrigger>
             <TabsTrigger value="timeline">Timeline</TabsTrigger>
+            <TabsTrigger value="market">Market Analysis</TabsTrigger>
             <TabsTrigger value="entitlements">Entitlements ({entitlements.length})</TabsTrigger>
             <TabsTrigger value="tasks">Tasks ({tasks.length})</TabsTrigger>
             <TabsTrigger value="documents">Documents</TabsTrigger>
@@ -441,7 +443,12 @@ export default function DealDetails() {
             />
           </TabsContent>
 
-
+          <TabsContent value="market">
+            <MarketAnalysisTab 
+              dealId={dealId}
+              proforma={proforma}
+            />
+          </TabsContent>
 
           <TabsContent value="entitlements">
             <div className="flex justify-between items-center mb-4">
