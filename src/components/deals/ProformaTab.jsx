@@ -758,6 +758,12 @@ export default function ProformaTab({ proforma, onSave, isLoading }) {
                     <p className="text-sm font-medium">{totalAbsorptionPace.toFixed(1)} units/month</p>
                   </div>
                 )}
+                {calculateFinalHomeClosing() && (
+                  <div>
+                    <p className="text-xs text-slate-500 mb-1">Final Home Closing</p>
+                    <p className="text-sm font-medium">{format(new Date(calculateFinalHomeClosing()), 'MMM d, yyyy')}</p>
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
