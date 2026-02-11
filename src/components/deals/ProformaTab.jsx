@@ -4,12 +4,22 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Edit, DollarSign, TrendingUp, Calculator, Plus, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
+import { base44 } from "@/api/base44Client";
+import { useQuery } from "@tanstack/react-query";
 
 export default function ProformaTab({ proforma, onSave, isLoading }) {
   const [isEditing, setIsEditing] = useState(!proforma);
+  
+  // Fetch floor plans
+  const { data: floorPlans = [] } = useQuery({
+    queryKey: ['floorPlans'],
+    queryFn: () => base44.entities.FloorPlan.list(),
+  });
+  
   const [formData, setFormData] = useState(proforma || {
     purchase_price: "",
     development_costs: "",
@@ -86,6 +96,23 @@ export default function ProformaTab({ proforma, onSave, isLoading }) {
         i === index ? { ...pt, [field]: value } : pt
       )
     }));
+  };
+
+  const selectFloorPlan = (index, floorPlanId) => {
+    const floorPlan = floorPlans.find(fp => fp.id === floorPlanId);
+    if (floorPlan) {
+      setFormData(prev => ({
+        ...prev,
+        product_types: prev.product_types.map((pt, i) => 
+          i === index ? {
+            ...pt,
+            name: floorPlan.name || pt.name,
+            average_sqft: floorPlan.square_footage || pt.average_sqft,
+            floor_plan_id: floorPlan.id
+          } : pt
+        )
+      }));
+    }
   };
 
   const handleSave = () => {
@@ -476,6 +503,21 @@ export default function ProformaTab({ proforma, onSave, isLoading }) {
                     </Button>
                   </div>
                   <div className="grid grid-cols-2 gap-3">
+                    <div className="col-span-2">
+                      <Label className="text-xs">Select Floor Plan</Label>
+                      <Select onValueChange={(value) => selectFloorPlan(index, value)}>
+                        <SelectTrigger className="h-9">
+                          <SelectValue placeholder="Choose floor plan..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {floorPlans.map((fp) => (
+                            <SelectItem key={fp.id} value={fp.id}>
+                              {fp.name} {fp.square_footage ? `(${fp.square_footage.toLocaleString()} sqft)` : ''}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
                     <div className="col-span-2">
                       <Label className="text-xs">Product Name</Label>
                       <Input
