@@ -15,6 +15,9 @@ export default function ProformaTab({ proforma, onSave, isLoading }) {
     development_costs: "",
     soft_costs: "",
     financing_costs: "",
+    loan_interest_rate: "",
+    loan_term_months: "",
+    construction_draws: [],
     product_types: [],
     contingency_percentage: 5,
     sales_commission_percentage: 3,
@@ -43,6 +46,32 @@ export default function ProformaTab({ proforma, onSave, isLoading }) {
     }));
   };
 
+  const addConstructionDraw = () => {
+    setFormData(prev => ({
+      ...prev,
+      construction_draws: [
+        ...(prev.construction_draws || []),
+        { date: "", amount: "", description: "" }
+      ]
+    }));
+  };
+
+  const removeConstructionDraw = (index) => {
+    setFormData(prev => ({
+      ...prev,
+      construction_draws: prev.construction_draws.filter((_, i) => i !== index)
+    }));
+  };
+
+  const updateConstructionDraw = (index, field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      construction_draws: prev.construction_draws.map((draw, i) => 
+        i === index ? { ...draw, [field]: value } : draw
+      )
+    }));
+  };
+
   const removeProductType = (index) => {
     setFormData(prev => ({
       ...prev,
@@ -66,6 +95,13 @@ export default function ProformaTab({ proforma, onSave, isLoading }) {
       development_costs: formData.development_costs ? parseFloat(formData.development_costs) : null,
       soft_costs: formData.soft_costs ? parseFloat(formData.soft_costs) : null,
       financing_costs: formData.financing_costs ? parseFloat(formData.financing_costs) : null,
+      loan_interest_rate: formData.loan_interest_rate ? parseFloat(formData.loan_interest_rate) : null,
+      loan_term_months: formData.loan_term_months ? parseFloat(formData.loan_term_months) : null,
+      construction_draws: (formData.construction_draws || []).map(draw => ({
+        date: draw.date,
+        amount: draw.amount ? parseFloat(draw.amount) : 0,
+        description: draw.description
+      })),
       product_types: (formData.product_types || []).map(pt => ({
         name: pt.name,
         number_of_units: pt.number_of_units ? parseFloat(pt.number_of_units) : 0,
@@ -86,9 +122,43 @@ export default function ProformaTab({ proforma, onSave, isLoading }) {
   const purchasePrice = parseFloat(formData.purchase_price) || 0;
   const devCosts = parseFloat(formData.development_costs) || 0;
   const softCosts = parseFloat(formData.soft_costs) || 0;
-  const financingCosts = parseFloat(formData.financing_costs) || 0;
+  const loanInterestRate = parseFloat(formData.loan_interest_rate) || 0;
+  const loanTermMonths = parseFloat(formData.loan_term_months) || 0;
   const contingencyPct = parseFloat(formData.contingency_percentage) || 5;
   const salesCommissionPct = parseFloat(formData.sales_commission_percentage) || 3;
+
+  // Calculate financing costs based on construction draws or simple interest
+  const calculateFinancingCosts = () => {
+    const constructionDraws = formData.construction_draws || [];
+    
+    if (constructionDraws.length > 0 && formData.development_completion_date && loanInterestRate > 0) {
+      // Calculate interest based on actual draws
+      const completionDate = new Date(formData.development_completion_date);
+      let totalInterest = 0;
+      
+      constructionDraws.forEach(draw => {
+        if (draw.date && draw.amount) {
+          const drawDate = new Date(draw.date);
+          const monthsOutstanding = Math.max(0, 
+            (completionDate.getFullYear() - drawDate.getFullYear()) * 12 + 
+            (completionDate.getMonth() - drawDate.getMonth())
+          );
+          const drawAmount = parseFloat(draw.amount) || 0;
+          const interest = drawAmount * (loanInterestRate / 100) * (monthsOutstanding / 12);
+          totalInterest += interest;
+        }
+      });
+      
+      return totalInterest;
+    } else if (loanInterestRate > 0 && loanTermMonths > 0 && devCosts > 0) {
+      // Simple interest calculation on development costs
+      return devCosts * (loanInterestRate / 100) * (loanTermMonths / 12);
+    }
+    
+    return parseFloat(formData.financing_costs) || 0;
+  };
+
+  const financingCosts = calculateFinancingCosts();
 
   const productTypes = formData.product_types || [];
   
@@ -266,7 +336,7 @@ export default function ProformaTab({ proforma, onSave, isLoading }) {
                 />
               </div>
               <div>
-                <Label htmlFor="financing_costs">Financing Costs</Label>
+                <Label htmlFor="financing_costs">Financing Costs (Manual Override)</Label>
                 <Input
                   id="financing_costs"
                   type="number"
@@ -274,7 +344,114 @@ export default function ProformaTab({ proforma, onSave, isLoading }) {
                   onChange={(e) => handleChange("financing_costs", e.target.value)}
                   placeholder="0"
                 />
+                <p className="text-xs text-slate-500 mt-1">
+                  {financingCosts > 0 && !formData.financing_costs && (
+                    <>Calculated: {formatCurrency(financingCosts)}</>
+                  )}
+                </p>
               </div>
+            </CardContent>
+          </Card>
+
+          {/* Financing Terms */}
+          <Card className="border-0 shadow-sm">
+            <CardHeader>
+              <CardTitle className="text-base">Loan Terms</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Label htmlFor="loan_interest_rate">Interest Rate (%)</Label>
+                <Input
+                  id="loan_interest_rate"
+                  type="number"
+                  step="0.01"
+                  value={formData.loan_interest_rate}
+                  onChange={(e) => handleChange("loan_interest_rate", e.target.value)}
+                  placeholder="0.00"
+                />
+              </div>
+              <div>
+                <Label htmlFor="loan_term_months">Loan Term (Months)</Label>
+                <Input
+                  id="loan_term_months"
+                  type="number"
+                  value={formData.loan_term_months}
+                  onChange={(e) => handleChange("loan_term_months", e.target.value)}
+                  placeholder="0"
+                />
+              </div>
+              {loanInterestRate > 0 && loanTermMonths > 0 && devCosts > 0 && (formData.construction_draws || []).length === 0 && (
+                <div className="p-3 bg-blue-50 rounded-lg">
+                  <p className="text-xs text-blue-700">
+                    Estimated Interest: {formatCurrency(devCosts * (loanInterestRate / 100) * (loanTermMonths / 12))}
+                  </p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Construction Draws */}
+          <Card className="border-0 shadow-sm md:col-span-2">
+            <CardHeader>
+              <div className="flex justify-between items-center">
+                <CardTitle className="text-base">Construction Loan Draws</CardTitle>
+                <Button onClick={addConstructionDraw} variant="outline" size="sm">
+                  <Plus className="h-4 w-4 mr-1" />
+                  Add Draw
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {(formData.construction_draws || []).map((draw, index) => (
+                <div key={index} className="border border-slate-200 rounded-lg p-4">
+                  <div className="flex justify-between items-start mb-3">
+                    <Label className="text-sm font-medium">Draw {index + 1}</Label>
+                    <Button variant="ghost" size="icon" className="h-6 w-6 text-red-500" onClick={() => removeConstructionDraw(index)}>
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  <div className="grid grid-cols-3 gap-3">
+                    <div>
+                      <Label className="text-xs">Date</Label>
+                      <Input
+                        type="date"
+                        value={draw.date}
+                        onChange={(e) => updateConstructionDraw(index, "date", e.target.value)}
+                        className="h-9"
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-xs">Amount</Label>
+                      <Input
+                        type="number"
+                        value={draw.amount}
+                        onChange={(e) => updateConstructionDraw(index, "amount", e.target.value)}
+                        placeholder="0"
+                        className="h-9"
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-xs">Description</Label>
+                      <Input
+                        value={draw.description}
+                        onChange={(e) => updateConstructionDraw(index, "description", e.target.value)}
+                        placeholder="e.g., Site prep"
+                        className="h-9"
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
+              {(formData.construction_draws || []).length === 0 && (
+                <p className="text-sm text-slate-500 text-center py-4">No draws scheduled yet</p>
+              )}
+              {(formData.construction_draws || []).length > 0 && loanInterestRate > 0 && formData.development_completion_date && (
+                <div className="p-3 bg-blue-50 rounded-lg">
+                  <p className="text-xs text-blue-700 font-medium">
+                    Calculated Interest from Draws: {formatCurrency(calculateFinancingCosts())}
+                  </p>
+                </div>
+              )}
             </CardContent>
           </Card>
 
@@ -678,6 +855,14 @@ export default function ProformaTab({ proforma, onSave, isLoading }) {
               <span className="text-slate-600">Financing Costs</span>
               <span className="font-medium">{formatCurrency(financingCosts)}</span>
             </div>
+            {loanInterestRate > 0 && (
+              <div className="flex justify-between text-xs pl-4">
+                <span className="text-slate-500">
+                  {loanInterestRate}% over {loanTermMonths} months
+                  {(formData.construction_draws || []).length > 0 && " (from draws)"}
+                </span>
+              </div>
+            )}
             <div className="flex justify-between text-sm">
               <span className="text-slate-600">Direct Costs ({numUnits} units)</span>
               <span className="font-medium">{formatCurrency(totalDirectCosts)}</span>
