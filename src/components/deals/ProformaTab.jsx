@@ -526,7 +526,7 @@ export default function ProformaTab({ proforma, onSave, isLoading }) {
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
         <Card className="border-0 shadow-sm">
           <CardContent className="p-6">
             <div className="flex items-center gap-2 text-slate-500 text-sm mb-2">
@@ -559,6 +559,19 @@ export default function ProformaTab({ proforma, onSave, isLoading }) {
               {formatCurrency(profit)}
             </p>
             <p className="text-xs text-slate-500 mt-1">{profitMargin.toFixed(1)}% margin</p>
+          </CardContent>
+        </Card>
+
+        <Card className={cn("border-0 shadow-sm", profitMargin >= 0 ? "bg-indigo-50" : "bg-red-50")}>
+          <CardContent className="p-6">
+            <div className="flex items-center gap-2 text-slate-500 text-sm mb-2">
+              <TrendingUp className="h-4 w-4" />
+              <span>Net Pretax Margin</span>
+            </div>
+            <p className={cn("text-2xl font-bold", profitMargin >= 0 ? "text-indigo-700" : "text-red-700")}>
+              {profitMargin.toFixed(1)}%
+            </p>
+            <p className="text-xs text-slate-500 mt-1">Profit / Gross Revenue</p>
           </CardContent>
         </Card>
 
