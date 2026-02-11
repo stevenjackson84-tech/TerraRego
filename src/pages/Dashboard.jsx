@@ -8,6 +8,7 @@ import RecentActivity from "@/components/dashboard/RecentActivity";
 import UpcomingTasks from "@/components/dashboard/UpcomingTasks";
 import QuarterlyDealsWidget from "@/components/dashboard/QuarterlyDealsWidget";
 import AvgProfitByTypeWidget from "@/components/dashboard/AvgProfitByTypeWidget";
+import TaskNotifications from "@/components/tasks/TaskNotifications";
 
 export default function Dashboard() {
   const queryClient = useQueryClient();
@@ -112,6 +113,11 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
           <QuarterlyDealsWidget deals={deals} />
           <AvgProfitByTypeWidget deals={deals} proformas={proformas} />
+        </div>
+
+        {/* Task Notifications */}
+        <div className="mb-6">
+          <TaskNotifications />
         </div>
 
         {/* Charts and Activity */}
