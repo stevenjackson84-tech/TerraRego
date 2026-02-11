@@ -106,9 +106,9 @@ export default function ProformaTab({ proforma, onSave, isLoading }) {
         product_types: prev.product_types.map((pt, i) => 
           i === index ? {
             ...pt,
-            name: floorPlan.name || pt.name,
             average_sqft: floorPlan.square_footage || pt.average_sqft,
-            floor_plan_id: floorPlan.id
+            floor_plan_id: floorPlan.id,
+            floor_plan_name: floorPlan.name
           } : pt
         )
       }));
@@ -504,10 +504,19 @@ export default function ProformaTab({ proforma, onSave, isLoading }) {
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <div className="col-span-2">
-                      <Label className="text-xs">Select Floor Plan</Label>
+                      <Label className="text-xs">Product Type</Label>
+                      <Input
+                        value={pt.name}
+                        onChange={(e) => updateProductType(index, "name", e.target.value)}
+                        placeholder="e.g., 50s"
+                        className="h-9"
+                      />
+                    </div>
+                    <div className="col-span-2">
+                      <Label className="text-xs">Floor Plan</Label>
                       <Select onValueChange={(value) => selectFloorPlan(index, value)}>
                         <SelectTrigger className="h-9">
-                          <SelectValue placeholder="Choose floor plan..." />
+                          <SelectValue placeholder="Select floor plan..." />
                         </SelectTrigger>
                         <SelectContent>
                           {floorPlans.map((fp) => (
@@ -517,15 +526,6 @@ export default function ProformaTab({ proforma, onSave, isLoading }) {
                           ))}
                         </SelectContent>
                       </Select>
-                    </div>
-                    <div className="col-span-2">
-                      <Label className="text-xs">Product Name</Label>
-                      <Input
-                        value={pt.name}
-                        onChange={(e) => updateProductType(index, "name", e.target.value)}
-                        placeholder="e.g., Single Family"
-                        className="h-9"
-                      />
                     </div>
                     <div>
                       <Label className="text-xs">Units</Label>
