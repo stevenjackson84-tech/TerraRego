@@ -16,6 +16,7 @@ export default function MarketAnalysisTab({ dealId, proforma }) {
   const [editingSale, setEditingSale] = useState(null);
   const [formData, setFormData] = useState({
     competitor_name: "",
+    subdivision_name: "",
     product_type: "",
     sale_price: "",
     square_footage: "",
@@ -54,6 +55,7 @@ export default function MarketAnalysisTab({ dealId, proforma }) {
   const resetForm = () => {
     setFormData({
       competitor_name: "",
+      subdivision_name: "",
       product_type: "",
       sale_price: "",
       square_footage: "",
@@ -69,6 +71,7 @@ export default function MarketAnalysisTab({ dealId, proforma }) {
     setEditingSale(sale);
     setFormData({
       competitor_name: sale.competitor_name || "",
+      subdivision_name: sale.subdivision_name || "",
       product_type: sale.product_type || "",
       sale_price: sale.sale_price || "",
       square_footage: sale.square_footage || "",
@@ -199,6 +202,9 @@ export default function MarketAnalysisTab({ dealId, proforma }) {
                       <div className="flex items-start justify-between mb-2">
                         <div>
                           <h3 className="font-semibold text-slate-900">{sale.competitor_name}</h3>
+                          {sale.subdivision_name && (
+                            <p className="text-sm text-slate-600">{sale.subdivision_name}</p>
+                          )}
                           <p className="text-sm text-slate-500">{sale.product_type}</p>
                         </div>
                         <p className="text-lg font-bold text-slate-900">{formatCurrency(sale.sale_price)}</p>
@@ -284,6 +290,15 @@ export default function MarketAnalysisTab({ dealId, proforma }) {
                   value={formData.competitor_name}
                   onChange={(e) => setFormData({ ...formData, competitor_name: e.target.value })}
                   placeholder="e.g., Builder Name"
+                />
+              </div>
+              <div>
+                <Label htmlFor="subdivision_name">Subdivision Name</Label>
+                <Input
+                  id="subdivision_name"
+                  value={formData.subdivision_name}
+                  onChange={(e) => setFormData({ ...formData, subdivision_name: e.target.value })}
+                  placeholder="e.g., Oak Ridge Estates"
                 />
               </div>
               <div>
