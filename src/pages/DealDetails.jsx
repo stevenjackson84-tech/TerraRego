@@ -29,6 +29,7 @@ import ProformaTab from "@/components/deals/ProformaTab";
 import TimelineTab from "@/components/deals/TimelineTab";
 import MarketAnalysisTab from "@/components/deals/MarketAnalysisTab";
 import DocumentList from "@/components/documents/DocumentList";
+import DueDiligenceTab from "@/components/deals/DueDiligenceTab";
 
 const stageStyles = {
   prospecting: "bg-slate-100 text-slate-700",
@@ -316,6 +317,7 @@ export default function DealDetails() {
             <TabsTrigger value="proforma">Proforma</TabsTrigger>
             <TabsTrigger value="timeline">Timeline</TabsTrigger>
             <TabsTrigger value="market">Market Analysis</TabsTrigger>
+            <TabsTrigger value="duediligence">Due Diligence</TabsTrigger>
             <TabsTrigger value="entitlements">Entitlements ({entitlements.length})</TabsTrigger>
             <TabsTrigger value="tasks">Tasks ({tasks.length})</TabsTrigger>
             <TabsTrigger value="documents">Documents</TabsTrigger>
@@ -448,6 +450,10 @@ export default function DealDetails() {
               dealId={dealId}
               proforma={proforma}
             />
+          </TabsContent>
+
+          <TabsContent value="duediligence">
+            <DueDiligenceTab dealId={dealId} />
           </TabsContent>
 
           <TabsContent value="entitlements">
