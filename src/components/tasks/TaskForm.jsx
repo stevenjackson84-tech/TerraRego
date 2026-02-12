@@ -18,14 +18,45 @@ const defaultTask = {
   priority: "medium",
   due_date: "",
   assigned_to: "",
-  category: "general"
+  category: "general",
+  parent_task_id: "",
+  depends_on: [],
+  is_recurring: false,
+  recurrence_pattern: "weekly",
+  recurrence_interval: 1,
+  recurrence_end_date: ""
 };
 
-export default function TaskForm({ task, deals, open, onClose, onSave, isLoading }) {
-  const [formData, setFormData] = useState(task || defaultTask);
+export default function TaskForm({ task, deals, open, onClose, onSave, isLoading, allTasks = [] }) {
+  const [formData, setFormData] = useState(defaultTask);
+  const [notifyAssignee, setNotifyAssignee] = useState(false);
+
+  const { data: users = [] } = useQuery({
+    queryKey: ['users'],
+    queryFn: () => base44.entities.User.list()
+  });
+
+  useEffect(() => {
+    if (task) {
+      setFormData({ ...defaultTask, ...task });
+    } else {
+      setFormData(defaultTask);
+    }
+  }, [task, open]);
 
   const handleChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const toggleDependency = (taskId) => {
+    setFormData(prev => {
+      const depends_on = prev.depends_on || [];
+      if (depends_on.includes(taskId)) {
+        return { ...prev, depends_on: depends_on.filter(id => id !== taskId) };
+      } else {
+        return { ...prev, depends_on: [...depends_on, taskId] };
+      }
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -51,9 +82,17 @@ export default function TaskForm({ task, deals, open, onClose, onSave, isLoading
     }
   };
 
+  const availableParentTasks = allTasks.filter(t => 
+    t.id !== task?.id && !t.parent_task_id && t.status !== 'completed'
+  );
+
+  const availableDependencyTasks = allTasks.filter(t => 
+    t.id !== task?.id && t.id !== formData.parent_task_id
+  );
+
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-lg">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold">
             {task ? "Edit Task" : "Add New Task"}
@@ -158,12 +197,145 @@ export default function TaskForm({ task, deals, open, onClose, onSave, isLoading
 
             <div>
               <Label htmlFor="assigned_to">Assigned To</Label>
-              <Input
-                id="assigned_to"
+              <Select
                 value={formData.assigned_to}
-                onChange={(e) => handleChange("assigned_to", e.target.value)}
-              />
+                onValueChange={(value) => handleChange("assigned_to", value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select team member..." />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={null}>Unassigned</SelectItem>
+                  {users.map((user) => (
+                    <SelectItem key={user.id} value={user.email}>
+                      {user.full_name} ({user.email})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
+          </div>
+
+          {formData.assigned_to && (
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="notify"
+                checked={notifyAssignee}
+                onCheckedChange={setNotifyAssignee}
+              />
+              <Label htmlFor="notify" className="text-sm font-normal cursor-pointer">
+                Send email notification to assignee
+              </Label>
+            </div>
+          )}
+
+          {/* Parent Task (Subtasks) */}
+          <div>
+            <Label>Parent Task (Optional)</Label>
+            <Select
+              value={formData.parent_task_id || "none"}
+              onValueChange={(v) => handleChange("parent_task_id", v === "none" ? "" : v)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="This is a standalone task" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">Standalone Task</SelectItem>
+                {availableParentTasks.map((t) => (
+                  <SelectItem key={t.id} value={t.id}>
+                    {t.title}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <p className="text-xs text-slate-500 mt-1">
+              Select a parent task to make this a subtask
+            </p>
+          </div>
+
+          {/* Dependencies */}
+          <div>
+            <Label>Dependencies (Optional)</Label>
+            <div className="border rounded-lg p-3 max-h-40 overflow-y-auto space-y-2">
+              {availableDependencyTasks.length === 0 ? (
+                <p className="text-sm text-slate-500">No tasks available</p>
+              ) : (
+                availableDependencyTasks.map((t) => (
+                  <div key={t.id} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={`dep-${t.id}`}
+                      checked={formData.depends_on?.includes(t.id)}
+                      onCheckedChange={() => toggleDependency(t.id)}
+                    />
+                    <Label htmlFor={`dep-${t.id}`} className="text-sm font-normal cursor-pointer">
+                      {t.title}
+                    </Label>
+                  </div>
+                ))
+              )}
+            </div>
+            <p className="text-xs text-slate-500 mt-1">
+              Select tasks that must be completed before this one
+            </p>
+          </div>
+
+          {/* Recurring Tasks */}
+          <div className="space-y-3 border-t pt-4">
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="recurring"
+                checked={formData.is_recurring}
+                onCheckedChange={(checked) => handleChange("is_recurring", checked)}
+              />
+              <Label htmlFor="recurring" className="text-sm font-medium cursor-pointer">
+                Make this a recurring task
+              </Label>
+            </div>
+
+            {formData.is_recurring && (
+              <div className="pl-6 space-y-3">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label>Recurrence Pattern</Label>
+                    <Select
+                      value={formData.recurrence_pattern}
+                      onValueChange={(v) => handleChange("recurrence_pattern", v)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="daily">Daily</SelectItem>
+                        <SelectItem value="weekly">Weekly</SelectItem>
+                        <SelectItem value="biweekly">Bi-weekly</SelectItem>
+                        <SelectItem value="monthly">Monthly</SelectItem>
+                        <SelectItem value="quarterly">Quarterly</SelectItem>
+                        <SelectItem value="yearly">Yearly</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label htmlFor="interval">Repeat Every</Label>
+                    <Input
+                      id="interval"
+                      type="number"
+                      min="1"
+                      value={formData.recurrence_interval}
+                      onChange={(e) => handleChange("recurrence_interval", parseInt(e.target.value))}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <Label htmlFor="end_date">End Date (Optional)</Label>
+                  <Input
+                    id="end_date"
+                    type="date"
+                    value={formData.recurrence_end_date}
+                    onChange={(e) => handleChange("recurrence_end_date", e.target.value)}
+                  />
+                </div>
+              </div>
+            )}
           </div>
 
           <DialogFooter>
