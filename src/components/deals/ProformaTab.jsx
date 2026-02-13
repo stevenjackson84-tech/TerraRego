@@ -534,7 +534,7 @@ export default function ProformaTab({ proforma, onSave, isLoading }) {
                           handleChange('purchase_takedowns', takedowns);
                         }}
                         placeholder="Amount"
-                        className="flex-1"
+                        className="flex-1 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                       />
                       <Input
                         type="text"
