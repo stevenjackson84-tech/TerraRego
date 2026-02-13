@@ -262,19 +262,34 @@ export default function ProformaTab({ proforma, onSave, isLoading }) {
   const netAssets = purchasePrice + devCosts + softCosts + totalDirectCosts + totalPermitCosts + contingency;
   const rona = netAssets > 0 ? (profit / netAssets) * 100 : 0;
 
-  // Unlevered IRR calculation
+  // Unlevered IRR calculation using construction draws
   const calculateUnleveredIRR = () => {
-    if (!formData.development_start_date || totalAbsorptionPace === 0 || numUnits === 0) return null;
+    if (!formData.development_start_date || !formData.first_home_closing || totalAbsorptionPace === 0 || numUnits === 0) return null;
     
-    // Build cash flow array
-    const cashFlows = [];
+    const devStartDate = new Date(formData.development_start_date);
+    const firstClosingDate = new Date(formData.first_home_closing);
     
-    // Initial investment (negative cash flow at time 0)
-    cashFlows.push(-netAssets);
+    // Build monthly cash flow array from development start
+    const cashFlowsByMonth = new Map();
     
-    // Calculate cash flows by product type
-    let currentMonth = 1;
-    const maxMonths = 240; // 20 years max
+    // Add construction draws (negative cash flows)
+    const draws = formData.construction_draws || [];
+    draws.forEach(draw => {
+      if (draw.date && draw.amount) {
+        const drawDate = new Date(draw.date);
+        const monthsSinceStart = (drawDate.getFullYear() - devStartDate.getFullYear()) * 12 + 
+                                  (drawDate.getMonth() - devStartDate.getMonth());
+        const currentFlow = cashFlowsByMonth.get(monthsSinceStart) || 0;
+        cashFlowsByMonth.set(monthsSinceStart, currentFlow - parseFloat(draw.amount));
+      }
+    });
+    
+    // Add other upfront costs at month 0
+    const upfrontCosts = purchasePrice + softCosts + totalDirectCosts + totalPermitCosts + contingency;
+    const month0Flow = cashFlowsByMonth.get(0) || 0;
+    cashFlowsByMonth.set(0, month0Flow - upfrontCosts);
+    
+    // Add sales revenue (positive cash flows)
     const productFlows = productTypes.map(pt => ({
       units: parseFloat(pt.number_of_units) || 0,
       salesPrice: parseFloat(pt.sales_price_per_unit) || 0,
@@ -282,8 +297,13 @@ export default function ProformaTab({ proforma, onSave, isLoading }) {
       unitsSold: 0
     }));
     
-    // Generate monthly cash flows until all units sold
-    while (currentMonth <= maxMonths && productFlows.some(pf => pf.unitsSold < pf.units)) {
+    const monthsSinceStartToFirstClosing = (firstClosingDate.getFullYear() - devStartDate.getFullYear()) * 12 + 
+                                            (firstClosingDate.getMonth() - devStartDate.getMonth());
+    
+    let currentSalesMonth = monthsSinceStartToFirstClosing;
+    const maxMonths = 240;
+    
+    while (currentSalesMonth <= maxMonths && productFlows.some(pf => pf.unitsSold < pf.units)) {
       let monthlyRevenue = 0;
       
       for (const pf of productFlows) {
@@ -296,18 +316,28 @@ export default function ProformaTab({ proforma, onSave, isLoading }) {
         }
       }
       
-      cashFlows.push(monthlyRevenue);
-      currentMonth++;
+      if (monthlyRevenue > 0) {
+        const currentFlow = cashFlowsByMonth.get(currentSalesMonth) || 0;
+        cashFlowsByMonth.set(currentSalesMonth, currentFlow + monthlyRevenue);
+      }
+      currentSalesMonth++;
+    }
+    
+    // Convert to array sorted by month
+    const maxMonth = Math.max(...Array.from(cashFlowsByMonth.keys()));
+    const cashFlows = [];
+    for (let i = 0; i <= maxMonth; i++) {
+      cashFlows.push(cashFlowsByMonth.get(i) || 0);
     }
     
     if (cashFlows.length <= 1) return null;
     
-    // Simple IRR approximation using Newton's method
+    // Newton's method for IRR
     const npv = (rate, flows) => {
       return flows.reduce((sum, flow, t) => sum + flow / Math.pow(1 + rate, t), 0);
     };
     
-    let rate = 0.1; // Initial guess 10%
+    let rate = 0.01; // Initial guess 1% monthly
     const maxIterations = 100;
     const tolerance = 0.0001;
     
@@ -315,6 +345,8 @@ export default function ProformaTab({ proforma, onSave, isLoading }) {
       const npvValue = npv(rate, cashFlows);
       const npvDerivative = cashFlows.reduce((sum, flow, t) => 
         sum - (t * flow) / Math.pow(1 + rate, t + 1), 0);
+      
+      if (Math.abs(npvDerivative) < 0.0000001) break;
       
       const newRate = rate - npvValue / npvDerivative;
       
