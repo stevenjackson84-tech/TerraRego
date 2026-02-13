@@ -5,7 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Edit, DollarSign, TrendingUp, Calculator, Plus, Trash2 } from "lucide-react";
+import { Edit, DollarSign, TrendingUp, Calculator, Plus, Trash2, RefreshCw } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { base44 } from "@/api/base44Client";
@@ -39,11 +40,45 @@ export default function ProformaTab({ proforma, onSave, isLoading }) {
     first_home_sale: "",
     first_home_closing: "",
     absorption_pace: "",
-    notes: ""
+    notes: "",
+    override_dev_completion: false
   });
 
   const handleChange = (field, value) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData(prev => {
+      const updated = { ...prev, [field]: value };
+      
+      // Auto-calculate development completion date (6 months after start)
+      if (field === "development_start_date" && !prev.override_dev_completion && value) {
+        const startDate = new Date(value);
+        const completionDate = new Date(startDate);
+        completionDate.setMonth(completionDate.getMonth() + 6);
+        updated.development_completion_date = completionDate.toISOString().split('T')[0];
+      }
+      
+      // Auto-generate construction draws when development costs or dates change
+      if ((field === "development_costs" || field === "development_start_date") && 
+          updated.development_costs && updated.development_start_date) {
+        const devCost = parseFloat(updated.development_costs);
+        const startDate = new Date(updated.development_start_date);
+        
+        if (devCost > 0 && startDate) {
+          const pattern = [0.05, 0.10, 0.15, 0.20, 0.25, 0.20, 0.05];
+          const draws = pattern.map((pct, index) => {
+            const drawDate = new Date(startDate);
+            drawDate.setMonth(drawDate.getMonth() + index);
+            return {
+              date: drawDate.toISOString().split('T')[0],
+              amount: (devCost * pct).toFixed(2),
+              description: `Month ${index + 1} - ${(pct * 100).toFixed(0)}%`
+            };
+          });
+          updated.construction_draws = draws;
+        }
+      }
+      
+      return updated;
+    });
   };
 
   const addProductType = () => {
@@ -421,11 +456,31 @@ export default function ProformaTab({ proforma, onSave, isLoading }) {
           <Card className="border-0 shadow-sm md:col-span-2">
             <CardHeader>
               <div className="flex justify-between items-center">
-                <CardTitle className="text-base">Construction Loan Draws</CardTitle>
-                <Button onClick={addConstructionDraw} variant="outline" size="sm">
-                  <Plus className="h-4 w-4 mr-1" />
-                  Add Draw
-                </Button>
+                <div>
+                  <CardTitle className="text-base">Construction Loan Draws</CardTitle>
+                  <p className="text-xs text-slate-500 mt-1">
+                    Auto-generated: 5%, 10%, 15%, 20%, 25%, 20%, 5% over 7 months
+                  </p>
+                </div>
+                <div className="flex gap-2">
+                  <Button 
+                    onClick={() => {
+                      if (formData.development_costs && formData.development_start_date) {
+                        handleChange("development_costs", formData.development_costs);
+                      }
+                    }} 
+                    variant="outline" 
+                    size="sm"
+                    disabled={!formData.development_costs || !formData.development_start_date}
+                  >
+                    <RefreshCw className="h-4 w-4 mr-1" />
+                    Regenerate
+                  </Button>
+                  <Button onClick={addConstructionDraw} variant="outline" size="sm">
+                    <Plus className="h-4 w-4 mr-1" />
+                    Add Draw
+                  </Button>
+                </div>
               </div>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -663,15 +718,36 @@ export default function ProformaTab({ proforma, onSave, isLoading }) {
                   value={formData.development_start_date}
                   onChange={(e) => handleChange("development_start_date", e.target.value)}
                 />
+                <p className="text-xs text-slate-500 mt-1">
+                  Triggers auto-calculation of completion date & cashflow
+                </p>
               </div>
               <div>
                 <Label htmlFor="development_completion_date">Development Completion Date</Label>
-                <Input
-                  id="development_completion_date"
-                  type="date"
-                  value={formData.development_completion_date}
-                  onChange={(e) => handleChange("development_completion_date", e.target.value)}
-                />
+                <div className="space-y-2">
+                  <Input
+                    id="development_completion_date"
+                    type="date"
+                    value={formData.development_completion_date}
+                    onChange={(e) => handleChange("development_completion_date", e.target.value)}
+                    disabled={!formData.override_dev_completion}
+                  />
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="override_completion"
+                      checked={formData.override_dev_completion}
+                      onCheckedChange={(checked) => handleChange("override_dev_completion", checked)}
+                    />
+                    <Label htmlFor="override_completion" className="text-xs font-normal cursor-pointer">
+                      Manual override (for deal specifics/weather delays)
+                    </Label>
+                  </div>
+                  {!formData.override_dev_completion && formData.development_start_date && (
+                    <p className="text-xs text-emerald-600">
+                      Auto: 6 months after start date
+                    </p>
+                  )}
+                </div>
               </div>
               <div>
                 <Label htmlFor="first_home_start">First Home Start</Label>
