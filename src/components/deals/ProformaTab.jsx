@@ -159,6 +159,11 @@ export default function ProformaTab({ proforma, onSave, isLoading }) {
       financing_costs: formData.financing_costs ? parseFloat(formData.financing_costs) : null,
       loan_interest_rate: formData.loan_interest_rate ? parseFloat(formData.loan_interest_rate) : null,
       loan_term_months: formData.loan_term_months ? parseFloat(formData.loan_term_months) : null,
+      purchase_takedowns: (formData.purchase_takedowns || []).map(td => ({
+        date: td.date,
+        amount: td.amount ? parseFloat(td.amount) : 0,
+        description: td.description
+      })),
       construction_draws: (formData.construction_draws || []).map(draw => ({
         date: draw.date,
         amount: draw.amount ? parseFloat(draw.amount) : 0,
@@ -488,6 +493,78 @@ export default function ProformaTab({ proforma, onSave, isLoading }) {
                   onChange={(e) => handleChange("purchase_price", e.target.value)}
                   placeholder="0"
                 />
+              </div>
+
+              {/* Purchase Takedowns */}
+              <div className="md:col-span-2 border-t pt-4 mt-2">
+                <div className="flex items-center justify-between mb-2">
+                  <Label>Purchase Takedowns (Optional)</Label>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    onClick={() => {
+                      const takedowns = formData.purchase_takedowns || [];
+                      handleChange('purchase_takedowns', [...takedowns, { date: '', amount: 0, description: '' }]);
+                    }}
+                  >
+                    <Plus className="h-4 w-4 mr-1" />
+                    Add Takedown
+                  </Button>
+                </div>
+                <div className="space-y-2 max-h-64 overflow-y-auto">
+                  {(formData.purchase_takedowns || []).map((td, index) => (
+                    <div key={index} className="flex gap-2 items-center p-3 bg-slate-50 rounded-lg">
+                      <Input
+                        type="date"
+                        value={td.date || ''}
+                        onChange={(e) => {
+                          const takedowns = [...(formData.purchase_takedowns || [])];
+                          takedowns[index].date = e.target.value;
+                          handleChange('purchase_takedowns', takedowns);
+                        }}
+                        className="flex-1"
+                      />
+                      <Input
+                        type="number"
+                        value={td.amount || ''}
+                        onChange={(e) => {
+                          const takedowns = [...(formData.purchase_takedowns || [])];
+                          takedowns[index].amount = parseFloat(e.target.value) || 0;
+                          handleChange('purchase_takedowns', takedowns);
+                        }}
+                        placeholder="Amount"
+                        className="flex-1"
+                      />
+                      <Input
+                        type="text"
+                        value={td.description || ''}
+                        onChange={(e) => {
+                          const takedowns = [...(formData.purchase_takedowns || [])];
+                          takedowns[index].description = e.target.value;
+                          handleChange('purchase_takedowns', takedowns);
+                        }}
+                        placeholder="Description"
+                        className="flex-1"
+                      />
+                      <Button
+                        type="button"
+                        size="icon"
+                        variant="ghost"
+                        onClick={() => {
+                          const takedowns = [...(formData.purchase_takedowns || [])];
+                          takedowns.splice(index, 1);
+                          handleChange('purchase_takedowns', takedowns);
+                        }}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ))}
+                  {(formData.purchase_takedowns || []).length === 0 && (
+                    <p className="text-sm text-slate-500 text-center py-4">No takedowns scheduled. Purchase price will be paid at development start.</p>
+                  )}
+                </div>
               </div>
               <div>
                 <Label htmlFor="development_costs">Development Costs</Label>
@@ -1088,6 +1165,20 @@ export default function ProformaTab({ proforma, onSave, isLoading }) {
               <span className="text-slate-600">Purchase Price</span>
               <span className="font-medium">{formatCurrency(purchasePrice)}</span>
             </div>
+            {formData.purchase_takedowns && formData.purchase_takedowns.length > 0 && (
+              <div className="pl-4 space-y-1 border-l-2 border-slate-200">
+                <div className="text-xs text-slate-500 font-medium mb-1">Takedown Schedule:</div>
+                {formData.purchase_takedowns.map((td, idx) => (
+                  <div key={idx} className="flex justify-between text-xs">
+                    <span className="text-slate-500">
+                      {td.description || `Takedown ${idx + 1}`} 
+                      {td.date && ` (${format(new Date(td.date), 'MMM d, yyyy')})`}
+                    </span>
+                    <span className="font-medium">{formatCurrency(td.amount)}</span>
+                  </div>
+                ))}
+              </div>
+            )}
             <div className="flex justify-between text-sm pl-4">
               <span className="text-slate-500 text-xs">Per Unit</span>
               <span className="font-medium text-xs">{formatCurrency(purchasePricePerUnit)}</span>
