@@ -363,6 +363,56 @@ export default function ProformaTab({ proforma, onSave, isLoading }) {
 
   const unleveredIRR = calculateUnleveredIRR();
 
+  // Calculate Peak Capital
+  const calculatePeakCapital = () => {
+    if (!formData.development_start_date) return { amount: 0, date: null };
+    
+    const devStartDate = new Date(formData.development_start_date);
+    const cashFlowsByMonth = new Map();
+    
+    // Initial costs at month 0
+    const upfrontCosts = purchasePrice + softCosts + totalDirectCosts + totalPermitCosts + contingency;
+    cashFlowsByMonth.set(0, -upfrontCosts);
+    
+    // Add construction draws
+    const draws = formData.construction_draws || [];
+    draws.forEach(draw => {
+      if (draw.date && draw.amount) {
+        const drawDate = new Date(draw.date);
+        const monthsSinceStart = (drawDate.getFullYear() - devStartDate.getFullYear()) * 12 + 
+                                  (drawDate.getMonth() - devStartDate.getMonth());
+        const currentFlow = cashFlowsByMonth.get(monthsSinceStart) || 0;
+        cashFlowsByMonth.set(monthsSinceStart, currentFlow - parseFloat(draw.amount));
+      }
+    });
+    
+    // Calculate cumulative and find peak
+    const maxMonth = Math.max(...Array.from(cashFlowsByMonth.keys()), 0);
+    let cumulativeCash = 0;
+    let peakCapital = 0;
+    let peakMonth = 0;
+    
+    for (let i = 0; i <= maxMonth; i++) {
+      const monthFlow = cashFlowsByMonth.get(i) || 0;
+      cumulativeCash += monthFlow;
+      
+      if (cumulativeCash < peakCapital) {
+        peakCapital = cumulativeCash;
+        peakMonth = i;
+      }
+    }
+    
+    const peakDate = new Date(devStartDate);
+    peakDate.setMonth(peakDate.getMonth() + peakMonth);
+    
+    return {
+      amount: Math.abs(peakCapital),
+      date: peakDate.toISOString().split('T')[0]
+    };
+  };
+
+  const peakCapital = calculatePeakCapital();
+
   const formatCurrency = (value) => {
     return new Intl.NumberFormat('en-US', { 
       style: 'currency', 
@@ -862,6 +912,29 @@ export default function ProformaTab({ proforma, onSave, isLoading }) {
           Edit
         </Button>
       </div>
+
+      {/* Peak Capital */}
+      {peakCapital.date && (
+        <Card className="border-0 shadow-sm bg-amber-50 md:col-span-full">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="flex items-center gap-2 text-amber-700 text-sm mb-2">
+                  <DollarSign className="h-5 w-5" />
+                  <span className="font-semibold">Peak Capital Required</span>
+                </div>
+                <p className="text-3xl font-bold text-amber-900">{formatCurrency(peakCapital.amount)}</p>
+              </div>
+              <div className="text-right">
+                <p className="text-sm text-amber-700 mb-1">Peak Date</p>
+                <p className="text-xl font-semibold text-amber-900">
+                  {format(new Date(peakCapital.date), 'MMM d, yyyy')}
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
