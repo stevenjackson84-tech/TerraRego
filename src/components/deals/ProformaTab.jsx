@@ -262,7 +262,7 @@ export default function ProformaTab({ proforma, onSave, isLoading }) {
   const netAssets = purchasePrice + devCosts + softCosts + totalDirectCosts + totalPermitCosts + contingency;
   const rona = netAssets > 0 ? (profit / netAssets) * 100 : 0;
 
-  // Unlevered IRR calculation using construction draws
+  // Unlevered IRR calculation using construction draws and purchase takedowns
   const calculateUnleveredIRR = () => {
     if (!formData.development_start_date || !formData.first_home_closing || totalAbsorptionPace === 0 || numUnits === 0) return null;
     
@@ -271,6 +271,20 @@ export default function ProformaTab({ proforma, onSave, isLoading }) {
     
     // Build monthly cash flow array from development start
     const cashFlowsByMonth = new Map();
+    
+    // Add purchase takedowns (negative cash flows)
+    const takedowns = formData.purchase_takedowns || [];
+    let totalTakedowns = 0;
+    takedowns.forEach(td => {
+      if (td.date && td.amount) {
+        const tdDate = new Date(td.date);
+        const monthsSinceStart = (tdDate.getFullYear() - devStartDate.getFullYear()) * 12 + 
+                                  (tdDate.getMonth() - devStartDate.getMonth());
+        const currentFlow = cashFlowsByMonth.get(monthsSinceStart) || 0;
+        cashFlowsByMonth.set(monthsSinceStart, currentFlow - parseFloat(td.amount));
+        totalTakedowns += parseFloat(td.amount);
+      }
+    });
     
     // Add construction draws (negative cash flows)
     const draws = formData.construction_draws || [];
@@ -284,8 +298,9 @@ export default function ProformaTab({ proforma, onSave, isLoading }) {
       }
     });
     
-    // Add other upfront costs at month 0
-    const upfrontCosts = purchasePrice + softCosts + totalDirectCosts + totalPermitCosts + contingency;
+    // Add other upfront costs at month 0 (excluding purchase price if using takedowns)
+    const purchaseCost = totalTakedowns > 0 ? 0 : purchasePrice;
+    const upfrontCosts = purchaseCost + softCosts + totalDirectCosts + totalPermitCosts + contingency;
     const month0Flow = cashFlowsByMonth.get(0) || 0;
     cashFlowsByMonth.set(0, month0Flow - upfrontCosts);
     
@@ -370,8 +385,23 @@ export default function ProformaTab({ proforma, onSave, isLoading }) {
     const devStartDate = new Date(formData.development_start_date);
     const cashFlowsByMonth = new Map();
     
-    // Initial costs at month 0
-    const upfrontCosts = purchasePrice + softCosts + totalDirectCosts + totalPermitCosts + contingency;
+    // Add purchase takedowns
+    const takedowns = formData.purchase_takedowns || [];
+    let totalTakedowns = 0;
+    takedowns.forEach(td => {
+      if (td.date && td.amount) {
+        const tdDate = new Date(td.date);
+        const monthsSinceStart = (tdDate.getFullYear() - devStartDate.getFullYear()) * 12 + 
+                                  (tdDate.getMonth() - devStartDate.getMonth());
+        const currentFlow = cashFlowsByMonth.get(monthsSinceStart) || 0;
+        cashFlowsByMonth.set(monthsSinceStart, currentFlow - parseFloat(td.amount));
+        totalTakedowns += parseFloat(td.amount);
+      }
+    });
+    
+    // Initial costs at month 0 (excluding purchase price if using takedowns)
+    const purchaseCost = totalTakedowns > 0 ? 0 : purchasePrice;
+    const upfrontCosts = purchaseCost + softCosts + totalDirectCosts + totalPermitCosts + contingency;
     cashFlowsByMonth.set(0, -upfrontCosts);
     
     // Add construction draws
