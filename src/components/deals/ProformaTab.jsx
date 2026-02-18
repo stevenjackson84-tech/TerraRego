@@ -158,6 +158,21 @@ export default function ProformaTab({ proforma, onSave, isLoading, deal }) {
     }));
   };
 
+  // Dev cost phases helpers
+  const addDevPhase = () => setFormData(prev => ({ ...prev, development_cost_phases: [...(prev.development_cost_phases || []), { phase_name: "", amount: "", description: "" }] }));
+  const removeDevPhase = (i) => setFormData(prev => ({ ...prev, development_cost_phases: prev.development_cost_phases.filter((_, idx) => idx !== i) }));
+  const updateDevPhase = (i, field, value) => setFormData(prev => ({ ...prev, development_cost_phases: prev.development_cost_phases.map((p, idx) => idx === i ? { ...p, [field]: value } : p) }));
+
+  // Offsite helpers
+  const addOffsite = () => setFormData(prev => ({ ...prev, offsite_improvements: [...(prev.offsite_improvements || []), { name: "", amount: "", description: "" }] }));
+  const removeOffsite = (i) => setFormData(prev => ({ ...prev, offsite_improvements: prev.offsite_improvements.filter((_, idx) => idx !== i) }));
+  const updateOffsite = (i, field, value) => setFormData(prev => ({ ...prev, offsite_improvements: prev.offsite_improvements.map((p, idx) => idx === i ? { ...p, [field]: value } : p) }));
+
+  // Master infrastructure helpers
+  const addMasterInfra = () => setFormData(prev => ({ ...prev, master_infrastructure: [...(prev.master_infrastructure || []), { name: "", amount: "", description: "" }] }));
+  const removeMasterInfra = (i) => setFormData(prev => ({ ...prev, master_infrastructure: prev.master_infrastructure.filter((_, idx) => idx !== i) }));
+  const updateMasterInfra = (i, field, value) => setFormData(prev => ({ ...prev, master_infrastructure: prev.master_infrastructure.map((p, idx) => idx === i ? { ...p, [field]: value } : p) }));
+
   const addConstructionDraw = () => {
     setFormData(prev => ({
       ...prev,
