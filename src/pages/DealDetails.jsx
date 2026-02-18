@@ -327,6 +327,9 @@ export default function DealDetails() {
 
           <TabsContent value="overview">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="lg:col-span-2">
+                <DealScoreCard deal={deal} tasks={tasks} proforma={proforma} />
+              </div>
               <Card className="border-0 shadow-sm">
                 <CardHeader>
                   <CardTitle className="text-lg">Deal Information</CardTitle>
