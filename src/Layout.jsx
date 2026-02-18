@@ -15,7 +15,8 @@ import {
   Menu,
   X,
   ChevronRight,
-  Folder
+  Folder,
+  Sigma
 } from "lucide-react";
 import FloorPlansSection from "@/components/sidebar/FloorPlansSection";
 
@@ -30,6 +31,7 @@ const navigation = [
   { name: "Business Plan", icon: FileText, page: "BusinessPlan" },
   { name: "Analytics", icon: TrendingUp, page: "Analytics" },
   { name: "Reports", icon: FileText, page: "Reports" },
+  { name: "Lean Six Sigma", icon: Sigma, page: "LeanSixSigma" },
 ];
 
 export default function Layout({ children, currentPageName }) {
