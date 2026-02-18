@@ -23,7 +23,9 @@ const propertyTypeStyles = {
   multifamily: "bg-rose-50 text-rose-700"
 };
 
-export default function DealCard({ deal }) {
+export default function DealCard({ deal, tasks = [], proforma = null }) {
+  const { score } = computeDealScore(deal, tasks, proforma);
+
   return (
     <Link to={createPageUrl(`DealDetails?id=${deal.id}`)}>
       <Card className={cn(
@@ -46,9 +48,12 @@ export default function DealCard({ deal }) {
         <div className="p-4">
           <div className="flex items-start justify-between gap-2 mb-2">
             <h3 className="font-semibold text-slate-900 line-clamp-1">{deal.name}</h3>
-            <Badge variant="outline" className={cn("shrink-0 text-xs", priorityStyles[deal.priority])}>
-              {deal.priority}
-            </Badge>
+            <div className="flex items-center gap-1.5 shrink-0">
+              <DealScoreBadge score={score} />
+              <Badge variant="outline" className={cn("text-xs", priorityStyles[deal.priority])}>
+                {deal.priority}
+              </Badge>
+            </div>
           </div>
           
           {deal.address && (
