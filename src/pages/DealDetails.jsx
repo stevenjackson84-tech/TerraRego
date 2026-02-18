@@ -554,6 +554,10 @@ export default function DealDetails() {
             </div>
           </TabsContent>
 
+          <TabsContent value="burn">
+            <BurnScheduleTab deal={deal} />
+          </TabsContent>
+
           <TabsContent value="documents">
             <DocumentList entityType="deal" entityId={dealId} />
           </TabsContent>
