@@ -666,6 +666,7 @@ export default function ProformaTab({ proforma, onSave, isLoading, deal }) {
                     <RefreshCw className="h-4 w-4 mr-1" />
                     Regenerate
                   </Button>
+                  <AIDrawsButton formData={formData} onApply={(draws) => setFormData(prev => ({ ...prev, construction_draws: draws }))} />
                   <Button onClick={addConstructionDraw} variant="outline" size="sm">
                     <Plus className="h-4 w-4 mr-1" />
                     Add Draw
