@@ -251,6 +251,21 @@ export default function ProformaTab({ proforma, onSave, isLoading, deal }) {
         amount: draw.amount ? parseFloat(draw.amount) : 0,
         description: draw.description
       })),
+      development_cost_phases: (formData.development_cost_phases || []).map(p => ({
+        phase_name: p.phase_name,
+        amount: p.amount ? parseFloat(p.amount) : 0,
+        description: p.description
+      })),
+      offsite_improvements: (formData.offsite_improvements || []).map(p => ({
+        name: p.name,
+        amount: p.amount ? parseFloat(p.amount) : 0,
+        description: p.description
+      })),
+      master_infrastructure: (formData.master_infrastructure || []).map(p => ({
+        name: p.name,
+        amount: p.amount ? parseFloat(p.amount) : 0,
+        description: p.description
+      })),
       product_types: (formData.product_types || []).map(pt => ({
         name: pt.name,
         number_of_units: pt.number_of_units ? parseFloat(pt.number_of_units) : 0,
