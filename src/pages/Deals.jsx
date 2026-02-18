@@ -4,11 +4,12 @@ import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, Search, LayoutGrid, Kanban, List } from "lucide-react";
+import { Plus, Search, LayoutGrid, Kanban } from "lucide-react";
 import DealCard from "@/components/deals/DealCard";
 import DealPipeline from "@/components/deals/DealPipeline";
 import DealForm from "@/components/deals/DealForm";
 import { cn } from "@/lib/utils";
+import { computeDealScore } from "@/components/deals/DealScore";
 
 export default function Deals() {
   const [view, setView] = useState("pipeline");
@@ -22,6 +23,16 @@ export default function Deals() {
   const { data: deals = [], isLoading } = useQuery({
     queryKey: ['deals'],
     queryFn: () => base44.entities.Deal.list('-created_date')
+  });
+
+  const { data: allTasks = [] } = useQuery({
+    queryKey: ['all_tasks'],
+    queryFn: () => base44.entities.Task.list()
+  });
+
+  const { data: allProformas = [] } = useQuery({
+    queryKey: ['all_proformas'],
+    queryFn: () => base44.entities.Proforma.list()
   });
 
   const createMutation = useMutation({
@@ -128,8 +139,19 @@ export default function Deals() {
           />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredDeals.map(deal => (
-              <DealCard key={deal.id} deal={deal} />
+            {[...filteredDeals]
+              .sort((a, b) => {
+                const scoreA = computeDealScore(a, allTasks.filter(t => t.deal_id === a.id), allProformas.find(p => p.deal_id === a.id)).score;
+                const scoreB = computeDealScore(b, allTasks.filter(t => t.deal_id === b.id), allProformas.find(p => p.deal_id === b.id)).score;
+                return scoreB - scoreA;
+              })
+              .map(deal => (
+              <DealCard 
+                key={deal.id} 
+                deal={deal} 
+                tasks={allTasks.filter(t => t.deal_id === deal.id)}
+                proforma={allProformas.find(p => p.deal_id === deal.id)}
+              />
             ))}
             {filteredDeals.length === 0 && (
               <div className="col-span-full text-center py-12 text-slate-500">
