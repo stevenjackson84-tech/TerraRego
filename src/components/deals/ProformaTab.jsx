@@ -5,14 +5,15 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Edit, DollarSign, TrendingUp, Calculator, Plus, Trash2, RefreshCw } from "lucide-react";
+import { Edit, DollarSign, TrendingUp, Calculator, Plus, Trash2, RefreshCw, Sparkles } from "lucide-react";
+import AIMarketSuggestion from "./AIMarketSuggestion";
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 
-export default function ProformaTab({ proforma, onSave, isLoading }) {
+export default function ProformaTab({ proforma, onSave, isLoading, deal }) {
   const [isEditing, setIsEditing] = useState(!proforma);
   
   // Fetch floor plans
