@@ -833,6 +833,14 @@ export default function ProformaTab({ proforma, onSave, isLoading, deal }) {
                         className="h-9"
                       />
                     </div>
+                    <AIMarketSuggestion
+                      deal={deal}
+                      productType={pt}
+                      onApply={(vals) => {
+                        if (vals.sales_price_per_unit) updateProductType(index, "sales_price_per_unit", vals.sales_price_per_unit);
+                        if (vals.absorption_pace) updateProductType(index, "absorption_pace", vals.absorption_pace);
+                      }}
+                    />
                   </div>
                 </div>
               ))}
