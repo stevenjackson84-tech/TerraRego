@@ -331,6 +331,9 @@ export default function DealDetails() {
               <div className="lg:col-span-2">
                 <DealScoreCard deal={deal} tasks={tasks} proforma={proforma} />
               </div>
+              <div className="lg:col-span-2">
+                <DealRiskAssessment deal={deal} tasks={tasks} entitlements={entitlements} proforma={proforma} />
+              </div>
               <Card className="border-0 shadow-sm">
                 <CardHeader>
                   <CardTitle className="text-lg">Deal Information</CardTitle>
