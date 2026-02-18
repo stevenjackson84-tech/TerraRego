@@ -16,7 +16,6 @@ const PRODUCT_COLORS = [
 ];
 const CHART_COLORS = ["#3b82f6","#10b981","#f59e0b","#8b5cf6","#f43f5e","#06b6d4","#f97316","#6366f1"];
 
-// Generate ordered month keys from startDate spanning n months
 function generateMonths(startDate, endDate) {
   if (!startDate || !endDate) return [];
   const months = [];
@@ -43,16 +42,14 @@ function computeScheduleMonths(rows) {
   return generateMonths(format(minDate, "yyyy-MM-dd"), format(maxDate, "yyyy-MM-dd"));
 }
 
-function computeRowStarts(row, allMonths) {
+function computeRowStarts(row) {
   if (!row.hb_start_date || !row.total_units || !row.absorption_pace) return {};
   const pace = parseFloat(row.absorption_pace) || 0;
   const total = parseFloat(row.total_units) || 0;
   if (!pace || !total) return {};
-
   const starts = {};
   let remaining = total;
   let curDate = startOfMonth(parseISO(row.hb_start_date));
-
   while (remaining > 0) {
     const key = format(curDate, "yyyy-MM");
     const thisMonth = Math.min(pace, remaining);
@@ -63,6 +60,92 @@ function computeRowStarts(row, allMonths) {
   return starts;
 }
 
+function monthToQuarter(m) {
+  const d = parseISO(m + "-01");
+  return `Q${Math.ceil((d.getMonth() + 1) / 3)} '${String(d.getFullYear()).slice(2)}`;
+}
+
+// ─── Custom Chart Tooltip ────────────────────────────────────────────────────
+function CustomTooltip({ active, payload, label, schedule, rowStartsMap, groupBy, allMonths }) {
+  if (!active || !payload?.length) return null;
+
+  // Gather months in this quarter
+  const qMonths = allMonths.filter(m => monthToQuarter(m) === label);
+
+  // Build per-row detail for this quarter
+  const rows = schedule?.rows || [];
+  const details = rows.map((row, i) => {
+    const key = groupBy === "village" ? (row.village || "Unknown") : (row.product_type || "Unknown");
+    const starts = rowStartsMap[i] || {};
+    const quarterCount = qMonths.reduce((s, m) => s + (starts[m] || 0), 0);
+    if (!quarterCount) return null;
+    const monthBreakdown = qMonths
+      .map(m => ({ label: format(parseISO(m + "-01"), "MMM"), count: starts[m] || 0 }))
+      .filter(x => x.count > 0);
+    return { key, row, quarterCount, monthBreakdown, colorIdx: i % CHART_COLORS.length };
+  }).filter(Boolean);
+
+  const total = details.reduce((s, d) => s + d.quarterCount, 0);
+
+  return (
+    <div className="bg-white border border-slate-200 rounded-xl shadow-xl p-4 min-w-[220px] max-w-[300px]">
+      <div className="flex items-center justify-between mb-3 pb-2 border-b border-slate-100">
+        <span className="font-bold text-slate-800 text-sm">{label}</span>
+        <span className="text-xs font-semibold bg-slate-900 text-white px-2 py-0.5 rounded-full">{total} starts</span>
+      </div>
+      <div className="space-y-2.5">
+        {details.map(({ key, row, quarterCount, monthBreakdown, colorIdx }) => (
+          <div key={key}>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-1.5">
+                <div className="w-2.5 h-2.5 rounded-sm shrink-0" style={{ backgroundColor: CHART_COLORS[colorIdx] }} />
+                <span className="text-xs font-medium text-slate-700 truncate max-w-[130px]">{key}</span>
+                {groupBy === "product_type" && row.village && (
+                  <span className="text-xs text-slate-400">({row.village})</span>
+                )}
+              </div>
+              <span className="text-xs font-bold text-slate-800">{quarterCount}</span>
+            </div>
+            <div className="flex gap-1.5 mt-1 ml-4">
+              {monthBreakdown.map(({ label: ml, count }) => (
+                <div key={ml} className="flex flex-col items-center">
+                  <span className="text-[10px] text-slate-400">{ml}</span>
+                  <span className="text-[10px] font-semibold text-slate-600">{count}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+      {qMonths.length > 0 && (
+        <div className="mt-2.5 pt-2 border-t border-slate-100 text-[10px] text-slate-400">
+          {qMonths.map(m => format(parseISO(m + "-01"), "MMM yyyy")).join(" · ")}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Quarterly grid columns ──────────────────────────────────────────────────
+function computeAllQuarters(allMonths) {
+  const seen = [];
+  const set = new Set();
+  allMonths.forEach(m => {
+    const q = monthToQuarter(m);
+    if (!set.has(q)) { set.add(q); seen.push({ key: q, months: [] }); }
+    seen[seen.length - 1].months.push(m);
+  });
+  // rebuild properly - months may not be sequential in the loop above
+  const map = {};
+  allMonths.forEach(m => {
+    const q = monthToQuarter(m);
+    if (!map[q]) map[q] = { key: q, months: [] };
+    map[q].months.push(m);
+  });
+  return Object.values(map);
+}
+
+// ─── Empty / form sub-components ─────────────────────────────────────────────
 function EmptyState({ onAdd }) {
   return (
     <div className="text-center py-16">
@@ -88,22 +171,17 @@ function RowForm({ row, onChange, onRemove, index }) {
         </Button>
       </div>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <div>
-          <Label className="text-xs">Village/Phase</Label>
-          <Input value={row.village || ""} onChange={e => onChange("village", e.target.value)} placeholder="e.g. V7" className="h-8 text-sm" />
-        </div>
-        <div>
-          <Label className="text-xs">Plat</Label>
-          <Input value={row.plat || ""} onChange={e => onChange("plat", e.target.value)} placeholder="e.g. N1" className="h-8 text-sm" />
-        </div>
-        <div>
-          <Label className="text-xs">Product Type</Label>
-          <Input value={row.product_type || ""} onChange={e => onChange("product_type", e.target.value)} placeholder="e.g. Townhome" className="h-8 text-sm" />
-        </div>
-        <div>
-          <Label className="text-xs">Lot Type</Label>
-          <Input value={row.lot_type || ""} onChange={e => onChange("lot_type", e.target.value)} placeholder="e.g. 30x80" className="h-8 text-sm" />
-        </div>
+        {[
+          { label: "Village/Phase", field: "village", placeholder: "e.g. V7" },
+          { label: "Plat", field: "plat", placeholder: "e.g. N1" },
+          { label: "Product Type", field: "product_type", placeholder: "e.g. Townhome" },
+          { label: "Lot Type", field: "lot_type", placeholder: "e.g. 30x80" },
+        ].map(({ label, field, placeholder }) => (
+          <div key={field}>
+            <Label className="text-xs">{label}</Label>
+            <Input value={row[field] || ""} onChange={e => onChange(field, e.target.value)} placeholder={placeholder} className="h-8 text-sm" />
+          </div>
+        ))}
         <div>
           <Label className="text-xs">Total Units</Label>
           <Input type="number" value={row.total_units || ""} onChange={e => onChange("total_units", parseFloat(e.target.value) || "")} placeholder="0" className="h-8 text-sm" />
@@ -133,13 +211,15 @@ function RowForm({ row, onChange, onRemove, index }) {
   );
 }
 
+// ─── Main Component ───────────────────────────────────────────────────────────
 export default function BurnScheduleTab({ deal }) {
   const queryClient = useQueryClient();
   const [isEditing, setIsEditing] = useState(false);
   const [formRows, setFormRows] = useState([]);
   const [formName, setFormName] = useState("");
   const [showChart, setShowChart] = useState(true);
-  const [groupBy, setGroupBy] = useState("product_type"); // product_type or village
+  const [groupBy, setGroupBy] = useState("product_type");
+  const [gridView, setGridView] = useState("monthly"); // "monthly" | "quarterly"
 
   const { data: schedules = [], isLoading } = useQuery({
     queryKey: ["burnSchedule", deal.id],
@@ -179,19 +259,15 @@ export default function BurnScheduleTab({ deal }) {
     else createMutation.mutate(payload);
   };
 
-  // Compute display data from saved schedule
   const allMonths = useMemo(() => schedule ? computeScheduleMonths(schedule.rows || []) : [], [schedule]);
 
   const rowStartsMap = useMemo(() => {
     if (!schedule) return {};
     const map = {};
-    (schedule.rows || []).forEach((row, i) => {
-      map[i] = computeRowStarts(row, allMonths);
-    });
+    (schedule.rows || []).forEach((row, i) => { map[i] = computeRowStarts(row); });
     return map;
-  }, [schedule, allMonths]);
+  }, [schedule]);
 
-  // Summary stats
   const totalUnits = useMemo(() => (schedule?.rows || []).reduce((s, r) => s + (parseFloat(r.total_units) || 0), 0), [schedule]);
 
   const monthlyTotals = useMemo(() => {
@@ -209,30 +285,31 @@ export default function BurnScheduleTab({ deal }) {
     return peak;
   }, [monthlyTotals]);
 
-  // Chart data: group by product_type or village per month (quarterly view)
-  const chartData = useMemo(() => {
-    if (!allMonths.length) return [];
-    // Group into quarters
-    const quarters = {};
-    allMonths.forEach(m => {
-      const d = parseISO(m + "-01");
-      const q = `Q${Math.ceil((d.getMonth() + 1) / 3)}'${String(d.getFullYear()).slice(2)}`;
-      if (!quarters[q]) quarters[q] = { quarter: q };
-    });
+  // Quarterly columns for quarterly grid view
+  const allQuarters = useMemo(() => computeAllQuarters(allMonths), [allMonths]);
 
+  // Quarterly totals per row
+  const rowQuarterTotals = useMemo(() => {
+    const map = {};
     (schedule?.rows || []).forEach((row, i) => {
-      const key = groupBy === "village" ? (row.village || "Unknown") : (row.product_type || "Unknown");
+      map[i] = {};
       const starts = rowStartsMap[i] || {};
-      Object.entries(starts).forEach(([m, c]) => {
-        const d = parseISO(m + "-01");
-        const q = `Q${Math.ceil((d.getMonth() + 1) / 3)}'${String(d.getFullYear()).slice(2)}`;
-        if (quarters[q]) quarters[q][key] = (quarters[q][key] || 0) + c;
+      allQuarters.forEach(({ key, months }) => {
+        map[i][key] = months.reduce((s, m) => s + (starts[m] || 0), 0);
       });
     });
+    return map;
+  }, [schedule, rowStartsMap, allQuarters]);
 
-    return Object.values(quarters).filter(q => Object.keys(q).length > 1);
-  }, [schedule, allMonths, rowStartsMap, groupBy]);
+  const quarterTotals = useMemo(() => {
+    const totals = {};
+    allQuarters.forEach(({ key, months }) => {
+      totals[key] = months.reduce((s, m) => s + (monthlyTotals[m] || 0), 0);
+    });
+    return totals;
+  }, [allQuarters, monthlyTotals]);
 
+  // Chart data
   const groupKeys = useMemo(() => {
     if (!schedule) return [];
     const keys = new Set();
@@ -240,8 +317,27 @@ export default function BurnScheduleTab({ deal }) {
     return [...keys];
   }, [schedule, groupBy]);
 
+  const chartData = useMemo(() => {
+    if (!allMonths.length) return [];
+    const map = {};
+    allMonths.forEach(m => {
+      const q = monthToQuarter(m);
+      if (!map[q]) map[q] = { quarter: q };
+    });
+    (schedule?.rows || []).forEach((row, i) => {
+      const key = groupBy === "village" ? (row.village || "Unknown") : (row.product_type || "Unknown");
+      const starts = rowStartsMap[i] || {};
+      Object.entries(starts).forEach(([m, c]) => {
+        const q = monthToQuarter(m);
+        if (map[q]) map[q][key] = (map[q][key] || 0) + c;
+      });
+    });
+    return Object.values(map).filter(q => Object.keys(q).length > 1);
+  }, [schedule, allMonths, rowStartsMap, groupBy]);
+
   if (isLoading) return <div className="py-12 text-center text-slate-400">Loading...</div>;
 
+  // ── Edit Mode ──
   if (isEditing) {
     return (
       <div className="space-y-5">
@@ -257,18 +353,15 @@ export default function BurnScheduleTab({ deal }) {
             </Button>
           </div>
         </div>
-
         <div>
           <Label>Schedule Name</Label>
           <Input value={formName} onChange={e => setFormName(e.target.value)} className="max-w-sm mt-1" />
         </div>
-
         <div className="space-y-3">
           {formRows.map((row, i) => (
             <RowForm key={i} row={row} index={i} onChange={(f, v) => updateRow(i, f, v)} onRemove={() => removeRow(i)} />
           ))}
         </div>
-
         <Button variant="outline" onClick={addRow} className="w-full border-dashed">
           <Plus className="h-4 w-4 mr-2" /> Add Row
         </Button>
@@ -309,7 +402,7 @@ export default function BurnScheduleTab({ deal }) {
       {/* Chart */}
       <Card className="border-0 shadow-sm">
         <CardHeader className="pb-2">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between flex-wrap gap-2">
             <button className="flex items-center gap-1.5 text-sm font-semibold text-slate-800" onClick={() => setShowChart(v => !v)}>
               <BarChart2 className="h-4 w-4" />
               Quarterly Starts Chart
@@ -328,15 +421,25 @@ export default function BurnScheduleTab({ deal }) {
         </CardHeader>
         {showChart && (
           <CardContent>
-            <ResponsiveContainer width="100%" height={260}>
-              <BarChart data={chartData} margin={{ top: 0, right: 10, left: -10, bottom: 20 }}>
+            <ResponsiveContainer width="100%" height={280}>
+              <BarChart data={chartData} margin={{ top: 4, right: 10, left: -10, bottom: 24 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                <XAxis dataKey="quarter" tick={{ fontSize: 10 }} angle={-45} textAnchor="end" interval={0} />
+                <XAxis dataKey="quarter" tick={{ fontSize: 10 }} angle={-40} textAnchor="end" interval={0} />
                 <YAxis tick={{ fontSize: 10 }} />
-                <Tooltip contentStyle={{ fontSize: 12 }} />
-                <Legend wrapperStyle={{ fontSize: 11, paddingTop: 12 }} />
+                <Tooltip
+                  content={(props) => (
+                    <CustomTooltip
+                      {...props}
+                      schedule={schedule}
+                      rowStartsMap={rowStartsMap}
+                      groupBy={groupBy}
+                      allMonths={allMonths}
+                    />
+                  )}
+                />
+                <Legend wrapperStyle={{ fontSize: 11, paddingTop: 14 }} />
                 {groupKeys.map((k, i) => (
-                  <Bar key={k} dataKey={k} stackId="a" fill={CHART_COLORS[i % CHART_COLORS.length]} />
+                  <Bar key={k} dataKey={k} stackId="a" fill={CHART_COLORS[i % CHART_COLORS.length]} radius={i === groupKeys.length - 1 ? [3, 3, 0, 0] : [0, 0, 0, 0]} />
                 ))}
               </BarChart>
             </ResponsiveContainer>
@@ -344,85 +447,188 @@ export default function BurnScheduleTab({ deal }) {
         )}
       </Card>
 
-      {/* Scrollable monthly grid */}
+      {/* Grid: monthly / quarterly toggle */}
       <Card className="border-0 shadow-sm">
         <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-semibold text-slate-800">Monthly Start Schedule</CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-sm font-semibold text-slate-800">Start Schedule Grid</CardTitle>
+            <div className="flex gap-1">
+              {["monthly", "quarterly"].map(v => (
+                <button key={v} onClick={() => setGridView(v)}
+                  className={cn("text-xs px-2.5 py-1 rounded-md border font-medium transition-colors capitalize",
+                    gridView === v ? "bg-slate-900 text-white border-slate-900" : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50")}>
+                  {v}
+                </button>
+              ))}
+            </div>
+          </div>
         </CardHeader>
         <CardContent className="p-0">
           <div className="overflow-x-auto">
-            <table className="w-full text-xs border-collapse">
-              <thead>
-                <tr className="bg-slate-50 border-b border-slate-200">
-                  <th className="sticky left-0 z-10 bg-slate-50 text-left px-3 py-2 font-semibold text-slate-600 min-w-[90px]">Village</th>
-                  <th className="sticky left-[90px] z-10 bg-slate-50 text-left px-2 py-2 font-semibold text-slate-600 min-w-[70px]">Plat</th>
-                  <th className="sticky left-[160px] z-10 bg-slate-50 text-left px-2 py-2 font-semibold text-slate-600 min-w-[100px]">Product</th>
-                  <th className="text-center px-2 py-2 font-semibold text-slate-600 min-w-[50px]">Units</th>
-                  <th className="text-center px-2 py-2 font-semibold text-slate-600 min-w-[46px]">Pace</th>
-                  {allMonths.map(m => (
-                    <th key={m} className="text-center px-1 py-2 font-medium text-slate-500 min-w-[38px] whitespace-nowrap">
-                      {format(parseISO(m + "-01"), "MMM yy")}
-                    </th>
-                  ))}
-                  <th className="text-center px-2 py-2 font-semibold text-slate-600 min-w-[50px]">Total</th>
-                </tr>
-              </thead>
-              <tbody>
-                {(schedule.rows || []).map((row, i) => {
-                  const starts = rowStartsMap[i] || {};
-                  const rowTotal = Object.values(starts).reduce((s, c) => s + c, 0);
-                  const colorIdx = i % PRODUCT_COLORS.length;
-                  return (
-                    <tr key={i} className="border-b border-slate-100 hover:bg-slate-50/50 transition-colors">
-                      <td className="sticky left-0 z-10 bg-white hover:bg-slate-50/50 px-3 py-2 font-medium text-slate-700">{row.village || "—"}</td>
-                      <td className="sticky left-[90px] z-10 bg-white hover:bg-slate-50/50 px-2 py-2 text-slate-600">{row.plat || "—"}</td>
-                      <td className="sticky left-[160px] z-10 bg-white hover:bg-slate-50/50 px-2 py-2">
-                        <div className="flex items-center gap-1.5">
-                          <div className={cn("w-2 h-2 rounded-full shrink-0", PRODUCT_COLORS[colorIdx])} />
-                          <span className="text-slate-700 truncate max-w-[80px]">{row.product_type || "—"}</span>
-                        </div>
-                      </td>
-                      <td className="text-center px-2 py-2 text-slate-600 font-medium">{row.total_units || "—"}</td>
-                      <td className="text-center px-2 py-2 text-slate-500">{row.absorption_pace || "—"}</td>
-                      {allMonths.map(m => {
-                        const count = starts[m];
-                        return (
-                          <td key={m} className="text-center px-1 py-2">
-                            {count ? (
-                              <span className={cn("inline-flex items-center justify-center w-7 h-5 rounded font-semibold text-white text-xs", PRODUCT_COLORS[colorIdx])}>
-                                {count % 1 === 0 ? count : count.toFixed(1)}
-                              </span>
-                            ) : (
-                              <span className="text-slate-200">·</span>
-                            )}
-                          </td>
-                        );
-                      })}
-                      <td className="text-center px-2 py-2 font-bold text-slate-700">{rowTotal || 0}</td>
-                    </tr>
-                  );
-                })}
-                {/* Totals row */}
-                <tr className="bg-slate-100 border-t-2 border-slate-300 font-semibold">
-                  <td className="sticky left-0 z-10 bg-slate-100 px-3 py-2 text-slate-800" colSpan={3}>TOTAL MONTHLY STARTS</td>
-                  <td className="text-center px-2 py-2 text-slate-800">{totalUnits}</td>
-                  <td></td>
-                  {allMonths.map(m => (
-                    <td key={m} className="text-center px-1 py-2 text-slate-700">
-                      {monthlyTotals[m] ? (
-                        <span className="inline-flex items-center justify-center w-7 h-5 rounded bg-slate-700 text-white text-xs font-bold">
-                          {monthlyTotals[m]}
-                        </span>
-                      ) : <span className="text-slate-300">·</span>}
-                    </td>
-                  ))}
-                  <td className="text-center px-2 py-2 text-slate-800">{totalUnits}</td>
-                </tr>
-              </tbody>
-            </table>
+            {gridView === "monthly" ? (
+              <MonthlyGrid
+                schedule={schedule}
+                allMonths={allMonths}
+                rowStartsMap={rowStartsMap}
+                monthlyTotals={monthlyTotals}
+                totalUnits={totalUnits}
+              />
+            ) : (
+              <QuarterlyGrid
+                schedule={schedule}
+                allQuarters={allQuarters}
+                rowQuarterTotals={rowQuarterTotals}
+                quarterTotals={quarterTotals}
+                totalUnits={totalUnits}
+              />
+            )}
           </div>
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+// ─── Monthly Grid ─────────────────────────────────────────────────────────────
+function MonthlyGrid({ schedule, allMonths, rowStartsMap, monthlyTotals, totalUnits }) {
+  return (
+    <table className="w-full text-xs border-collapse">
+      <thead>
+        <tr className="bg-slate-50 border-b border-slate-200">
+          <th className="sticky left-0 z-10 bg-slate-50 text-left px-3 py-2 font-semibold text-slate-600 min-w-[90px]">Village</th>
+          <th className="sticky left-[90px] z-10 bg-slate-50 text-left px-2 py-2 font-semibold text-slate-600 min-w-[70px]">Plat</th>
+          <th className="sticky left-[160px] z-10 bg-slate-50 text-left px-2 py-2 font-semibold text-slate-600 min-w-[100px]">Product</th>
+          <th className="text-center px-2 py-2 font-semibold text-slate-600 min-w-[50px]">Units</th>
+          <th className="text-center px-2 py-2 font-semibold text-slate-600 min-w-[46px]">Pace</th>
+          {allMonths.map(m => (
+            <th key={m} className="text-center px-1 py-2 font-medium text-slate-500 min-w-[42px] whitespace-nowrap">
+              {format(parseISO(m + "-01"), "MMM yy")}
+            </th>
+          ))}
+          <th className="text-center px-2 py-2 font-semibold text-slate-600 min-w-[50px]">Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        {(schedule.rows || []).map((row, i) => {
+          const starts = rowStartsMap[i] || {};
+          const rowTotal = Object.values(starts).reduce((s, c) => s + c, 0);
+          const colorIdx = i % PRODUCT_COLORS.length;
+          return (
+            <tr key={i} className="border-b border-slate-100 hover:bg-slate-50/50 transition-colors">
+              <td className="sticky left-0 z-10 bg-white px-3 py-2 font-medium text-slate-700">{row.village || "—"}</td>
+              <td className="sticky left-[90px] z-10 bg-white px-2 py-2 text-slate-600">{row.plat || "—"}</td>
+              <td className="sticky left-[160px] z-10 bg-white px-2 py-2">
+                <div className="flex items-center gap-1.5">
+                  <div className={cn("w-2 h-2 rounded-full shrink-0", PRODUCT_COLORS[colorIdx])} />
+                  <span className="text-slate-700 truncate max-w-[80px]">{row.product_type || "—"}</span>
+                </div>
+              </td>
+              <td className="text-center px-2 py-2 text-slate-600 font-medium">{row.total_units || "—"}</td>
+              <td className="text-center px-2 py-2 text-slate-500">{row.absorption_pace || "—"}</td>
+              {allMonths.map(m => {
+                const count = starts[m];
+                return (
+                  <td key={m} className="text-center px-1 py-2">
+                    {count ? (
+                      <span className={cn("inline-flex items-center justify-center w-7 h-5 rounded font-semibold text-white text-xs", PRODUCT_COLORS[colorIdx])}>
+                        {count % 1 === 0 ? count : count.toFixed(1)}
+                      </span>
+                    ) : <span className="text-slate-200">·</span>}
+                  </td>
+                );
+              })}
+              <td className="text-center px-2 py-2 font-bold text-slate-700">{rowTotal || 0}</td>
+            </tr>
+          );
+        })}
+        <tr className="bg-slate-100 border-t-2 border-slate-300 font-semibold">
+          <td className="sticky left-0 z-10 bg-slate-100 px-3 py-2 text-slate-800" colSpan={3}>TOTAL</td>
+          <td className="text-center px-2 py-2 text-slate-800">{totalUnits}</td>
+          <td></td>
+          {allMonths.map(m => (
+            <td key={m} className="text-center px-1 py-2 text-slate-700">
+              {monthlyTotals[m] ? (
+                <span className="inline-flex items-center justify-center w-7 h-5 rounded bg-slate-700 text-white text-xs font-bold">
+                  {monthlyTotals[m]}
+                </span>
+              ) : <span className="text-slate-300">·</span>}
+            </td>
+          ))}
+          <td className="text-center px-2 py-2 text-slate-800">{totalUnits}</td>
+        </tr>
+      </tbody>
+    </table>
+  );
+}
+
+// ─── Quarterly Grid ───────────────────────────────────────────────────────────
+function QuarterlyGrid({ schedule, allQuarters, rowQuarterTotals, quarterTotals, totalUnits }) {
+  return (
+    <table className="w-full text-xs border-collapse">
+      <thead>
+        <tr className="bg-slate-50 border-b border-slate-200">
+          <th className="sticky left-0 z-10 bg-slate-50 text-left px-3 py-2 font-semibold text-slate-600 min-w-[90px]">Village</th>
+          <th className="sticky left-[90px] z-10 bg-slate-50 text-left px-2 py-2 font-semibold text-slate-600 min-w-[70px]">Plat</th>
+          <th className="sticky left-[160px] z-10 bg-slate-50 text-left px-2 py-2 font-semibold text-slate-600 min-w-[100px]">Product</th>
+          <th className="text-center px-2 py-2 font-semibold text-slate-600 min-w-[50px]">Units</th>
+          <th className="text-center px-2 py-2 font-semibold text-slate-600 min-w-[46px]">Pace</th>
+          {allQuarters.map(({ key }) => (
+            <th key={key} className="text-center px-2 py-2 font-medium text-slate-500 min-w-[60px] whitespace-nowrap">
+              {key}
+            </th>
+          ))}
+          <th className="text-center px-2 py-2 font-semibold text-slate-600 min-w-[50px]">Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        {(schedule.rows || []).map((row, i) => {
+          const qTotals = rowQuarterTotals[i] || {};
+          const rowTotal = Object.values(qTotals).reduce((s, c) => s + c, 0);
+          const colorIdx = i % PRODUCT_COLORS.length;
+          return (
+            <tr key={i} className="border-b border-slate-100 hover:bg-slate-50/50 transition-colors">
+              <td className="sticky left-0 z-10 bg-white px-3 py-2 font-medium text-slate-700">{row.village || "—"}</td>
+              <td className="sticky left-[90px] z-10 bg-white px-2 py-2 text-slate-600">{row.plat || "—"}</td>
+              <td className="sticky left-[160px] z-10 bg-white px-2 py-2">
+                <div className="flex items-center gap-1.5">
+                  <div className={cn("w-2 h-2 rounded-full shrink-0", PRODUCT_COLORS[colorIdx])} />
+                  <span className="text-slate-700 truncate max-w-[80px]">{row.product_type || "—"}</span>
+                </div>
+              </td>
+              <td className="text-center px-2 py-2 text-slate-600 font-medium">{row.total_units || "—"}</td>
+              <td className="text-center px-2 py-2 text-slate-500">{row.absorption_pace || "—"}</td>
+              {allQuarters.map(({ key }) => {
+                const count = qTotals[key];
+                return (
+                  <td key={key} className="text-center px-2 py-2">
+                    {count ? (
+                      <span className={cn("inline-flex items-center justify-center px-2 h-6 rounded font-semibold text-white text-xs", PRODUCT_COLORS[colorIdx])}>
+                        {count % 1 === 0 ? count : count.toFixed(1)}
+                      </span>
+                    ) : <span className="text-slate-200">·</span>}
+                  </td>
+                );
+              })}
+              <td className="text-center px-2 py-2 font-bold text-slate-700">{rowTotal || 0}</td>
+            </tr>
+          );
+        })}
+        <tr className="bg-slate-100 border-t-2 border-slate-300 font-semibold">
+          <td className="sticky left-0 z-10 bg-slate-100 px-3 py-2 text-slate-800" colSpan={3}>TOTAL</td>
+          <td className="text-center px-2 py-2 text-slate-800">{totalUnits}</td>
+          <td></td>
+          {allQuarters.map(({ key }) => (
+            <td key={key} className="text-center px-2 py-2 text-slate-700">
+              {quarterTotals[key] ? (
+                <span className="inline-flex items-center justify-center px-2 h-6 rounded bg-slate-700 text-white text-xs font-bold">
+                  {quarterTotals[key]}
+                </span>
+              ) : <span className="text-slate-300">·</span>}
+            </td>
+          ))}
+          <td className="text-center px-2 py-2 text-slate-800">{totalUnits}</td>
+        </tr>
+      </tbody>
+    </table>
   );
 }
