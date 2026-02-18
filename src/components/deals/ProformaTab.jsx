@@ -8,6 +8,69 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Edit, DollarSign, TrendingUp, Calculator, Plus, Trash2, RefreshCw, Sparkles } from "lucide-react";
 import AIMarketSuggestion from "./AIMarketSuggestion";
 import { Checkbox } from "@/components/ui/checkbox";
+
+function AIDrawsButton({ formData, onApply }) {
+  const [loading, setLoading] = useState(false);
+
+  const generate = async () => {
+    if (!formData.development_costs || !formData.development_start_date) return;
+    setLoading(true);
+    const devCost = parseFloat(formData.development_costs);
+    const startDate = new Date(formData.development_start_date);
+    const endDate = formData.development_completion_date
+      ? new Date(formData.development_completion_date)
+      : new Date(new Date(startDate).setMonth(startDate.getMonth() + 6));
+    const months = Math.max(2,
+      (endDate.getFullYear() - startDate.getFullYear()) * 12 +
+      (endDate.getMonth() - startDate.getMonth())
+    );
+    const result = await base44.integrations.Core.InvokeLLM({
+      prompt: `You are a construction finance expert. Generate a realistic construction loan draw schedule for a residential land development.
+- Total development cost: $${devCost.toLocaleString()}
+- Duration: ${months} months starting ${formData.development_start_date}
+- Product types: ${(formData.product_types || []).map(p => p.name).filter(Boolean).join(", ") || "residential"}
+Use a realistic S-curve (slow start, fast middle, tapering end). Return exactly ${months} draws summing to 100%.`,
+      response_json_schema: {
+        type: "object",
+        properties: {
+          draws: {
+            type: "array",
+            items: {
+              type: "object",
+              properties: {
+                month_index: { type: "number" },
+                percentage: { type: "number" },
+                description: { type: "string" }
+              }
+            }
+          }
+        }
+      }
+    });
+    if (result?.draws) {
+      const draws = result.draws.map(d => {
+        const drawDate = new Date(startDate);
+        drawDate.setMonth(drawDate.getMonth() + (d.month_index || 0));
+        return {
+          date: drawDate.toISOString().split('T')[0],
+          amount: ((d.percentage / 100) * devCost).toFixed(2),
+          description: d.description || `Month ${(d.month_index || 0) + 1}`
+        };
+      });
+      onApply(draws);
+    }
+    setLoading(false);
+  };
+
+  return (
+    <Button onClick={generate} variant="outline" size="sm"
+      disabled={loading || !formData.development_costs || !formData.development_start_date}
+      className="border-purple-200 text-purple-700 hover:bg-purple-50">
+      <Sparkles className={cn("h-4 w-4 mr-1", loading && "animate-spin")} />
+      {loading ? "Generating..." : "AI Generate"}
+    </Button>
+  );
+}
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { base44 } from "@/api/base44Client";

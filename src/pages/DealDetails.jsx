@@ -431,7 +431,8 @@ export default function DealDetails() {
 
           <TabsContent value="proforma">
             <ProformaTab 
-              proforma={proforma} 
+              proforma={proforma}
+              deal={deal}
               onSave={(data) => proformaMutation.mutate(data)}
               isLoading={proformaMutation.isPending}
             />
