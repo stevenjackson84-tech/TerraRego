@@ -5,6 +5,7 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
+import { DealScoreBadge, computeDealScore } from "./DealScore";
 
 const priorityStyles = {
   low: "bg-slate-100 text-slate-600 border-slate-200",
