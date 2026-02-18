@@ -16,6 +16,7 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import DealForm from "@/components/deals/DealForm";
 import { DealScoreCard } from "@/components/deals/DealScore";
+import DealRiskAssessment from "@/components/deals/DealRiskAssessment";
 import EntitlementCard from "@/components/entitlements/EntitlementCard";
 import EntitlementForm from "@/components/entitlements/EntitlementForm";
 import TaskForm from "@/components/tasks/TaskForm";
