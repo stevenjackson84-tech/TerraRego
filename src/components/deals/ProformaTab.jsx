@@ -1362,6 +1362,39 @@ export default function ProformaTab({ proforma, onSave, isLoading, deal }) {
               <span className="text-slate-600">Development Costs</span>
               <span className="font-medium">{formatCurrency(devCosts)}</span>
             </div>
+            {(proforma.development_cost_phases || []).length > 0 && (
+              <div className="pl-4 space-y-1 border-l-2 border-slate-200">
+                <div className="text-xs text-slate-500 font-medium mb-1">By Phase:</div>
+                {proforma.development_cost_phases.map((p, i) => (
+                  <div key={i} className="flex justify-between text-xs">
+                    <span className="text-slate-500">{p.phase_name || `Phase ${i+1}`}</span>
+                    <span className="font-medium">{formatCurrency(p.amount)}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+            {(proforma.offsite_improvements || []).length > 0 && (
+              <div className="pl-4 space-y-1 border-l-2 border-orange-200">
+                <div className="text-xs text-orange-600 font-medium mb-1">Offsite Improvements:</div>
+                {proforma.offsite_improvements.map((p, i) => (
+                  <div key={i} className="flex justify-between text-xs">
+                    <span className="text-slate-500">{p.name || `Item ${i+1}`}</span>
+                    <span className="font-medium">{formatCurrency(p.amount)}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+            {(proforma.master_infrastructure || []).length > 0 && (
+              <div className="pl-4 space-y-1 border-l-2 border-blue-200">
+                <div className="text-xs text-blue-600 font-medium mb-1">Master Infrastructure:</div>
+                {proforma.master_infrastructure.map((p, i) => (
+                  <div key={i} className="flex justify-between text-xs">
+                    <span className="text-slate-500">{p.name || `Item ${i+1}`}</span>
+                    <span className="font-medium">{formatCurrency(p.amount)}</span>
+                  </div>
+                ))}
+              </div>
+            )}
             <div className="flex justify-between text-sm pl-4">
               <span className="text-slate-500 text-xs">Per Unit</span>
               <span className="font-medium text-xs">{formatCurrency(devCostPerUnit)}</span>
