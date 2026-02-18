@@ -88,6 +88,9 @@ export default function ProformaTab({ proforma, onSave, isLoading, deal }) {
   const [formData, setFormData] = useState(proforma || {
     purchase_price: "",
     development_costs: "",
+    development_cost_phases: [],
+    offsite_improvements: [],
+    master_infrastructure: [],
     soft_costs: "",
     financing_costs: "",
     loan_interest_rate: "",
