@@ -664,7 +664,7 @@ export default function ProformaTab({ proforma, onSave, isLoading, deal }) {
                 </div>
               </div>
               <div>
-                <Label htmlFor="development_costs">Development Costs</Label>
+                <Label htmlFor="development_costs">Development Costs (Total)</Label>
                 <Input
                   id="development_costs"
                   type="number"
@@ -672,7 +672,76 @@ export default function ProformaTab({ proforma, onSave, isLoading, deal }) {
                   onChange={(e) => handleChange("development_costs", e.target.value)}
                   placeholder="0"
                 />
+                {(formData.development_cost_phases || []).length > 0 && (
+                  <p className="text-xs text-slate-500 mt-1">
+                    Phases sum: {formatCurrency((formData.development_cost_phases || []).reduce((s,p) => s + (parseFloat(p.amount) || 0), 0))}
+                  </p>
+                )}
               </div>
+
+              {/* Dev Cost Phases */}
+              <div className="border-t pt-4">
+                <div className="flex items-center justify-between mb-2">
+                  <Label>Development Costs by Phase</Label>
+                  <Button type="button" size="sm" variant="outline" onClick={addDevPhase}>
+                    <Plus className="h-4 w-4 mr-1" /> Add Phase
+                  </Button>
+                </div>
+                <div className="space-y-2">
+                  {(formData.development_cost_phases || []).map((p, i) => (
+                    <div key={i} className="flex gap-2 items-center bg-slate-50 rounded-lg p-2">
+                      <Input value={p.phase_name} onChange={e => updateDevPhase(i, "phase_name", e.target.value)} placeholder="Phase (e.g., Grading)" className="flex-1 h-8 text-sm" />
+                      <Input type="number" value={p.amount} onChange={e => updateDevPhase(i, "amount", e.target.value)} placeholder="Amount" className="w-32 h-8 text-sm" />
+                      <Input value={p.description} onChange={e => updateDevPhase(i, "description", e.target.value)} placeholder="Notes" className="flex-1 h-8 text-sm" />
+                      <Button type="button" variant="ghost" size="icon" className="h-7 w-7 text-red-400" onClick={() => removeDevPhase(i)}><Trash2 className="h-3.5 w-3.5" /></Button>
+                    </div>
+                  ))}
+                  {(formData.development_cost_phases || []).length === 0 && <p className="text-xs text-slate-400 text-center py-2">No phases added</p>}
+                </div>
+              </div>
+
+              {/* Offsite Improvements */}
+              <div className="border-t pt-4">
+                <div className="flex items-center justify-between mb-2">
+                  <Label>Offsite Improvements</Label>
+                  <Button type="button" size="sm" variant="outline" onClick={addOffsite}>
+                    <Plus className="h-4 w-4 mr-1" /> Add Item
+                  </Button>
+                </div>
+                <div className="space-y-2">
+                  {(formData.offsite_improvements || []).map((p, i) => (
+                    <div key={i} className="flex gap-2 items-center bg-orange-50 rounded-lg p-2">
+                      <Input value={p.name} onChange={e => updateOffsite(i, "name", e.target.value)} placeholder="Item (e.g., Road widening)" className="flex-1 h-8 text-sm" />
+                      <Input type="number" value={p.amount} onChange={e => updateOffsite(i, "amount", e.target.value)} placeholder="Amount" className="w-32 h-8 text-sm" />
+                      <Input value={p.description} onChange={e => updateOffsite(i, "description", e.target.value)} placeholder="Notes" className="flex-1 h-8 text-sm" />
+                      <Button type="button" variant="ghost" size="icon" className="h-7 w-7 text-red-400" onClick={() => removeOffsite(i)}><Trash2 className="h-3.5 w-3.5" /></Button>
+                    </div>
+                  ))}
+                  {(formData.offsite_improvements || []).length === 0 && <p className="text-xs text-slate-400 text-center py-2">No offsite improvements added</p>}
+                </div>
+              </div>
+
+              {/* Master Infrastructure */}
+              <div className="border-t pt-4">
+                <div className="flex items-center justify-between mb-2">
+                  <Label>Master Infrastructure Improvements</Label>
+                  <Button type="button" size="sm" variant="outline" onClick={addMasterInfra}>
+                    <Plus className="h-4 w-4 mr-1" /> Add Item
+                  </Button>
+                </div>
+                <div className="space-y-2">
+                  {(formData.master_infrastructure || []).map((p, i) => (
+                    <div key={i} className="flex gap-2 items-center bg-blue-50 rounded-lg p-2">
+                      <Input value={p.name} onChange={e => updateMasterInfra(i, "name", e.target.value)} placeholder="Item (e.g., Water main)" className="flex-1 h-8 text-sm" />
+                      <Input type="number" value={p.amount} onChange={e => updateMasterInfra(i, "amount", e.target.value)} placeholder="Amount" className="w-32 h-8 text-sm" />
+                      <Input value={p.description} onChange={e => updateMasterInfra(i, "description", e.target.value)} placeholder="Notes" className="flex-1 h-8 text-sm" />
+                      <Button type="button" variant="ghost" size="icon" className="h-7 w-7 text-red-400" onClick={() => removeMasterInfra(i)}><Trash2 className="h-3.5 w-3.5" /></Button>
+                    </div>
+                  ))}
+                  {(formData.master_infrastructure || []).length === 0 && <p className="text-xs text-slate-400 text-center py-2">No master infrastructure items added</p>}
+                </div>
+              </div>
+
               <div>
                 <Label htmlFor="soft_costs">Soft Costs</Label>
                 <Input
