@@ -32,6 +32,7 @@ import TimelineTab from "@/components/deals/TimelineTab";
 import MarketAnalysisTab from "@/components/deals/MarketAnalysisTab";
 import DocumentList from "@/components/documents/DocumentList";
 import DueDiligenceTab from "@/components/deals/DueDiligenceTab";
+import BurnScheduleTab from "@/components/deals/BurnScheduleTab";
 
 const stageStyles = {
   prospecting: "bg-slate-100 text-slate-700",
