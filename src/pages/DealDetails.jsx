@@ -323,6 +323,7 @@ export default function DealDetails() {
             <TabsTrigger value="duediligence">Due Diligence</TabsTrigger>
             <TabsTrigger value="entitlements">Entitlements ({entitlements.length})</TabsTrigger>
             <TabsTrigger value="tasks">Tasks ({tasks.length})</TabsTrigger>
+            <TabsTrigger value="burn">Burn Schedule</TabsTrigger>
             <TabsTrigger value="documents">Documents</TabsTrigger>
             <TabsTrigger value="activity">Activity</TabsTrigger>
           </TabsList>
