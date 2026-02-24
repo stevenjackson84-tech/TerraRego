@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import { Plus, Trash2, Edit, Save, X, TrendingUp, Home, Calendar, BarChart2, ChevronDown, ChevronUp } from "lucide-react";
 import { format, addMonths, parseISO, startOfMonth } from "date-fns";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
+import BurnScheduleAI from "./BurnScheduleAI";
 
 const PRODUCT_COLORS = [
   "bg-blue-500", "bg-emerald-500", "bg-amber-500", "bg-purple-500",
