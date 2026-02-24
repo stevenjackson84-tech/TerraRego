@@ -448,6 +448,16 @@ export default function BurnScheduleTab({ deal }) {
         )}
       </Card>
 
+      {/* AI Analytics */}
+      <BurnScheduleAI
+        schedule={schedule}
+        deal={deal}
+        totalUnits={totalUnits}
+        allMonths={allMonths}
+        monthlyTotals={monthlyTotals}
+        peakMonth={peakMonth}
+      />
+
       {/* Grid: monthly / quarterly toggle */}
       <Card className="border-0 shadow-sm">
         <CardHeader className="pb-2">
