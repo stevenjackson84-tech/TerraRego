@@ -33,6 +33,7 @@ const navigation = [
   { name: "Analytics", icon: TrendingUp, page: "Analytics" },
   { name: "Reports", icon: FileText, page: "Reports" },
   { name: "Lean Six Sigma", icon: Sigma, page: "LeanSixSigma" },
+  { name: "GIS Map", icon: Map, page: "GISMap" },
 ];
 
 export default function Layout({ children, currentPageName }) {
