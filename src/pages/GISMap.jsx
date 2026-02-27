@@ -34,6 +34,7 @@ export default function GISMap() {
   const [mapCenter] = useState([40.3916, -111.8507]); // Default: Lehi, UT
   const [clickedLocation, setClickedLocation] = useState(null);
   const [tileLayer, setTileLayer] = useState("street");
+  const [showParcels, setShowParcels] = useState(true);
 
   const tileLayers = {
     street: {
