@@ -171,7 +171,7 @@ Generate a realistic land parcel analysis. Include:
             <Search className="h-4 w-4" />
           </Button>
         </div>
-        <div className="flex gap-1 ml-auto">
+        <div className="flex gap-1 ml-auto items-center">
           {Object.entries(tileLayers).map(([key, val]) => (
             <Button
               key={key}
@@ -183,6 +183,16 @@ Generate a realistic land parcel analysis. Include:
               {val.label}
             </Button>
           ))}
+          <div className="w-px h-5 bg-slate-200 mx-1" />
+          <Button
+            size="sm"
+            variant={showParcels ? "default" : "outline"}
+            onClick={() => setShowParcels(!showParcels)}
+            className="text-xs flex items-center gap-1"
+          >
+            <Layers className="h-3 w-3" />
+            Parcels
+          </Button>
         </div>
       </div>
 
