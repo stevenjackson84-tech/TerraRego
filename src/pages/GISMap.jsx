@@ -1,21 +1,64 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { MapContainer, TileLayer, WMSTileLayer, Marker, Popup, useMapEvents } from "react-leaflet";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Search, MapPin, Layers, X, Info } from "lucide-react";
+import { Search, MapPin, Layers, X, Info, Building2 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
+import { useQuery } from "@tanstack/react-query";
+import { Link } from "react-router-dom";
+import { createPageUrl } from "@/utils";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 
-// Fix default marker icons for leaflet
+// Fix default marker icons
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
   iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
   shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
 });
+
+// Stage colors (hex for SVG icons)
+const stageColors = {
+  prospecting:         "#6366f1", // indigo
+  loi:                 "#f59e0b", // amber
+  controlled_not_approved: "#f97316", // orange
+  controlled_approved: "#10b981", // emerald
+  owned:               "#059669", // green
+  entitlements:        "#3b82f6", // blue
+  development:         "#8b5cf6", // violet
+  closed:              "#64748b", // slate
+  dead:                "#ef4444", // red
+};
+
+const stageLabels = {
+  prospecting: "Prospecting",
+  loi: "LOI",
+  controlled_not_approved: "Controlled (Not Approved)",
+  controlled_approved: "Controlled (Approved)",
+  owned: "Owned",
+  entitlements: "Entitlements",
+  development: "Development",
+  closed: "Closed",
+  dead: "Dead",
+};
+
+function createColoredIcon(color) {
+  const svg = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="40" viewBox="0 0 28 40">
+      <path d="M14 0C6.268 0 0 6.268 0 14c0 10.5 14 26 14 26S28 24.5 28 14C28 6.268 21.732 0 14 0z" fill="${color}" stroke="white" stroke-width="2"/>
+      <circle cx="14" cy="14" r="6" fill="white" opacity="0.9"/>
+    </svg>`;
+  return L.divIcon({
+    html: svg,
+    iconSize: [28, 40],
+    iconAnchor: [14, 40],
+    popupAnchor: [0, -42],
+    className: "",
+  });
+}
 
 function ClickHandler({ onMapClick }) {
   useMapEvents({
@@ -26,15 +69,57 @@ function ClickHandler({ onMapClick }) {
   return null;
 }
 
+async function geocodeAddress(address, city, state) {
+  const query = [address, city, state].filter(Boolean).join(", ");
+  if (!query.trim()) return null;
+  try {
+    const res = await fetch(
+      `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`
+    );
+    const data = await res.json();
+    if (data && data.length > 0) {
+      return { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) };
+    }
+  } catch {}
+  return null;
+}
+
 export default function GISMap() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedParcel, setSelectedParcel] = useState(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [parcelInfo, setParcelInfo] = useState(null);
-  const [mapCenter] = useState([40.3916, -111.8507]); // Default: Lehi, UT
+  const [mapCenter] = useState([40.3916, -111.8507]);
   const [clickedLocation, setClickedLocation] = useState(null);
   const [tileLayer, setTileLayer] = useState("street");
   const [showParcels, setShowParcels] = useState(true);
+  const [showDeals, setShowDeals] = useState(true);
+  const [dealLocations, setDealLocations] = useState([]);
+
+  const { data: deals = [] } = useQuery({
+    queryKey: ["deals"],
+    queryFn: () => base44.entities.Deal.list(),
+  });
+
+  // Geocode deals that have addresses
+  useEffect(() => {
+    if (!deals.length) return;
+    const dealsWithAddress = deals.filter(d => d.address || d.city);
+
+    let cancelled = false;
+    const geocodeAll = async () => {
+      const results = [];
+      for (const deal of dealsWithAddress) {
+        if (cancelled) break;
+        const coords = await geocodeAddress(deal.address, deal.city, deal.state);
+        if (coords) results.push({ deal, coords });
+        // small delay to be polite to nominatim
+        await new Promise(r => setTimeout(r, 300));
+      }
+      if (!cancelled) setDealLocations(results);
+    };
+    geocodeAll();
+    return () => { cancelled = true; };
+  }, [deals]);
 
   const tileLayers = {
     street: {
@@ -58,7 +143,6 @@ export default function GISMap() {
     setClickedLocation(latlng);
     setParcelInfo(null);
     setIsAnalyzing(true);
-
     try {
       const result = await base44.integrations.Core.InvokeLLM({
         prompt: `You are a real estate GIS analyst. A user clicked on coordinates lat: ${latlng.lat.toFixed(5)}, lng: ${latlng.lng.toFixed(5)}.
@@ -101,9 +185,7 @@ Be specific and realistic based on the geographic coordinates provided.`,
     setIsAnalyzing(true);
     setParcelInfo(null);
     setClickedLocation(null);
-
     try {
-      // Geocode the address using nominatim
       const response = await fetch(
         `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery)}&limit=1`
       );
@@ -112,7 +194,6 @@ Be specific and realistic based on the geographic coordinates provided.`,
         const { lat, lon } = data[0];
         const latlng = { lat: parseFloat(lat), lng: parseFloat(lon) };
         setClickedLocation(latlng);
-
         const result = await base44.integrations.Core.InvokeLLM({
           prompt: `You are a real estate GIS analyst. Analyze this land parcel location: "${searchQuery}" at coordinates lat: ${lat}, lng: ${lon}.
 
@@ -157,7 +238,7 @@ Generate a realistic land parcel analysis. Include:
   return (
     <div className="flex flex-col h-screen relative">
       {/* Top Bar */}
-      <div className="bg-white border-b border-slate-200 px-4 py-3 flex items-center gap-3 z-10">
+      <div className="bg-white border-b border-slate-200 px-4 py-3 flex items-center gap-3 z-10 flex-wrap">
         <h1 className="text-lg font-semibold text-slate-900 whitespace-nowrap">GIS Map</h1>
         <div className="flex-1 flex gap-2 max-w-xl">
           <Input
@@ -171,7 +252,7 @@ Generate a realistic land parcel analysis. Include:
             <Search className="h-4 w-4" />
           </Button>
         </div>
-        <div className="flex gap-1 ml-auto items-center">
+        <div className="flex gap-1 ml-auto items-center flex-wrap">
           {Object.entries(tileLayers).map(([key, val]) => (
             <Button
               key={key}
@@ -193,6 +274,15 @@ Generate a realistic land parcel analysis. Include:
             <Layers className="h-3 w-3" />
             Parcels
           </Button>
+          <Button
+            size="sm"
+            variant={showDeals ? "default" : "outline"}
+            onClick={() => setShowDeals(!showDeals)}
+            className="text-xs flex items-center gap-1"
+          >
+            <Building2 className="h-3 w-3" />
+            Deals
+          </Button>
         </div>
       </div>
 
@@ -210,7 +300,8 @@ Generate a realistic land parcel analysis. Include:
             attribution={tileLayers[tileLayer].attribution}
           />
           <ClickHandler onMapClick={handleMapClick} />
-          {/* Utah AGRC Parcel WMS - free public layer */}
+
+          {/* Utah AGRC Parcel WMS */}
           {showParcels && (
             <WMSTileLayer
               url="https://tiles.arcgis.com/tiles/ZzrwjTRez6FJlsby/arcgis/rest/services/UtahParcels/MapServer/WMSServer"
@@ -221,6 +312,45 @@ Generate a realistic land parcel analysis. Include:
               attribution="Utah AGRC Parcels"
             />
           )}
+
+          {/* Deal pins */}
+          {showDeals && dealLocations.map(({ deal, coords }) => (
+            <Marker
+              key={deal.id}
+              position={[coords.lat, coords.lng]}
+              icon={createColoredIcon(stageColors[deal.stage] || "#6366f1")}
+            >
+              <Popup>
+                <div className="min-w-[180px]">
+                  <div className="font-semibold text-sm text-slate-900 mb-1">{deal.name}</div>
+                  {deal.address && <div className="text-xs text-slate-500 mb-1">{deal.address}{deal.city ? `, ${deal.city}` : ""}</div>}
+                  <div className="flex items-center gap-1 mb-2">
+                    <span
+                      className="inline-block w-2.5 h-2.5 rounded-full"
+                      style={{ backgroundColor: stageColors[deal.stage] || "#6366f1" }}
+                    />
+                    <span className="text-xs font-medium" style={{ color: stageColors[deal.stage] }}>
+                      {stageLabels[deal.stage] || deal.stage}
+                    </span>
+                  </div>
+                  {deal.asking_price && (
+                    <div className="text-xs text-slate-600">Ask: ${deal.asking_price?.toLocaleString()}</div>
+                  )}
+                  {deal.acreage && (
+                    <div className="text-xs text-slate-600">{deal.acreage} acres</div>
+                  )}
+                  <Link
+                    to={createPageUrl(`DealDetails?id=${deal.id}`)}
+                    className="mt-2 inline-block text-xs text-indigo-600 hover:underline"
+                  >
+                    View Deal →
+                  </Link>
+                </div>
+              </Popup>
+            </Marker>
+          ))}
+
+          {/* Clicked location pin */}
           {clickedLocation && (
             <Marker position={[clickedLocation.lat, clickedLocation.lng]}>
               <Popup>
@@ -233,8 +363,25 @@ Generate a realistic land parcel analysis. Include:
           )}
         </MapContainer>
 
+        {/* Legend */}
+        {showDeals && dealLocations.length > 0 && (
+          <div className="absolute bottom-6 left-4 z-10 bg-white/95 border border-slate-200 rounded-lg p-3 shadow text-xs max-w-[200px]">
+            <div className="font-semibold text-slate-700 mb-2">Deal Stages</div>
+            <div className="space-y-1">
+              {Object.entries(stageColors)
+                .filter(([stage]) => dealLocations.some(d => d.deal.stage === stage))
+                .map(([stage, color]) => (
+                  <div key={stage} className="flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: color }} />
+                    <span className="text-slate-600">{stageLabels[stage]}</span>
+                  </div>
+                ))}
+            </div>
+          </div>
+        )}
+
         {/* Hint overlay */}
-        {!clickedLocation && !isAnalyzing && (
+        {!clickedLocation && !isAnalyzing && dealLocations.length === 0 && (
           <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 bg-white/90 backdrop-blur-sm border border-slate-200 rounded-lg px-4 py-2 text-sm text-slate-600 flex items-center gap-2 shadow">
             <MapPin className="h-4 w-4 text-slate-400" />
             Click anywhere on the map to analyze a parcel
@@ -262,7 +409,7 @@ Generate a realistic land parcel analysis. Include:
                 {isAnalyzing ? (
                   <div className="space-y-2">
                     {[...Array(5)].map((_, i) => (
-                      <div key={i} className={`h-3 bg-slate-100 rounded animate-pulse`} style={{ width: `${70 + (i % 3) * 10}%` }} />
+                      <div key={i} className="h-3 bg-slate-100 rounded animate-pulse" style={{ width: `${70 + (i % 3) * 10}%` }} />
                     ))}
                     <p className="text-xs text-slate-400 mt-3">Analyzing parcel...</p>
                   </div>
@@ -278,7 +425,6 @@ Generate a realistic land parcel analysis. Include:
                         <div className="font-semibold">${parcelInfo.estimated_value_per_acre?.toLocaleString()}</div>
                       </div>
                     </div>
-
                     <div className="flex items-center justify-between">
                       <div>
                         <div className="text-xs text-slate-500">Zoning</div>
@@ -288,31 +434,26 @@ Generate a realistic land parcel analysis. Include:
                         {parcelInfo.development_potential} Potential
                       </Badge>
                     </div>
-
                     <div>
                       <div className="text-xs text-slate-500 mb-1">Land Use</div>
                       <div className="text-slate-700">{parcelInfo.land_use}</div>
                     </div>
-
                     <div>
                       <div className="text-xs text-slate-500 mb-1">Observations</div>
                       <div className="text-slate-700 text-xs leading-relaxed">{parcelInfo.observations}</div>
                     </div>
-
                     {parcelInfo.opportunities && (
                       <div className="bg-green-50 rounded-lg p-2">
                         <div className="text-xs font-medium text-green-800 mb-1">Opportunities</div>
                         <div className="text-xs text-green-700">{parcelInfo.opportunities}</div>
                       </div>
                     )}
-
                     {parcelInfo.risks && (
                       <div className="bg-red-50 rounded-lg p-2">
                         <div className="text-xs font-medium text-red-800 mb-1">Risks</div>
                         <div className="text-xs text-red-700">{parcelInfo.risks}</div>
                       </div>
                     )}
-
                     {parcelInfo.infrastructure && (
                       <div className="bg-blue-50 rounded-lg p-2">
                         <div className="text-xs font-medium text-blue-800 mb-1">Infrastructure</div>
