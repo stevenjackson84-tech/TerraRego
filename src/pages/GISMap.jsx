@@ -31,7 +31,7 @@ export default function GISMap() {
   const [selectedParcel, setSelectedParcel] = useState(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [parcelInfo, setParcelInfo] = useState(null);
-  const [mapCenter] = useState([33.749, -84.388]); // Default: Atlanta
+  const [mapCenter] = useState([40.3916, -111.8507]); // Default: Lehi, UT
   const [clickedLocation, setClickedLocation] = useState(null);
   const [tileLayer, setTileLayer] = useState("street");
 
