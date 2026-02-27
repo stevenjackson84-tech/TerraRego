@@ -210,6 +210,17 @@ Generate a realistic land parcel analysis. Include:
             attribution={tileLayers[tileLayer].attribution}
           />
           <ClickHandler onMapClick={handleMapClick} />
+          {/* Utah AGRC Parcel WMS - free public layer */}
+          {showParcels && (
+            <WMSTileLayer
+              url="https://tiles.arcgis.com/tiles/ZzrwjTRez6FJlsby/arcgis/rest/services/UtahParcels/MapServer/WMSServer"
+              layers="0"
+              format="image/png"
+              transparent={true}
+              opacity={0.5}
+              attribution="Utah AGRC Parcels"
+            />
+          )}
           {clickedLocation && (
             <Marker position={[clickedLocation.lat, clickedLocation.lng]}>
               <Popup>
