@@ -55,11 +55,12 @@ import DealDetails from './pages/DealDetails';
 import Deals from './pages/Deals';
 import Development from './pages/Development';
 import Entitlements from './pages/Entitlements';
+import LeanSixSigma from './pages/LeanSixSigma';
 import ProjectDetails from './pages/ProjectDetails';
 import Projects from './pages/Projects';
 import Reports from './pages/Reports';
 import Tasks from './pages/Tasks';
-import LeanSixSigma from './pages/LeanSixSigma';
+import GISMap from './pages/GISMap';
 import __Layout from './Layout.jsx';
 
 
@@ -72,11 +73,12 @@ export const PAGES = {
     "Deals": Deals,
     "Development": Development,
     "Entitlements": Entitlements,
+    "LeanSixSigma": LeanSixSigma,
     "ProjectDetails": ProjectDetails,
     "Projects": Projects,
     "Reports": Reports,
     "Tasks": Tasks,
-    "LeanSixSigma": LeanSixSigma,
+    "GISMap": GISMap,
 }
 
 export const pagesConfig = {
