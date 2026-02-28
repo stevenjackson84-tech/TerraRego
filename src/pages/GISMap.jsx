@@ -324,12 +324,16 @@ Generate a realistic land parcel analysis. Include:
           />
           <ClickHandler onMapClick={handleMapClick} />
 
-          {/* FEMA Flood Zones - official FEMA ArcGIS REST tile service */}
+          {/* FEMA Flood Zones - official FEMA WMS service */}
           {showFloodZones && (
-            <TileLayer
-              url="https://hazards.fema.gov/arcgis/rest/services/public/NFHL/MapServer/tile/{z}/{y}/{x}"
-              attribution='<a href="https://msc.fema.gov">FEMA NFHL</a>'
+            <WMSTileLayer
+              url="https://hazards.fema.gov/arcgis/services/public/NFHLWMS/MapServer/WMSServer"
+              layers="28"
+              format="image/png"
+              transparent={true}
               opacity={0.6}
+              version="1.3.0"
+              attribution='<a href="https://msc.fema.gov">FEMA NFHL</a>'
               zIndex={10}
             />
           )}
