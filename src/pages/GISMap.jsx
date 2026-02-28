@@ -324,23 +324,31 @@ Generate a realistic land parcel analysis. Include:
           />
           <ClickHandler onMapClick={handleMapClick} />
 
-          {/* FEMA Flood Zones - via FEMA ArcGIS tile cache (CORS-enabled) */}
+          {/* FEMA Flood Zones - ESRI hosted NFHL (CORS-enabled) */}
           {showFloodZones && (
-            <TileLayer
-              url="https://hazards.fema.gov/gis/nfhl/rest/services/public/NFHL/MapServer/tile/{z}/{y}/{x}"
-              attribution='<a href="https://msc.fema.gov">FEMA NFHL</a>'
+            <WMSTileLayer
+              url="https://hazards.fema.gov/gis/nfhl/services/public/NFHL/MapServer/WmsServer"
+              layers="28"
+              format="image/png"
+              transparent={true}
               opacity={0.55}
-              zIndex={10}
+              version="1.3.0"
+              uppercase={true}
+              attribution='<a href="https://msc.fema.gov">FEMA NFHL</a>'
             />
           )}
 
-          {/* Sensitive Lands - USFWS National Wetlands Inventory via ArcGIS tile cache */}
+          {/* Sensitive Lands - EPA EnviroMapper WMS (CORS-enabled) */}
           {showSensitiveLands && (
-            <TileLayer
-              url="https://www.fws.gov/wetlandsmapper/rest/services/Wetlands_Raster/ImageServer/tile/{z}/{y}/{x}"
-              attribution="USFWS National Wetlands Inventory"
+            <WMSTileLayer
+              url="https://geodata.epa.gov/arcgis/services/OA/FRS_INTERESTS/MapServer/WmsServer"
+              layers="0"
+              format="image/png"
+              transparent={true}
               opacity={0.6}
-              zIndex={9}
+              version="1.3.0"
+              uppercase={true}
+              attribution="EPA EnviroMapper"
             />
           )}
 
