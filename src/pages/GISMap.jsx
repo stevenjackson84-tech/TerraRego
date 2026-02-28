@@ -74,13 +74,17 @@ async function geocodeAddress(address, city, state) {
   if (!query.trim()) return null;
   try {
     const res = await fetch(
-      `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`
+      `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`,
+      { headers: { "Accept": "application/json" } }
     );
+    if (!res.ok) return null;
     const data = await res.json();
     if (data && data.length > 0) {
       return { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) };
     }
-  } catch {}
+  } catch (e) {
+    console.warn("Geocoding failed for:", query, e.message);
+  }
   return null;
 }
 
