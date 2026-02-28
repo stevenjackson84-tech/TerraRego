@@ -324,27 +324,23 @@ Generate a realistic land parcel analysis. Include:
           />
           <ClickHandler onMapClick={handleMapClick} />
 
-          {/* FEMA Flood Zones - NFHL public WMS */}
+          {/* FEMA Flood Zones - via FEMA ArcGIS tile cache (CORS-enabled) */}
           {showFloodZones && (
-            <WMSTileLayer
-              url="https://hazards.fema.gov/gis/nfhl/services/public/NFHL/MapServer/WMSServer"
-              layers="28"
-              format="image/png"
-              transparent={true}
-              opacity={0.55}
+            <TileLayer
+              url="https://hazards.fema.gov/gis/nfhl/rest/services/public/NFHL/MapServer/tile/{z}/{y}/{x}"
               attribution='<a href="https://msc.fema.gov">FEMA NFHL</a>'
+              opacity={0.55}
+              zIndex={10}
             />
           )}
 
-          {/* Sensitive Lands - USFWS National Wetlands Inventory + Protected Areas */}
+          {/* Sensitive Lands - USFWS National Wetlands Inventory via ArcGIS tile cache */}
           {showSensitiveLands && (
-            <WMSTileLayer
-              url="https://www.fws.gov/wetlandsmapper/ogc/services/NWIRasterService/MapServer/WMSServer"
-              layers="0"
-              format="image/png"
-              transparent={true}
-              opacity={0.6}
+            <TileLayer
+              url="https://www.fws.gov/wetlandsmapper/rest/services/Wetlands_Raster/ImageServer/tile/{z}/{y}/{x}"
               attribution="USFWS National Wetlands Inventory"
+              opacity={0.6}
+              zIndex={9}
             />
           )}
 
