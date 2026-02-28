@@ -315,6 +315,18 @@ Generate a realistic land parcel analysis. Include:
           />
           <ClickHandler onMapClick={handleMapClick} />
 
+          {/* Sensitive Lands - USFWS National Wetlands Inventory + Protected Areas */}
+          {showSensitiveLands && (
+            <WMSTileLayer
+              url="https://www.fws.gov/wetlandsmapper/ogc/services/NWIRasterService/MapServer/WMSServer"
+              layers="0"
+              format="image/png"
+              transparent={true}
+              opacity={0.6}
+              attribution="USFWS National Wetlands Inventory"
+            />
+          )}
+
           {/* Utah AGRC Parcel WMS */}
           {showParcels && (
             <WMSTileLayer
