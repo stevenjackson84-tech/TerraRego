@@ -371,13 +371,18 @@ Generate a realistic land parcel analysis. Include:
             />
           )}
 
-          {/* Utah High Risk WUI - Utah SGID via ESRI tile service */}
-          {showWUI && (
-            <TileLayer
-              url="https://tiles.arcgis.com/tiles/ZzrwjTRez6FJiOq4/arcgis/rest/services/Utah_High_Risk_WUI_Properties/MapServer/tile/{z}/{y}/{x}"
-              attribution='<a href="https://gis.utah.gov">Utah SGID - High Risk WUI</a>'
-              opacity={0.55}
-              zIndex={11}
+          {/* Utah High Risk WUI - loaded as GeoJSON from SGID FeatureServer */}
+          {showWUI && wuiData && (
+            <GeoJSON
+              key="wui-layer"
+              data={wuiData}
+              style={() => ({
+                color: "#ff4500",
+                weight: 1,
+                opacity: 0.8,
+                fillColor: "#ff6600",
+                fillOpacity: 0.35,
+              })}
             />
           )}
 
