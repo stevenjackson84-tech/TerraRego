@@ -109,6 +109,18 @@ export default function GISMap() {
     queryFn: () => base44.entities.Deal.list(),
   });
 
+  // Load WUI GeoJSON data when toggled on
+  useEffect(() => {
+    if (!showWUI || wuiData) return;
+    setWuiLoading(true);
+    // Fetch Utah High Risk WUI from the SGID FeatureServer as GeoJSON
+    const url = "https://services.arcgis.com/ZzrwjTRez6FJiOq4/arcgis/rest/services/Utah_High_Risk_WUI_Properties/FeatureServer/1/query?where=1%3D1&outFields=*&outSR=4326&f=geojson&resultRecordCount=2000";
+    fetch(url)
+      .then(r => r.json())
+      .then(data => { setWuiData(data); setWuiLoading(false); })
+      .catch(() => setWuiLoading(false));
+  }, [showWUI, wuiData]);
+
   // Geocode deals that have addresses
   useEffect(() => {
     if (!deals.length) return;
