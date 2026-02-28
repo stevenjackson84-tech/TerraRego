@@ -307,6 +307,14 @@ Generate a realistic land parcel analysis. Include:
           >
             💧 Flood Zones
           </Button>
+          <Button
+            size="sm"
+            variant={showWUI ? "default" : "outline"}
+            onClick={() => setShowWUI(!showWUI)}
+            className="text-xs flex items-center gap-1"
+          >
+            🔥 WUI Zone
+          </Button>
         </div>
       </div>
 
