@@ -191,7 +191,8 @@ Be specific and realistic based on the geographic coordinates provided.`,
     setClickedLocation(null);
     try {
       const response = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery)}&limit=1`
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery)}&limit=1`,
+        { headers: { "Accept": "application/json" } }
       );
       const data = await response.json();
       if (data && data.length > 0) {
