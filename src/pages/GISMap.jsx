@@ -298,6 +298,14 @@ Generate a realistic land parcel analysis. Include:
           >
             🌿 Sensitive Lands
           </Button>
+          <Button
+            size="sm"
+            variant={showFloodZones ? "default" : "outline"}
+            onClick={() => setShowFloodZones(!showFloodZones)}
+            className="text-xs flex items-center gap-1"
+          >
+            💧 Flood Zones
+          </Button>
         </div>
       </div>
 
