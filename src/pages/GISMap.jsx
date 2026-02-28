@@ -289,6 +289,14 @@ Generate a realistic land parcel analysis. Include:
             <Building2 className="h-3 w-3" />
             Deals
           </Button>
+          <Button
+            size="sm"
+            variant={showSensitiveLands ? "default" : "outline"}
+            onClick={() => setShowSensitiveLands(!showSensitiveLands)}
+            className="text-xs flex items-center gap-1"
+          >
+            🌿 Sensitive Lands
+          </Button>
         </div>
       </div>
 
