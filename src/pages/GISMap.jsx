@@ -97,6 +97,7 @@ export default function GISMap() {
   const [tileLayer, setTileLayer] = useState("street");
   const [showParcels, setShowParcels] = useState(true);
   const [showDeals, setShowDeals] = useState(true);
+  const [showSensitiveLands, setShowSensitiveLands] = useState(false);
   const [dealLocations, setDealLocations] = useState([]);
 
   const { data: deals = [] } = useQuery({
