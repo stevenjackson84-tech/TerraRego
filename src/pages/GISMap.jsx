@@ -100,6 +100,8 @@ export default function GISMap() {
   const [showSensitiveLands, setShowSensitiveLands] = useState(false);
   const [showFloodZones, setShowFloodZones] = useState(false);
   const [showWUI, setShowWUI] = useState(false);
+  const [wuiData, setWuiData] = useState(null);
+  const [wuiLoading, setWuiLoading] = useState(false);
   const [dealLocations, setDealLocations] = useState([]);
 
   const { data: deals = [] } = useQuery({
