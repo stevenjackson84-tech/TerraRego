@@ -324,21 +324,23 @@ Generate a realistic land parcel analysis. Include:
           />
           <ClickHandler onMapClick={handleMapClick} />
 
-          {/* FEMA Flood Zones - ESRI Living Atlas (publicly accessible tile service) */}
+          {/* FEMA Flood Zones - official FEMA ArcGIS REST tile service */}
           {showFloodZones && (
             <TileLayer
-              url="https://tiles.arcgis.com/tiles/P3ePLMYs2RVChkJx/arcgis/rest/services/FEMA_NFHL_v3/MapServer/tile/{z}/{y}/{x}"
-              attribution='<a href="https://msc.fema.gov">FEMA NFHL via ESRI</a>'
+              url="https://hazards.fema.gov/arcgis/rest/services/public/NFHL/MapServer/tile/{z}/{y}/{x}"
+              attribution='<a href="https://msc.fema.gov">FEMA NFHL</a>'
               opacity={0.6}
+              zIndex={10}
             />
           )}
 
-          {/* Sensitive Lands - ESRI USA Wetlands (publicly accessible tile service) */}
+          {/* Sensitive Lands - USFWS NWI via official ArcGIS REST tile service */}
           {showSensitiveLands && (
             <TileLayer
-              url="https://tiles.arcgis.com/tiles/P3ePLMYs2RVChkJx/arcgis/rest/services/USA_Wetlands/MapServer/tile/{z}/{y}/{x}"
-              attribution='<a href="https://www.fws.gov/wetlands/">USFWS NWI via ESRI</a>'
+              url="https://fwspublicservices.wim.usgs.gov/wetlandsmapservice/rest/services/Wetlands/MapServer/tile/{z}/{y}/{x}"
+              attribution='<a href="https://www.fws.gov/wetlands/">USFWS NWI</a>'
               opacity={0.6}
+              zIndex={9}
             />
           )}
 
