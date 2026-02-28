@@ -327,7 +327,7 @@ Generate a realistic land parcel analysis. Include:
             onClick={() => setShowWUI(!showWUI)}
             className="text-xs flex items-center gap-1"
           >
-            🔥 WUI Zone
+            🔥 {wuiLoading ? "Loading WUI..." : "WUI Zone"}
           </Button>
         </div>
       </div>
