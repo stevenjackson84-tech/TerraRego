@@ -305,6 +305,8 @@ export default function CADDrafter() {
       setSelectedIds(prev =>
         e.shiftKey ? (prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]) : [id]
       );
+    } else if (tool === TOOLS.ERASE) {
+      pushHistory(shapes.filter(s => s.id !== id));
     } else if (tool === TOOLS.OFFSET) {
       applyOffset(id);
     } else if (tool === TOOLS.FILLET) {
