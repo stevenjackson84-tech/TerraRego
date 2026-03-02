@@ -700,7 +700,7 @@ Generate a realistic land parcel analysis. Include:
           <Button
             size="sm"
             variant={showSteepSlopes ? "default" : "outline"}
-            onClick={() => { setShowSteepSlopes(!showSteepSlopes); if (showSteepSlopes) setSlopeData(null); }}
+            onClick={() => setShowSteepSlopes(!showSteepSlopes)}
             className="text-xs flex items-center gap-1"
           >
             ⛰️ {slopeLoading ? "Loading Slopes..." : "Slopes >30%"}
