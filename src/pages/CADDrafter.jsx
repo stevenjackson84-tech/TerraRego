@@ -206,7 +206,7 @@ export default function CADDrafter() {
 
     if (!drawing) return;
     const raw = getSVGPoint(e);
-    const pt = snapPt(raw.x, raw.y);
+    const pt = snapPt(raw.x, raw.y, drawing.x1, drawing.y1);
     setDrawing(prev => ({ ...prev, x2: pt.x, y2: pt.y }));
   };
 
