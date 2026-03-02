@@ -920,15 +920,15 @@ Generate a realistic land parcel analysis. Include:
               {/* Vector features (only if there are actual features) */}
               {layer.geojson?.features?.length > 0 && (
                 <GeoJSON
-                  key={layer.id}
-                  data={layer.geojson}
-                  style={() => ({
-                    color: "#7c3aed",
-                    weight: 2,
-                    opacity: 0.9,
-                    fillColor: "#7c3aed",
-                    fillOpacity: 0.0,
-                  })}
+                    key={layer.id}
+                    data={layer.geojson}
+                    style={() => ({
+                      color: "#7c3aed",
+                      weight: 2,
+                      opacity: layer.opacity || 0.8,
+                      fillColor: "#7c3aed",
+                      fillOpacity: (layer.opacity || 0.8) * 0.15,
+                    })}
                   pointToLayer={(feature, latlng) => L.circleMarker(latlng, {
                     radius: 6,
                     color: "#7c3aed",
