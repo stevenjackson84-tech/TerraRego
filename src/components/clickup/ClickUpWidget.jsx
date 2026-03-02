@@ -169,11 +169,11 @@ export default function ClickUpWidget() {
       {expanded && (
         <CardContent className="px-4 pb-4 space-y-3">
           {/* Tabs */}
-          <div className="flex gap-1 border-b border-slate-200">
+          <div className="flex gap-1 border-b border-slate-200 overflow-x-auto">
             <button
               onClick={() => setActiveTab("dashboards")}
               className={cn(
-                "text-xs px-2 py-2 border-b-2 font-medium transition-colors",
+                "text-xs px-2 py-2 border-b-2 font-medium transition-colors whitespace-nowrap",
                 activeTab === "dashboards"
                   ? "border-violet-600 text-violet-700"
                   : "border-transparent text-slate-500 hover:text-slate-700"
@@ -182,9 +182,20 @@ export default function ClickUpWidget() {
               Dashboards
             </button>
             <button
+              onClick={() => setActiveTab("calendar")}
+              className={cn(
+                "text-xs px-2 py-2 border-b-2 font-medium transition-colors whitespace-nowrap",
+                activeTab === "calendar"
+                  ? "border-violet-600 text-violet-700"
+                  : "border-transparent text-slate-500 hover:text-slate-700"
+              )}
+            >
+              Calendar
+            </button>
+            <button
               onClick={() => setActiveTab("tasks")}
               className={cn(
-                "text-xs px-2 py-2 border-b-2 font-medium transition-colors",
+                "text-xs px-2 py-2 border-b-2 font-medium transition-colors whitespace-nowrap",
                 activeTab === "tasks"
                   ? "border-violet-600 text-violet-700"
                   : "border-transparent text-slate-500 hover:text-slate-700"
