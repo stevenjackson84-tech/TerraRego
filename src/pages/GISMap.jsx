@@ -757,12 +757,16 @@ Generate a realistic land parcel analysis. Include:
             />
           )}
 
-          {/* Sensitive Lands - USFWS NWI via official ArcGIS REST tile service */}
+          {/* Sensitive Lands - Utah Geological Survey Wetlands */}
           {showSensitiveLands && (
-            <TileLayer
-              url="https://fwspublicservices.wim.usgs.gov/wetlandsmapservice/rest/services/Wetlands/MapServer/tile/{z}/{y}/{x}"
-              attribution='<a href="https://www.fws.gov/wetlands/">USFWS NWI</a>'
+            <WMSTileLayer
+              url="https://wetlands.geology.utah.gov/arcgis/services/Wetlands/MapServer/WMSServer"
+              layers="0"
+              format="image/png"
+              transparent={true}
               opacity={0.6}
+              version="1.3.0"
+              attribution='<a href="https://wetlands.geology.utah.gov/">Utah Geological Survey</a>'
               zIndex={9}
             />
           )}

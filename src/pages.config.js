@@ -49,6 +49,7 @@
  */
 import Analytics from './pages/Analytics';
 import BusinessPlan from './pages/BusinessPlan';
+import CADDrafter from './pages/CADDrafter';
 import Contacts from './pages/Contacts';
 import Dashboard from './pages/Dashboard';
 import DealDetails from './pages/DealDetails';
@@ -62,13 +63,13 @@ import ProjectDetails from './pages/ProjectDetails';
 import Projects from './pages/Projects';
 import Reports from './pages/Reports';
 import Tasks from './pages/Tasks';
-import CADDrafter from './pages/CADDrafter';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
     "Analytics": Analytics,
     "BusinessPlan": BusinessPlan,
+    "CADDrafter": CADDrafter,
     "Contacts": Contacts,
     "Dashboard": Dashboard,
     "DealDetails": DealDetails,
@@ -82,7 +83,6 @@ export const PAGES = {
     "Projects": Projects,
     "Reports": Reports,
     "Tasks": Tasks,
-    "CADDrafter": CADDrafter,
 }
 
 export const pagesConfig = {
