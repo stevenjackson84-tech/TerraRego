@@ -433,13 +433,27 @@ Generate a realistic land parcel analysis. Include:
             />
           )}
 
-          {/* Utah Parcels - AGRC public tile service */}
-          {showParcels && (
-            <TileLayer
-              url="https://tiles.arcgis.com/tiles/ZzrwjTRez6FJiOq4/arcgis/rest/services/Utah_Parcels/MapServer/tile/{z}/{y}/{x}"
-              attribution='<a href="https://gis.utah.gov">Utah AGRC Parcels</a>'
-              opacity={0.6}
-              zIndex={8}
+          {/* Utah County Parcels - GeoJSON from UGRC SGID */}
+          {showParcels && parcelData && (
+            <GeoJSON
+              key="parcel-layer"
+              data={parcelData}
+              style={() => ({
+                color: "#b45309",
+                weight: 1,
+                opacity: 0.8,
+                fillColor: "#fef3c7",
+                fillOpacity: 0.15,
+              })}
+              onEachFeature={(feature, layer) => {
+                const p = feature.properties;
+                if (p?.OWNER || p?.PARCEL_ID) {
+                  layer.bindTooltip(
+                    `<div style="font-size:11px"><b>${p.OWNER || "Unknown"}</b><br/>Parcel: ${p.PARCEL_ID || "N/A"}</div>`,
+                    { sticky: true }
+                  );
+                }
+              }}
             />
           )}
 
