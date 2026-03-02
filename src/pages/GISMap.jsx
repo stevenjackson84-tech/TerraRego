@@ -865,6 +865,28 @@ Generate a realistic land parcel analysis. Include:
           )}
         </MapContainer>
 
+        {/* KMZ Layer List */}
+        {kmzLayers.length > 0 && (
+          <div className="absolute bottom-6 right-4 z-10 bg-white/95 border border-slate-200 rounded-lg p-3 shadow text-xs max-w-[220px]">
+            <div className="font-semibold text-slate-700 mb-2 flex items-center gap-1">
+              <Upload className="h-3 w-3 text-violet-600" /> Uploaded Layers
+            </div>
+            <div className="space-y-1">
+              {kmzLayers.map(layer => (
+                <div key={layer.id} className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-1.5 min-w-0">
+                    <span className="w-2.5 h-2.5 rounded-full flex-shrink-0 bg-violet-600" />
+                    <span className="text-slate-600 truncate">{layer.name}</span>
+                  </div>
+                  <button onClick={() => setKmzLayers(prev => prev.filter(l => l.id !== layer.id))} className="text-slate-400 hover:text-red-500 flex-shrink-0">
+                    <Trash2 className="h-3 w-3" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Legend */}
         {showDeals && dealLocations.length > 0 && (
           <div className="absolute bottom-6 left-4 z-10 bg-white/95 border border-slate-200 rounded-lg p-3 shadow text-xs max-w-[200px]">
