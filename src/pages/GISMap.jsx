@@ -661,6 +661,27 @@ Generate a realistic land parcel analysis. Include:
             />
           )}
 
+          {/* Steep Slopes >30% - computed from USGS 3DEP elevation */}
+          {showSteepSlopes && slopeData && slopeData.features && slopeData.features.length > 0 && (
+            <GeoJSON
+              key={slopeData.features.length + "-slopes"}
+              data={slopeData}
+              style={(feature) => {
+                const s = parseFloat(feature.properties.slope);
+                const intensity = Math.min((s - 30) / 40, 1); // 30–70%+ maps to 0–1
+                return {
+                  color: "#dc2626",
+                  weight: 0,
+                  fillColor: `rgba(220, ${Math.round(38 - intensity * 38)}, ${Math.round(38 - intensity * 38)}, 1)`,
+                  fillOpacity: 0.5 + intensity * 0.25,
+                };
+              }}
+              onEachFeature={(feature, layer) => {
+                layer.bindTooltip(`Slope: ${feature.properties.slope}%`, { sticky: true });
+              }}
+            />
+          )}
+
           {/* Utah High Risk WUI - loaded as GeoJSON from SGID FeatureServer */}
           {showWUI && wuiData && wuiData.features && wuiData.features.length > 0 && (
             <GeoJSON
