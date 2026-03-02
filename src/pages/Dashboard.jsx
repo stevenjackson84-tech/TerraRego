@@ -121,6 +121,11 @@ export default function Dashboard() {
           <TaskNotifications />
         </div>
 
+        {/* ClickUp Widget */}
+        <div className="mb-6">
+          <ClickUpWidget />
+        </div>
+
         {/* Charts and Activity */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2">
