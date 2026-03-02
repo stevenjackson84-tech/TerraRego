@@ -27,12 +27,15 @@ export default function ClickUpWidget() {
   const [spaces, setSpaces] = useState([]);
   const [lists, setLists] = useState([]);
   const [tasks, setTasks] = useState([]);
+  const [dashboards, setDashboards] = useState([]);
   const [selectedWorkspace, setSelectedWorkspace] = useState(null);
   const [selectedSpace, setSelectedSpace] = useState(null);
   const [selectedList, setSelectedList] = useState(null);
   const [loading, setLoading] = useState(true);
   const [tasksLoading, setTasksLoading] = useState(false);
+  const [dashboardsLoading, setDashboardsLoading] = useState(false);
   const [expanded, setExpanded] = useState(true);
+  const [activeTab, setActiveTab] = useState("dashboards");
 
   const invoke = (action, params = {}) =>
     base44.functions.invoke("clickup", { action, ...params }).then(r => r.data);
