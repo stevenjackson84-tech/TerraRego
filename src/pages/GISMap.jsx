@@ -954,22 +954,25 @@ Generate a realistic land parcel analysis. Include:
 
         {/* KMZ Layer List */}
         {kmzLayers.length > 0 && (
-          <div className="absolute bottom-6 right-4 z-10 bg-white/95 border border-slate-200 rounded-lg p-3 shadow text-xs max-w-[220px]">
+          <div className="absolute bottom-6 right-4 z-10 bg-white/95 border border-slate-200 rounded-lg p-3 shadow text-xs max-w-[240px]">
             <div className="font-semibold text-slate-700 mb-2 flex items-center gap-1">
-              <Upload className="h-3 w-3 text-violet-600" /> Uploaded Layers
+              <Upload className="h-3 w-3 text-violet-600" /> Local Uploads
             </div>
-            <div className="space-y-1">
-              {kmzLayers.map(layer => (
-                <div key={layer.id} className="flex items-center justify-between gap-2">
-                  <div className="flex items-center gap-1.5 min-w-0">
-                    <span className="w-2.5 h-2.5 rounded-full flex-shrink-0 bg-violet-600" />
-                    <span className="text-slate-600 truncate">{layer.name}</span>
+            <div className="space-y-2">
+              {kmzLayers.map(layer => {
+                const catLabel = kmzCategories.find(c => c.value === layer.category)?.label || layer.category;
+                return (
+                  <div key={layer.id} className="flex items-start justify-between gap-2 p-2 bg-slate-50 rounded border border-slate-100">
+                    <div className="flex-1 min-w-0">
+                      <div className="font-medium text-slate-700 truncate">{layer.name}</div>
+                      <div className="text-xs text-slate-500">{catLabel}</div>
+                    </div>
+                    <button onClick={() => setKmzLayers(prev => prev.filter(l => l.id !== layer.id))} className="text-slate-400 hover:text-red-500 flex-shrink-0 mt-0.5">
+                      <Trash2 className="h-3 w-3" />
+                    </button>
                   </div>
-                  <button onClick={() => setKmzLayers(prev => prev.filter(l => l.id !== layer.id))} className="text-slate-400 hover:text-red-500 flex-shrink-0">
-                    <Trash2 className="h-3 w-3" />
-                  </button>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         )}
