@@ -759,14 +759,10 @@ Generate a realistic land parcel analysis. Include:
 
           {/* Sensitive Lands - Utah Geological Survey Wetlands */}
           {showSensitiveLands && (
-            <WMSTileLayer
-              url="https://wetlands.geology.utah.gov/arcgis/services/Wetlands/MapServer/WMSServer"
-              layers="0"
-              format="image/png"
-              transparent={true}
+            <TileLayer
+              url="https://wetlands.geology.utah.gov/arcgis/rest/services/Wetlands/MapServer/tile/{z}/{y}/{x}"
+              attribution='<a href="https://wetlands.geology.utah.gov/">Utah Geological Survey Wetlands</a>'
               opacity={0.6}
-              version="1.3.0"
-              attribution='<a href="https://wetlands.geology.utah.gov/">Utah Geological Survey</a>'
               zIndex={9}
             />
           )}
