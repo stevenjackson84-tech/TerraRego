@@ -168,6 +168,31 @@ export default function GISMap() {
     setParcelInfo(null);
     setIsAnalyzing(true);
     try {
+      // If parcels layer is on, try to get real ownership data from Utah County GIS first
+      let parcelOwnerData = null;
+      if (showParcels) {
+        try {
+          // Convert lat/lng to Web Mercator (EPSG:3857) for the identify request
+          const x = latlng.lng * 20037508.34 / 180;
+          const yRad = latlng.lat * Math.PI / 180;
+          const y = Math.log(Math.tan(yRad / 2 + Math.PI / 4)) * (20037508.34 / Math.PI);
+          const tolerance = 20;
+          const identifyUrl = `https://maps.utahcounty.gov/arcgis/rest/services/Parcels/Parcel_Serial_Name_Address/MapServer/identify?geometry=${x},${y}&geometryType=esriGeometryPoint&sr=3857&layers=all&tolerance=${tolerance}&mapExtent=${x-500},${y-500},${x+500},${y+500}&imageDisplay=800,600,96&returnGeometry=false&f=json`;
+          const res = await fetch(identifyUrl);
+          const data = await res.json();
+          if (data.results && data.results.length > 0) {
+            const attrs = data.results[0].attributes;
+            parcelOwnerData = attrs;
+          }
+        } catch (e) {
+          console.warn("Utah County parcel identify failed:", e);
+        }
+      }
+
+      const ownerContext = parcelOwnerData
+        ? `Real parcel data from Utah County GIS: ${JSON.stringify(parcelOwnerData)}. Use this real data where available.`
+        : "";
+
       const result = await base44.integrations.Core.InvokeLLM({
         prompt: `You are a real estate GIS analyst. A user clicked on coordinates lat: ${latlng.lat.toFixed(5)}, lng: ${latlng.lng.toFixed(5)}.
 
