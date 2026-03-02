@@ -89,12 +89,16 @@ export default function ClickUpCalendarView({ tasks = [], selectedList, selected
             mode="single"
             selected={selectedDate}
             onSelect={handleDayClick}
-            disabled={(date) => {
-              // Disable dates without tasks for easier navigation
-              return !datesWithTasks.some(d => isSameDay(d, date));
-            }}
-            className="[&_.disabled]:opacity-50"
+            className="w-full"
           />
+          {selectedList && (
+            <Button
+              onClick={() => setShowCreateDialog(true)}
+              className="w-full mt-3 bg-violet-600 hover:bg-violet-700 text-xs h-8"
+            >
+              <Plus className="h-3 w-3 mr-1" /> New Task
+            </Button>
+          )}
         </div>
 
         {/* Tasks for selected date */}
