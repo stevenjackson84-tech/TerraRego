@@ -960,25 +960,84 @@ Generate a realistic land parcel analysis. Include:
 
         {/* KMZ Layer List */}
         {kmzLayers.length > 0 && (
-          <div className="absolute bottom-6 right-4 z-10 bg-white/95 border border-slate-200 rounded-lg p-3 shadow text-xs max-w-[240px]">
+          <div className="absolute bottom-6 right-4 z-10 bg-white/95 border border-slate-200 rounded-lg p-3 shadow text-xs max-w-[260px]">
             <div className="font-semibold text-slate-700 mb-2 flex items-center gap-1">
               <Upload className="h-3 w-3 text-violet-600" /> Local Uploads
             </div>
             <div className="space-y-2">
-              {kmzLayers.map(layer => {
-                const catLabel = kmzCategories.find(c => c.value === layer.category)?.label || layer.category;
-                return (
-                  <div key={layer.id} className="flex items-start justify-between gap-2 p-2 bg-slate-50 rounded border border-slate-100">
-                    <div className="flex-1 min-w-0">
-                      <div className="font-medium text-slate-700 truncate">{layer.name}</div>
-                      <div className="text-xs text-slate-500">{catLabel}</div>
+              {Object.entries(
+                kmzLayers.reduce((acc, layer) => {
+                  if (!acc[layer.category]) acc[layer.category] = [];
+                  acc[layer.category].push(layer);
+                  return acc;
+                }, {})
+              ).map(([category, categoryLayers]) => (
+                <div key={category} className="border border-slate-200 rounded bg-white">
+                  <button
+                    onClick={() => setKmzGroupVisibility(prev => ({ ...prev, [category]: !prev[category] }))}
+                    className="w-full flex items-center justify-between gap-2 p-2 hover:bg-slate-50 font-medium text-slate-700"
+                  >
+                    <span>{kmzCategories.find(c => c.value === category)?.label || category}</span>
+                    <span className="text-slate-400 text-lg leading-none">{kmzGroupVisibility[category] !== false ? '▼' : '▶'}</span>
+                  </button>
+                  {kmzGroupVisibility[category] !== false && (
+                    <div className="space-y-2 p-2 border-t border-slate-100 bg-slate-50">
+                      {categoryLayers.map((layer, idx) => (
+                        <div key={layer.id} className="space-y-1.5 p-2 bg-white rounded border border-slate-100">
+                          <div className="flex items-center justify-between">
+                            <div className="font-medium text-slate-700 text-xs truncate flex-1">{layer.name}</div>
+                            <div className="flex gap-1 ml-2 flex-shrink-0">
+                              {idx > 0 && (
+                                <button
+                                  onClick={() => setKmzLayers(prev => {
+                                    const arr = [...prev];
+                                    const currentIdx = arr.findIndex(l => l.id === layer.id);
+                                    [arr[currentIdx - 1], arr[currentIdx]] = [arr[currentIdx], arr[currentIdx - 1]];
+                                    return arr;
+                                  })}
+                                  className="text-slate-400 hover:text-slate-600 text-xs leading-none"
+                                >
+                                  ▲
+                                </button>
+                              )}
+                              {idx < categoryLayers.length - 1 && (
+                                <button
+                                  onClick={() => setKmzLayers(prev => {
+                                    const arr = [...prev];
+                                    const currentIdx = arr.findIndex(l => l.id === layer.id);
+                                    [arr[currentIdx], arr[currentIdx + 1]] = [arr[currentIdx + 1], arr[currentIdx]];
+                                    return arr;
+                                  })}
+                                  className="text-slate-400 hover:text-slate-600 text-xs leading-none"
+                                >
+                                  ▼
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="range"
+                              min="0"
+                              max="100"
+                              value={(layer.opacity || 0.8) * 100}
+                              onChange={(e) => setKmzLayers(prev => prev.map(l => l.id === layer.id ? { ...l, opacity: parseFloat(e.target.value) / 100 } : l))}
+                              className="flex-1 h-1.5 cursor-pointer"
+                            />
+                            <span className="text-slate-500 text-xs w-6 text-right">{Math.round((layer.opacity || 0.8) * 100)}%</span>
+                          </div>
+                          <button
+                            onClick={() => setKmzLayers(prev => prev.filter(l => l.id !== layer.id))}
+                            className="w-full text-xs text-slate-400 hover:text-red-500 py-1 text-center flex items-center justify-center gap-1"
+                          >
+                            <Trash2 className="h-3 w-3" /> Remove
+                          </button>
+                        </div>
+                      ))}
                     </div>
-                    <button onClick={() => setKmzLayers(prev => prev.filter(l => l.id !== layer.id))} className="text-slate-400 hover:text-red-500 flex-shrink-0 mt-0.5">
-                      <Trash2 className="h-3 w-3" />
-                    </button>
-                  </div>
-                );
-              })}
+                  )}
+                </div>
+              ))}
             </div>
           </div>
         )}
