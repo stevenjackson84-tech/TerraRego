@@ -635,6 +635,16 @@ Generate a realistic land parcel analysis. Include:
           >
             ⛰️ {slopeLoading ? "Loading Slopes..." : "Slopes >30%"}
           </Button>
+          <input ref={kmzInputRef} type="file" accept=".kmz,.kml" className="hidden" onChange={handleKmzUpload} />
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => kmzInputRef.current?.click()}
+            className="text-xs flex items-center gap-1"
+          >
+            <Upload className="h-3 w-3" />
+            KMZ/KML
+          </Button>
         </div>
       </div>
 
