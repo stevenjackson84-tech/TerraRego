@@ -469,6 +469,15 @@ export default function CADDrafter() {
         </text>
       );
     }
+    if (s.type === 'arc') {
+      // Quadratic bezier arc for fillet
+      const { x1, y1, x2, y2, corner } = s;
+      const d = `M ${x1} ${y1} Q ${corner.x} ${corner.y} ${x2} ${y2}`;
+      return (
+        <path key={s.id} d={d} stroke={selStroke} strokeWidth={s.strokeWidth / zoom} fill="none"
+          strokeLinecap="round" {...events} />
+      );
+    }
     return null;
   };
 
