@@ -196,7 +196,9 @@ export default function GISMap() {
       const result = await base44.integrations.Core.InvokeLLM({
         prompt: `You are a real estate GIS analyst. A user clicked on coordinates lat: ${latlng.lat.toFixed(5)}, lng: ${latlng.lng.toFixed(5)}.
 
-Generate a realistic land parcel analysis for this location. Include:
+${ownerContext}
+
+Generate a land parcel analysis for this location. Include:
 - Estimated parcel size (acres)
 - Estimated zoning type
 - Land use category
@@ -205,6 +207,7 @@ Generate a realistic land parcel analysis for this location. Include:
 - Key observations about this location for land acquisition
 - Nearby infrastructure notes
 - Any notable risks or opportunities
+- Owner name if available from real data
 
 Be specific and realistic based on the geographic coordinates provided.`,
         add_context_from_internet: true,
