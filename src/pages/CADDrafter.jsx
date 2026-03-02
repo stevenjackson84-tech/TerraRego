@@ -511,6 +511,8 @@ export default function CADDrafter() {
     { id: TOOLS.RECT, icon: Square, label: "Rectangle (R)" },
     { id: TOOLS.CIRCLE, icon: Circle, label: "Ellipse (E)" },
     { id: TOOLS.TEXT, icon: Type, label: "Text (T)" },
+    { id: TOOLS.OFFSET, icon: CopyPlus, label: "Offset – click a line/rect to offset it" },
+    { id: TOOLS.FILLET, icon: Spline, label: "Fillet – click two lines to round their corner" },
   ];
 
   // Keyboard shortcuts
