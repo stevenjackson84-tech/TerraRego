@@ -156,6 +156,7 @@ export default function Deals() {
                 deal={deal} 
                 tasks={allTasks.filter(t => t.deal_id === deal.id)}
                 proforma={allProformas.find(p => p.deal_id === deal.id)}
+                planDoc={planDocs.find(d => d.entity_id === deal.id)}
               />
             ))}
             {filteredDeals.length === 0 && (
