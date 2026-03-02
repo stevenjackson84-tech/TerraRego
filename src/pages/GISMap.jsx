@@ -517,7 +517,7 @@ Generate a realistic land parcel analysis. Include:
           )}
 
           {/* Salt Lake County Parcels - GeoJSON from UGRC SGID (zoom 14+) */}
-          {showParcels && parcelData && (
+          {showParcels && parcelData && parcelData.features && parcelData.features.length > 0 && (
             <GeoJSON
               key={JSON.stringify(parcelData?.features?.length)}
               data={parcelData}
