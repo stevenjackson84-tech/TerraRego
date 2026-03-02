@@ -1082,6 +1082,7 @@ Generate a realistic land parcel analysis. Include:
                         <div className="text-xs text-blue-700">{parcelInfo.infrastructure}</div>
                       </div>
                     )}
+                    <SendToClickUp parcelInfo={parcelInfo} location={clickedLocation} />
                   </div>
                 )}
               </CardContent>
