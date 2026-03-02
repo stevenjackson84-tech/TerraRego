@@ -350,6 +350,14 @@ export default function GISMap() {
     const file = e.target.files[0];
     if (!file) return;
     e.target.value = "";
+    setPendingKmzFile(file);
+    setKmzCategoryDialog(true);
+  }, []);
+
+  const confirmKmzUpload = useCallback(async () => {
+    if (!pendingKmzFile) return;
+    
+    const file = pendingKmzFile;
     const name = file.name.replace(/\.(kmz|kml)$/i, "");
     let kmlText;
     let zip = null;
@@ -404,9 +412,12 @@ export default function GISMap() {
       });
     }
 
-    setKmzLayers(prev => [...prev, { name, geojson, imageOverlays, id: Date.now() }]);
+    setKmzLayers(prev => [...prev, { name, geojson, imageOverlays, id: Date.now(), category: selectedKmzCategory }]);
     setShowImageOverlays(true);
-  }, []);
+    setKmzCategoryDialog(false);
+    setPendingKmzFile(null);
+    setSelectedKmzCategory("custom");
+  }, [pendingKmzFile, selectedKmzCategory]);
 
   // Slope analysis: fetch elevation grid and compute >30% slopes
   const fetchSlopeData = async (bounds) => {
