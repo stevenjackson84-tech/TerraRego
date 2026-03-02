@@ -326,6 +326,27 @@ export default function GISMap() {
     }
   };
 
+  // Parse a KMZ (or KML) file and add it as a GeoJSON layer
+  const handleKmzUpload = useCallback(async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    e.target.value = "";
+    const name = file.name.replace(/\.(kmz|kml)$/i, "");
+    let kmlText;
+    if (file.name.toLowerCase().endsWith(".kmz")) {
+      const zip = await JSZip.loadAsync(file);
+      const kmlFile = Object.values(zip.files).find(f => f.name.toLowerCase().endsWith(".kml"));
+      if (!kmlFile) return alert("No KML found inside KMZ.");
+      kmlText = await kmlFile.async("text");
+    } else {
+      kmlText = await file.text();
+    }
+    const parser = new DOMParser();
+    const xmlDoc = parser.parseFromString(kmlText, "text/xml");
+    const geojson = kml(xmlDoc);
+    setKmzLayers(prev => [...prev, { name, geojson, id: Date.now() }]);
+  }, []);
+
   // Slope analysis: fetch elevation grid and compute >30% slopes
   const fetchSlopeData = async (bounds) => {
     if (!bounds) return;
