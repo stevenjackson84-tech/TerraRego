@@ -141,6 +141,7 @@ export default function GISMap() {
   const [showSensitiveLands, setShowSensitiveLands] = useState(false);
   const [showFloodZones, setShowFloodZones] = useState(false);
   const [showFaultLines, setShowFaultLines] = useState(false);
+  const [showPlanDocs, setShowPlanDocs] = useState(true);
   const [showWUI, setShowWUI] = useState(false);
   const [wuiData, setWuiData] = useState(null);
   const [wuiLoading, setWuiLoading] = useState(false);
