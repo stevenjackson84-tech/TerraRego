@@ -109,9 +109,7 @@ export default function Layout({ children, currentPageName }) {
               <Menu className="h-5 w-5" />
             </Button>
             <Link to={createPageUrl("Dashboard")} className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-slate-900 flex items-center justify-center">
-                <Building2 className="h-5 w-5 text-white" />
-              </div>
+              <img src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/698a2099619afaafce3010e1/362b1f7a2_12cc719e-d419-49b8-99a5-7eeb303f114c.png" alt="Parcelr" className="h-8 w-8 object-contain" />
               <span className="text-lg font-semibold text-slate-900">Parcelr</span>
             </Link>
             <div className="w-10" />
