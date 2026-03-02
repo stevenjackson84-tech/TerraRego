@@ -960,6 +960,37 @@ Generate a realistic land parcel analysis. Include:
             );
           })}
 
+          {/* Zillow for sale comps */}
+          {showZillow && zillowData && zillowData.features && zillowData.features.length > 0 && (
+            <GeoJSON
+              key="zillow-comps"
+              data={zillowData}
+              pointToLayer={(feature, latlng) => L.circleMarker(latlng, {
+                radius: 8,
+                color: "#3b82f6",
+                weight: 2,
+                fillColor: "#93c5fd",
+                fillOpacity: 0.8,
+              })}
+              onEachFeature={(feature, layer) => {
+                const props = feature.properties;
+                const price = props.price ? `$${parseInt(props.price).toLocaleString()}` : "N/A";
+                const beds = props.beds ? `${props.beds}bd` : "";
+                const baths = props.baths ? `${props.baths}ba` : "";
+                const sqft = props.sqft ? `${parseInt(props.sqft).toLocaleString()} sqft` : "";
+                const details = [beds, baths, sqft].filter(Boolean).join(" • ");
+                const popup = `<div style="font-size:11px;line-height:1.5">
+                  <b>${props.address || "Property"}</b><br/>
+                  ${price}<br/>
+                  ${details}<br/>
+                  <a href="${props.url || '#'}" target="_blank" style="color:#3b82f6">View on Zillow →</a>
+                </div>`;
+                layer.bindPopup(popup);
+                layer.bindTooltip(`${price}`, { sticky: true });
+              }}
+            />
+          )}
+
           {/* KMZ/KML layers */}
           {kmzLayers.map((layer) => (
             <>
