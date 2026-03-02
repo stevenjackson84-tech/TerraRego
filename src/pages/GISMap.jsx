@@ -244,6 +244,7 @@ export default function GISMap() {
   const [slopeData, setSlopeData] = useState(null);
   const [slopeLoading, setSlopeLoading] = useState(false);
   const [kmzLayers, setKmzLayers] = useState([]); // [{name, geojson, imageOverlays}]
+  const [showImageOverlays, setShowImageOverlays] = useState(true);
   const kmzInputRef = useRef(null);
 
   const { data: deals = [] } = useQuery({
