@@ -626,6 +626,28 @@ export default function CADDrafter() {
             >
               Snap
             </button>
+            <button
+              onClick={() => setOrthoEnabled(o => !o)}
+              className={`text-xs px-2 py-1 rounded font-semibold ${orthoEnabled ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-500"}`}
+              title="Ortho mode – constrains lines to H/V (F8)"
+            >
+              Ortho
+            </button>
+            {tool === TOOLS.OFFSET && (
+              <div className="flex items-center gap-1 bg-slate-100 rounded px-2 py-1">
+                <span className="text-xs text-slate-500">Offset dist</span>
+                <input type="number" value={offsetDistance} onChange={e => setOffsetDistance(Number(e.target.value))}
+                  className="w-12 text-xs bg-transparent border-0 outline-none" min={1} />
+              </div>
+            )}
+            {tool === TOOLS.FILLET && (
+              <div className="flex items-center gap-1 bg-slate-100 rounded px-2 py-1">
+                <span className="text-xs text-slate-500">Fillet R</span>
+                <input type="number" value={filletRadius} onChange={e => setFilletRadius(Number(e.target.value))}
+                  className="w-12 text-xs bg-transparent border-0 outline-none" min={1} />
+                {filletFirst && <span className="text-xs text-indigo-600 ml-1">Select 2nd line…</span>}
+              </div>
+            )}
             <div className="flex items-center gap-1">
               <button onClick={() => setZoom(z => Math.max(0.1, z / 1.2))} className="p-1.5 rounded bg-slate-100 text-slate-600 hover:bg-slate-200">
                 <ZoomOut className="h-3 w-3" />
