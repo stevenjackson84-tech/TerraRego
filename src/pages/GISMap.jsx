@@ -388,6 +388,7 @@ export default function GISMap() {
     }
 
     setKmzLayers(prev => [...prev, { name, geojson, imageOverlays, id: Date.now() }]);
+    setShowImageOverlays(true);
   }, []);
 
   // Slope analysis: fetch elevation grid and compute >30% slopes
