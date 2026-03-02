@@ -419,6 +419,7 @@ Generate a realistic land parcel analysis. Include:
             attribution={tileLayers[tileLayer].attribution}
           />
           <ClickHandler onMapClick={handleMapClick} />
+          <ParcelBoundsLoader showParcels={showParcels} onBoundsChange={fetchParcelsForBounds} />
 
           {/* FEMA Flood Zones - official FEMA WMS service */}
           {showFloodZones && (
