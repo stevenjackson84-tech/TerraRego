@@ -460,25 +460,30 @@ Generate a realistic land parcel analysis. Include:
             />
           )}
 
-          {/* Utah County Parcels - GeoJSON from UGRC SGID */}
+          {/* Salt Lake County Parcels - GeoJSON from UGRC SGID (zoom 14+) */}
           {showParcels && parcelData && (
             <GeoJSON
-              key="parcel-layer"
+              key={JSON.stringify(parcelData?.features?.length)}
               data={parcelData}
               style={() => ({
                 color: "#b45309",
                 weight: 1,
-                opacity: 0.8,
+                opacity: 0.9,
                 fillColor: "#fef3c7",
-                fillOpacity: 0.15,
+                fillOpacity: 0.2,
               })}
               onEachFeature={(feature, layer) => {
                 const p = feature.properties;
-                if (p?.OWNER || p?.PARCEL_ID) {
-                  layer.bindTooltip(
-                    `<div style="font-size:11px"><b>${p.OWNER || "Unknown"}</b><br/>Parcel: ${p.PARCEL_ID || "N/A"}</div>`,
-                    { sticky: true }
-                  );
+                const lines = [
+                  p?.PARCEL_ID && `<b>Parcel:</b> ${p.PARCEL_ID}`,
+                  p?.PARCEL_ADD && `<b>Address:</b> ${p.PARCEL_ADD}`,
+                  p?.OWNER && `<b>Owner:</b> ${p.OWNER}`,
+                  p?.PROP_CLASS && `<b>Class:</b> ${p.PROP_CLASS}`,
+                  p?.PARCEL_ACRES && `<b>Acres:</b> ${parseFloat(p.PARCEL_ACRES).toFixed(2)}`,
+                  p?.TOTAL_MKT_VALUE && `<b>Market Value:</b> $${parseInt(p.TOTAL_MKT_VALUE).toLocaleString()}`,
+                ].filter(Boolean).join("<br/>");
+                if (lines) {
+                  layer.bindTooltip(`<div style="font-size:11px;line-height:1.5">${lines}</div>`, { sticky: true });
                 }
               }}
             />
