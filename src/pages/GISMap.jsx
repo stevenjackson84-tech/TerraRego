@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { MapContainer, TileLayer, WMSTileLayer, Marker, Popup, useMapEvents, GeoJSON, useMap, Tooltip } from "react-leaflet";
+import { MapContainer, TileLayer, WMSTileLayer, Marker, Popup, useMapEvents, GeoJSON, useMap, Tooltip, ImageOverlay } from "react-leaflet";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
