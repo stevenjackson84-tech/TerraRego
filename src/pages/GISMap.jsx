@@ -260,6 +260,9 @@ export default function GISMap() {
     const stored = localStorage.getItem("gis_kmz_group_visibility");
     return stored ? JSON.parse(stored) : {};
   });
+  const [showZillow, setShowZillow] = useState(false);
+  const [zillowData, setZillowData] = useState(null);
+  const [zillowLoading, setZillowLoading] = useState(false);
 
   // Persist KMZ layers to localStorage
   useEffect(() => {
