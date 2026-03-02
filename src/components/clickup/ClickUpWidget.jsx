@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ExternalLink, RefreshCw, CheckCircle2, Circle, Clock, AlertCircle, ChevronDown, ChevronRight, Star } from "lucide-react";
 import { cn } from "@/lib/utils";
+import ClickUpCalendarView from "./ClickUpCalendarView";
 
 const priorityConfig = {
   1: { label: "Urgent", color: "bg-red-100 text-red-700" },
