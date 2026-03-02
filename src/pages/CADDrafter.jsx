@@ -16,6 +16,8 @@ const TOOLS = {
   CIRCLE: "circle",
   TEXT: "text",
   PAN: "pan",
+  OFFSET: "offset",
+  FILLET: "fillet",
 };
 
 const SNAP_THRESHOLD = 8; // pixels
