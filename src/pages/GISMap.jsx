@@ -69,6 +69,30 @@ function ClickHandler({ onMapClick }) {
   return null;
 }
 
+function ParcelBoundsLoader({ showParcels, onBoundsChange }) {
+  const map = useMap();
+  useMapEvents({
+    moveend() {
+      if (showParcels && map.getZoom() >= 14) {
+        onBoundsChange(map.getBounds());
+      }
+    },
+    zoomend() {
+      if (showParcels && map.getZoom() >= 14) {
+        onBoundsChange(map.getBounds());
+      }
+    },
+  });
+
+  useEffect(() => {
+    if (showParcels && map.getZoom() >= 14) {
+      onBoundsChange(map.getBounds());
+    }
+  }, [showParcels]);
+
+  return null;
+}
+
 async function geocodeAddress(address, city, state) {
   const query = [address, city, state].filter(Boolean).join(", ");
   if (!query.trim()) return null;
