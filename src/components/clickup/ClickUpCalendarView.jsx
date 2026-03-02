@@ -186,6 +186,64 @@ export default function ClickUpCalendarView({ tasks = [], selectedList, selected
           )}
         </div>
       </div>
+
+      {/* Create Task Dialog */}
+      <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
+        <DialogContent className="sm:max-w-[400px]">
+          <DialogHeader>
+            <DialogTitle>Create Task</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <label className="text-sm font-medium text-slate-700 mb-1 block">Task Name</label>
+              <Input
+                placeholder="Task name"
+                value={newTaskName}
+                onChange={(e) => setNewTaskName(e.target.value)}
+                className="h-9"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium text-slate-700 mb-1 block">Description (optional)</label>
+              <Textarea
+                placeholder="Add details..."
+                value={newTaskDesc}
+                onChange={(e) => setNewTaskDesc(e.target.value)}
+                className="min-h-20 text-sm"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium text-slate-700 mb-1 block">Priority</label>
+              <Select value={newTaskPriority} onValueChange={setNewTaskPriority}>
+                <SelectTrigger className="h-9">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="1">Urgent</SelectItem>
+                  <SelectItem value="2">High</SelectItem>
+                  <SelectItem value="3">Normal</SelectItem>
+                  <SelectItem value="4">Low</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="bg-slate-50 rounded p-2 text-xs text-slate-600">
+              📅 Due: {format(selectedDate, "EEEE, MMMM d, yyyy")}
+            </div>
+            <div className="flex gap-2 justify-end pt-2">
+              <Button variant="outline" onClick={() => setShowCreateDialog(false)} className="h-8">
+                Cancel
+              </Button>
+              <Button
+                onClick={handleCreateTask}
+                disabled={!newTaskName.trim() || isCreating}
+                className="bg-violet-600 hover:bg-violet-700 h-8"
+              >
+                {isCreating ? "Creating..." : "Create Task"}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
