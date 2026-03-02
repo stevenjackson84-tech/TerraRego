@@ -90,19 +90,19 @@ function ParcelBoundsLoader({ showParcels, onBoundsChange }) {
   const map = useMap();
   useMapEvents({
     moveend() {
-      if (showParcels && map.getZoom() >= 14) {
+      if (showParcels && map.getZoom() >= 13) {
         onBoundsChange(map.getBounds());
       }
     },
     zoomend() {
-      if (showParcels && map.getZoom() >= 14) {
+      if (showParcels && map.getZoom() >= 13) {
         onBoundsChange(map.getBounds());
       }
     },
   });
 
   useEffect(() => {
-    if (showParcels && map.getZoom() >= 14) {
+    if (showParcels) {
       onBoundsChange(map.getBounds());
     }
   }, [showParcels]);
