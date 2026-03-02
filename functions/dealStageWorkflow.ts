@@ -24,9 +24,11 @@ Deno.serve(async (req) => {
       return Response.json({ success: true, message: 'Stage not in trigger list' });
     }
 
-    // Get assigned user email and sales manager (assume it's the current user or from a config)
-    const assignedEmail = deal.assigned_to || user.email;
-    const salesManagerEmail = user.email; // Sales manager is the logged-in user
+    const salesManagerEmail = user.email;
+
+    // Fetch applicable task template for this stage
+    const templates = await base44.entities.TaskTemplate.filter({ deal_stage: stage, is_active: true });
+    const template = templates && templates.length > 0 ? templates[0] : null;
 
     // Create ClickUp task
     const clickupApiKey = Deno.env.get('CLICKUP_API_KEY');
@@ -34,17 +36,30 @@ Deno.serve(async (req) => {
       console.warn('CLICKUP_API_KEY not set, skipping task creation');
     } else {
       try {
-        // Get ClickUp workspace and list ID (hardcoded or from config - using default workspace/list)
-        const workspaceId = '90150687696'; // Default ClickUp workspace
         const listId = '901506797614'; // Default list for deals
 
-        const stageLabel = {
-          controlled_approved: 'Controlled (Approved)',
-          owned: 'Owned'
-        }[stage];
+        let taskName, taskDescription, priority, dueDaysOffset;
 
-        const taskName = `${stageLabel}: ${deal.name}`;
-        const taskDescription = `Deal Details:
+        if (template) {
+          // Use template
+          taskName = template.task_name_template
+            .replace('{deal_name}', deal.name)
+            .replace('{deal_address}', deal.address || 'N/A');
+          taskDescription = template.description_template
+            .replace('{deal_name}', deal.name)
+            .replace('{deal_address}', deal.address || 'N/A')
+            .replace('{deal_city}', deal.city || 'N/A');
+          priority = template.priority;
+          dueDaysOffset = template.due_date_offset_days;
+        } else {
+          // Fallback to default
+          const stageLabel = {
+            controlled_approved: 'Controlled (Approved)',
+            owned: 'Owned'
+          }[stage];
+
+          taskName = `${stageLabel}: ${deal.name}`;
+          taskDescription = `Deal Details:
 - Name: ${deal.name}
 - Address: ${deal.address || 'N/A'}
 - City: ${deal.city || 'N/A'}
@@ -54,6 +69,9 @@ Deno.serve(async (req) => {
 - Assigned To: ${deal.assigned_to || 'Unassigned'}
 
 View full deal: https://your-app-url.com/deals/${deal.id}`;
+          priority = stage === 'owned' ? 3 : 2;
+          dueDaysOffset = 7;
+        }
 
         const taskResponse = await fetch(`https://api.clickup.com/api/v2/list/${listId}/task`, {
           method: 'POST',
@@ -64,8 +82,9 @@ View full deal: https://your-app-url.com/deals/${deal.id}`;
           body: JSON.stringify({
             name: taskName,
             description: taskDescription,
-            priority: stage === 'owned' ? 3 : 2, // Higher priority for Owned
-            due_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).getTime() // 7 days from now
+            priority,
+            due_date: new Date(Date.now() + dueDaysOffset * 24 * 60 * 60 * 1000).getTime(),
+            tags: template?.tags || []
           })
         });
 
