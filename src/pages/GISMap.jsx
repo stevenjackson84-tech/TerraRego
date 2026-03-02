@@ -535,6 +535,16 @@ Generate a realistic land parcel analysis. Include:
                   </div>
                 ) : parcelInfo && (
                   <div className="space-y-3 text-sm">
+                    {(parcelInfo.owner_name || parcelInfo.parcel_id) && (
+                      <div className="bg-indigo-50 rounded-lg p-2 border border-indigo-100">
+                        {parcelInfo.owner_name && (
+                          <div className="text-xs text-indigo-600 font-semibold mb-0.5">Owner: {parcelInfo.owner_name}</div>
+                        )}
+                        {parcelInfo.parcel_id && (
+                          <div className="text-xs text-indigo-500">Parcel ID: {parcelInfo.parcel_id}</div>
+                        )}
+                      </div>
+                    )}
                     <div className="grid grid-cols-2 gap-2">
                       <div className="bg-slate-50 rounded-lg p-2">
                         <div className="text-xs text-slate-500">Size</div>
