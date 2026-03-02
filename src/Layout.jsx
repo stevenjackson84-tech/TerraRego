@@ -30,6 +30,7 @@ const navigation = [
   { name: "Tasks", icon: ClipboardList, page: "Tasks" },
   { name: "Entitlements", icon: FileCheck, page: "Entitlements" },
   { name: "Development", icon: HardHat, page: "Development" },
+  { name: "Floor Plans", icon: Building2, page: "FloorPlansLibrary" },
   { name: "Business Plan", icon: FileText, page: "BusinessPlan" },
   { name: "Analytics", icon: TrendingUp, page: "Analytics" },
   { name: "Reports", icon: FileText, page: "Reports" },
