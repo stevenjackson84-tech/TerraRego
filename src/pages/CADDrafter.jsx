@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import {
   MousePointer2, Minus, Square, Circle, Type, Move,
   Trash2, Download, RotateCcw, RotateCw, ZoomIn, ZoomOut,
-  Grid3x3, CopyPlus, Spline
+  Grid3x3, CopyPlus, Spline, Eraser
 } from "lucide-react";
 
 const TOOLS = {
