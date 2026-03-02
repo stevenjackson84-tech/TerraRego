@@ -582,6 +582,44 @@ Generate a realistic land parcel analysis. Include:
             </Marker>
           ))}
 
+          {/* Plan PDF markers - pinned at deal coordinates */}
+          {showPlanDocs && planDocs.map((doc) => {
+            // Find the matching deal location for this document
+            const dealLoc = dealLocations.find(d => d.deal.id === doc.entity_id);
+            if (!dealLoc) return null;
+            // Slightly offset so PDF pin doesn't sit exactly on deal pin
+            const lat = dealLoc.coords.lat + 0.0003;
+            const lng = dealLoc.coords.lng + 0.0003;
+            return (
+              <Marker
+                key={doc.id}
+                position={[lat, lng]}
+                icon={createPDFIcon()}
+              >
+                <Popup>
+                  <div className="min-w-[200px]">
+                    <div className="flex items-center gap-1.5 mb-2">
+                      <FileText className="h-4 w-4 text-red-500 flex-shrink-0" />
+                      <span className="font-semibold text-sm text-slate-900 leading-tight">{doc.name}</span>
+                    </div>
+                    <div className="text-xs text-slate-500 mb-1">Deal: {dealLoc.deal.name}</div>
+                    {doc.description && (
+                      <div className="text-xs text-slate-600 mb-2">{doc.description}</div>
+                    )}
+                    <a
+                      href={doc.file_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-block mt-1 px-3 py-1.5 bg-red-500 hover:bg-red-600 text-white text-xs rounded font-medium"
+                    >
+                      Open PDF →
+                    </a>
+                  </div>
+                </Popup>
+              </Marker>
+            );
+          })}
+
           {/* Clicked location pin */}
           {clickedLocation && (
             <Marker position={[clickedLocation.lat, clickedLocation.lng]}>
