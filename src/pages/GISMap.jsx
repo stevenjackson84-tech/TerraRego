@@ -419,16 +419,12 @@ Generate a realistic land parcel analysis. Include:
             />
           )}
 
-          {/* Utah County Parcel Boundaries - Parcel_TaxParcels_Simple_wgs84 via ArcGIS WMS */}
+          {/* Utah Parcels - AGRC public tile service */}
           {showParcels && (
-            <WMSTileLayer
-              url="https://maps.utahcounty.gov/arcgis/services/Parcels/Parcel_TaxParcels_Simple_wgs84/MapServer/WMSServer"
-              layers="0"
-              format="image/png"
-              transparent={true}
-              opacity={0.7}
-              version="1.3.0"
-              attribution='<a href="https://maps.utahcounty.gov">Utah County GIS</a>'
+            <TileLayer
+              url="https://tiles.arcgis.com/tiles/ZzrwjTRez6FJiOq4/arcgis/rest/services/Utah_Parcels/MapServer/tile/{z}/{y}/{x}"
+              attribution='<a href="https://gis.utah.gov">Utah AGRC Parcels</a>'
+              opacity={0.6}
               zIndex={8}
             />
           )}
