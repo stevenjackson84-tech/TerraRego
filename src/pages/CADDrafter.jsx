@@ -18,6 +18,7 @@ const TOOLS = {
   PAN: "pan",
   OFFSET: "offset",
   FILLET: "fillet",
+  ERASE: "erase",
 };
 
 const SNAP_THRESHOLD = 8; // pixels
