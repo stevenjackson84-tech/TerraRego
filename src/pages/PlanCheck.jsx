@@ -300,6 +300,22 @@ Be thorough and specific. If a required value cannot be determined from the plan
             <CardTitle className="text-base">Plan Check Setup</CardTitle>
           </CardHeader>
           <CardContent className="space-y-5">
+            {/* Project Info */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="space-y-1.5">
+                <Label>Project Name <span className="text-slate-400 font-normal">(optional)</span></Label>
+                <Input placeholder="e.g. Sunset Ridge Subdivision" value={projectName} onChange={e => setProjectName(e.target.value)} />
+              </div>
+              <div className="space-y-1.5">
+                <Label>Project Address <span className="text-slate-400 font-normal">(optional)</span></Label>
+                <Input placeholder="e.g. 1234 Main St" value={projectAddress} onChange={e => setProjectAddress(e.target.value)} />
+              </div>
+              <div className="space-y-1.5">
+                <Label>Prepared By <span className="text-slate-400 font-normal">(optional)</span></Label>
+                <Input placeholder="e.g. John Smith, PE" value={preparedBy} onChange={e => setPreparedBy(e.target.value)} />
+              </div>
+            </div>
+
             {/* Municipality */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-1.5">
