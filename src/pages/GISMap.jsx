@@ -102,6 +102,8 @@ export default function GISMap() {
   const [showWUI, setShowWUI] = useState(false);
   const [wuiData, setWuiData] = useState(null);
   const [wuiLoading, setWuiLoading] = useState(false);
+  const [parcelData, setParcelData] = useState(null);
+  const [parcelLoading, setParcelLoading] = useState(false);
   const [dealLocations, setDealLocations] = useState([]);
 
   const { data: deals = [] } = useQuery({
