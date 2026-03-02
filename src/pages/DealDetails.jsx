@@ -458,10 +458,13 @@ export default function DealDetails() {
           </TabsContent>
 
           <TabsContent value="market">
-            <MarketAnalysisTab 
-              dealId={dealId}
-              proforma={proforma}
-            />
+            <div className="space-y-6">
+              <MarketAnalysisTab 
+                dealId={dealId}
+                proforma={proforma}
+              />
+              <ZondaMarketAnalysis deal={deal} />
+            </div>
           </TabsContent>
 
           <TabsContent value="duediligence">
