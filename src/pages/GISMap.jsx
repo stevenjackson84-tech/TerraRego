@@ -641,6 +641,37 @@ Generate a realistic land parcel analysis. Include:
           </div>
         )}
 
+        {/* PDF Viewer Panel */}
+        {activePdfDoc && (
+          <div className="absolute top-4 left-4 z-10 w-[560px] h-[75vh] flex flex-col bg-white rounded-xl shadow-2xl border border-slate-200 overflow-hidden">
+            <div className="flex items-center justify-between px-4 py-2.5 bg-slate-900 text-white flex-shrink-0">
+              <div className="flex items-center gap-2 min-w-0">
+                <FileText className="h-4 w-4 text-red-400 flex-shrink-0" />
+                <span className="font-semibold text-sm truncate">{activePdfDoc.doc.name}</span>
+                <span className="text-xs text-slate-400 flex-shrink-0">— {activePdfDoc.dealLoc.deal.name}</span>
+              </div>
+              <div className="flex items-center gap-2 flex-shrink-0 ml-2">
+                <a
+                  href={activePdfDoc.doc.file_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs text-slate-300 hover:text-white underline"
+                >
+                  Open full ↗
+                </a>
+                <button onClick={() => setActivePdfDoc(null)} className="text-slate-400 hover:text-white ml-1">
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+            <iframe
+              src={`${activePdfDoc.doc.file_url}#toolbar=0`}
+              className="flex-1 w-full border-0"
+              title={activePdfDoc.doc.name}
+            />
+          </div>
+        )}
+
         {/* Parcel Info Panel */}
         {(isAnalyzing || parcelInfo) && (
           <div className="absolute top-4 right-4 z-10 w-80">
