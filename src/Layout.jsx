@@ -35,6 +35,7 @@ const navigation = [
   { name: "Process Improvement", icon: Sigma, page: "LeanSixSigma" },
   { name: "GIS Map", icon: Map, page: "GISMap" },
   { name: "Plan Check", icon: FileCheck, page: "PlanCheck" },
+  { name: "CAD Drafter", icon: Layers, page: "CADDrafter" },
 ];
 
 export default function Layout({ children, currentPageName }) {
