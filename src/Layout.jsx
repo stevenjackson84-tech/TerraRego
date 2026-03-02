@@ -32,7 +32,7 @@ const navigation = [
   { name: "Business Plan", icon: FileText, page: "BusinessPlan" },
   { name: "Analytics", icon: TrendingUp, page: "Analytics" },
   { name: "Reports", icon: FileText, page: "Reports" },
-  { name: "Lean Six Sigma", icon: Sigma, page: "LeanSixSigma" },
+  { name: "Process Improvement", icon: Sigma, page: "LeanSixSigma" },
   { name: "GIS Map", icon: Map, page: "GISMap" },
   { name: "Plan Check", icon: FileCheck, page: "PlanCheck" },
 ];
