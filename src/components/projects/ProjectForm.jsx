@@ -217,6 +217,14 @@ export default function ProjectForm({ project, deals, open, onClose, onSave, isL
             </div>
           </div>
 
+          <div className="grid grid-cols-2 gap-4">
+            <LatLngPasteInput
+              latitude={formData.latitude}
+              longitude={formData.longitude}
+              onChange={(lat, lng) => setFormData(prev => ({ ...prev, latitude: lat, longitude: lng }))}
+            />
+          </div>
+
           <DialogFooter>
             <Button type="button" variant="outline" onClick={onClose}>Cancel</Button>
             <Button type="submit" disabled={isLoading} className="bg-slate-900 hover:bg-slate-800">

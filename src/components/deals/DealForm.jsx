@@ -254,6 +254,12 @@ export default function DealForm({ deal, open, onClose, onSave, isLoading }) {
               />
             </div>
 
+            <LatLngPasteInput
+              latitude={formData.latitude}
+              longitude={formData.longitude}
+              onChange={(lat, lng) => setFormData(prev => ({ ...prev, latitude: lat, longitude: lng }))}
+            />
+
             <div className="col-span-2">
               <Label htmlFor="notes">Notes</Label>
               <Textarea
