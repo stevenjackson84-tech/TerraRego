@@ -144,8 +144,67 @@ export default function ClickUpWidget() {
 
       {expanded && (
         <CardContent className="px-4 pb-4 space-y-3">
-          {/* Filters */}
-          <div className="flex gap-2 flex-wrap">
+          {/* Tabs */}
+          <div className="flex gap-1 border-b border-slate-200">
+            <button
+              onClick={() => setActiveTab("dashboards")}
+              className={cn(
+                "text-xs px-2 py-2 border-b-2 font-medium transition-colors",
+                activeTab === "dashboards"
+                  ? "border-violet-600 text-violet-700"
+                  : "border-transparent text-slate-500 hover:text-slate-700"
+              )}
+            >
+              Dashboards
+            </button>
+            <button
+              onClick={() => setActiveTab("tasks")}
+              className={cn(
+                "text-xs px-2 py-2 border-b-2 font-medium transition-colors",
+                activeTab === "tasks"
+                  ? "border-violet-600 text-violet-700"
+                  : "border-transparent text-slate-500 hover:text-slate-700"
+              )}
+            >
+              Tasks
+            </button>
+          </div>
+
+          {/* Dashboards Tab */}
+          {activeTab === "dashboards" && (
+            dashboardsLoading ? (
+              <div className="space-y-2">
+                {[...Array(3)].map((_, i) => (
+                  <div key={i} className="h-8 bg-slate-100 rounded animate-pulse" />
+                ))}
+              </div>
+            ) : dashboards.length > 0 ? (
+              <div className="space-y-1.5 max-h-64 overflow-y-auto">
+                {dashboards.map(dash => (
+                  <a
+                    key={dash.id}
+                    href={`https://app.clickup.com/${selectedWorkspace?.id}/v/li/dashboard/${dash.id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between p-2 rounded-lg hover:bg-slate-50 group transition-colors"
+                  >
+                    <div className="text-xs font-medium text-slate-800 group-hover:text-violet-700">
+                      {dash.name}
+                    </div>
+                    <ExternalLink className="h-3 w-3 text-slate-300 group-hover:text-violet-600" />
+                  </a>
+                ))}
+              </div>
+            ) : (
+              <p className="text-xs text-slate-400 text-center py-4">No dashboards available</p>
+            )
+          )}
+
+          {/* Tasks Tab */}
+          {activeTab === "tasks" && (
+            <>
+              {/* Filters */}
+              <div className="flex gap-2 flex-wrap">
             {spaces.length > 0 && (
               <Select value={selectedSpace || ""} onValueChange={loadLists}>
                 <SelectTrigger className="h-8 text-xs w-36">
