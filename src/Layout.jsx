@@ -95,8 +95,6 @@ export default function Layout({ children, currentPageName }) {
             );
           })}
         </nav>
-
-        <FloorPlansSection />
       </aside>
 
       {/* Main content */}
