@@ -1002,6 +1002,41 @@ Generate a realistic land parcel analysis. Include:
           </div>
         )}
 
+        {/* KMZ Category Selection Dialog */}
+        {kmzCategoryDialog && (
+          <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
+            <Card className="w-96 shadow-xl">
+              <CardHeader>
+                <CardTitle className="text-base">Assign KMZ/KML Layer</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <p className="text-sm text-slate-600 mb-3">{pendingKmzFile?.name}</p>
+                  <Label className="text-sm font-medium mb-2 block">Assign to GIS Category</Label>
+                  <Select value={selectedKmzCategory} onValueChange={setSelectedKmzCategory}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {kmzCategories.map(cat => (
+                        <SelectItem key={cat.value} value={cat.value}>{cat.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="flex gap-2 justify-end">
+                  <Button variant="outline" onClick={() => { setKmzCategoryDialog(false); setPendingKmzFile(null); }}>
+                    Cancel
+                  </Button>
+                  <Button onClick={confirmKmzUpload} className="bg-slate-900 hover:bg-slate-700">
+                    Upload
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
         {/* PDF Viewer Panel */}
         {activePdfDoc && (
           <div className="absolute top-4 left-4 z-10 w-[560px] h-[75vh] flex flex-col bg-white rounded-xl shadow-2xl border border-slate-200 overflow-hidden">
