@@ -86,6 +86,94 @@ function ClickHandler({ onMapClick }) {
   return null;
 }
 
+// Fetches a grid of USGS elevation points and computes slopes >30%
+async function computeSteepSlopes(bounds) {
+  const { _southWest: sw, _northEast: ne } = bounds;
+  const GRID = 30; // 30x30 grid of elevation samples
+  const latStep = (ne.lat - sw.lat) / GRID;
+  const lngStep = (ne.lng - sw.lng) / GRID;
+
+  // Build batch request to USGS Elevation Point Query Service
+  const points = [];
+  for (let i = 0; i <= GRID; i++) {
+    for (let j = 0; j <= GRID; j++) {
+      points.push({ lat: sw.lat + i * latStep, lng: sw.lng + j * lngStep });
+    }
+  }
+
+  // Fetch elevation for all points using USGS 3DEP
+  const elevGrid = Array.from({ length: GRID + 1 }, () => new Array(GRID + 1).fill(null));
+  const batchSize = 50;
+  for (let b = 0; b < points.length; b += batchSize) {
+    const batch = points.slice(b, b + batchSize);
+    const fetches = batch.map(({ lat, lng }) =>
+      fetch(`https://epqs.nationalmap.gov/v1/json?x=${lng}&y=${lat}&wkid=4326&includeDate=false`)
+        .then(r => r.json())
+        .then(d => d?.value ?? null)
+        .catch(() => null)
+    );
+    const results = await Promise.all(fetches);
+    results.forEach((elev, idx) => {
+      const ptIdx = b + idx;
+      const row = Math.floor(ptIdx / (GRID + 1));
+      const col = ptIdx % (GRID + 1);
+      elevGrid[row][col] = elev;
+    });
+  }
+
+  // Compute slope for each cell (degrees to %)
+  // Horizontal distance between grid points in meters
+  const latMeters = latStep * 111320;
+  const lngMeters = lngStep * 111320 * Math.cos(((sw.lat + ne.lat) / 2) * Math.PI / 180);
+
+  const steepPolygons = [];
+  for (let i = 0; i < GRID; i++) {
+    for (let j = 0; j < GRID; j++) {
+      const e00 = elevGrid[i][j];
+      const e10 = elevGrid[i + 1][j];
+      const e01 = elevGrid[i][j + 1];
+      const e11 = elevGrid[i + 1][j + 1];
+      if (e00 === null || e10 === null || e01 === null || e11 === null) continue;
+
+      const dLat = ((e10 - e00) + (e11 - e01)) / (2 * latMeters);
+      const dLng = ((e01 - e00) + (e11 - e10)) / (2 * lngMeters);
+      const slopePct = Math.sqrt(dLat * dLat + dLng * dLng) * 100;
+
+      if (slopePct > 30) {
+        const cellSw = { lat: sw.lat + i * latStep, lng: sw.lng + j * lngStep };
+        steepPolygons.push({
+          type: "Feature",
+          properties: { slope: slopePct.toFixed(1) },
+          geometry: {
+            type: "Polygon",
+            coordinates: [[
+              [cellSw.lng,            cellSw.lat],
+              [cellSw.lng + lngStep,  cellSw.lat],
+              [cellSw.lng + lngStep,  cellSw.lat + latStep],
+              [cellSw.lng,            cellSw.lat + latStep],
+              [cellSw.lng,            cellSw.lat],
+            ]],
+          },
+        });
+      }
+    }
+  }
+
+  return { type: "FeatureCollection", features: steepPolygons };
+}
+
+function SlopeBoundsLoader({ showSteepSlopes, onBoundsChange }) {
+  const map = useMap();
+  useMapEvents({
+    moveend() { if (showSteepSlopes) onBoundsChange(map.getBounds()); },
+    zoomend() { if (showSteepSlopes) onBoundsChange(map.getBounds()); },
+  });
+  useEffect(() => {
+    if (showSteepSlopes) onBoundsChange(map.getBounds());
+  }, [showSteepSlopes]);
+  return null;
+}
+
 function ParcelBoundsLoader({ showParcels, onBoundsChange }) {
   const map = useMap();
   useMapEvents({
