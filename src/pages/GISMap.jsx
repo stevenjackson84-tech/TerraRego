@@ -602,6 +602,14 @@ Generate a realistic land parcel analysis. Include:
             <FileText className="h-3 w-3" />
             Plan PDFs
           </Button>
+          <Button
+            size="sm"
+            variant={showSteepSlopes ? "default" : "outline"}
+            onClick={() => { setShowSteepSlopes(!showSteepSlopes); if (showSteepSlopes) setSlopeData(null); }}
+            className="text-xs flex items-center gap-1"
+          >
+            ⛰️ {slopeLoading ? "Loading Slopes..." : "Slopes >30%"}
+          </Button>
         </div>
       </div>
 
