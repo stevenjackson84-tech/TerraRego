@@ -245,7 +245,10 @@ export default function GISMap() {
   const [showSteepSlopes, setShowSteepSlopes] = useState(false);
   const [slopeData, setSlopeData] = useState(null);
   const [slopeLoading, setSlopeLoading] = useState(false);
-  const [kmzLayers, setKmzLayers] = useState([]);
+  const [kmzLayers, setKmzLayers] = useState(() => {
+    const stored = localStorage.getItem("gis_kmz_layers");
+    return stored ? JSON.parse(stored) : [];
+  });
   const [showImageOverlays, setShowImageOverlays] = useState(() => {
     const stored = localStorage.getItem("gis_show_image_overlays");
     return stored ? JSON.parse(stored) : true;
@@ -253,7 +256,20 @@ export default function GISMap() {
   const [pendingKmzFile, setPendingKmzFile] = useState(null);
   const [kmzCategoryDialog, setKmzCategoryDialog] = useState(false);
   const [selectedKmzCategory, setSelectedKmzCategory] = useState("custom");
-  const [kmzGroupVisibility, setKmzGroupVisibility] = useState({});
+  const [kmzGroupVisibility, setKmzGroupVisibility] = useState(() => {
+    const stored = localStorage.getItem("gis_kmz_group_visibility");
+    return stored ? JSON.parse(stored) : {};
+  });
+
+  // Persist KMZ layers to localStorage
+  useEffect(() => {
+    localStorage.setItem("gis_kmz_layers", JSON.stringify(kmzLayers));
+  }, [kmzLayers]);
+
+  // Persist KMZ group visibility to localStorage
+  useEffect(() => {
+    localStorage.setItem("gis_kmz_group_visibility", JSON.stringify(kmzGroupVisibility));
+  }, [kmzGroupVisibility]);
   const kmzInputRef = useRef(null);
 
   const kmzCategories = [
