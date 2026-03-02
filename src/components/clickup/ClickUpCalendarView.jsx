@@ -25,8 +25,13 @@ function statusIcon(status) {
   return <Circle className="h-3.5 w-3.5 text-slate-400" />;
 }
 
-export default function ClickUpCalendarView({ tasks = [] }) {
+export default function ClickUpCalendarView({ tasks = [], selectedList, selectedSpace, selectedWorkspace, invoke }) {
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [newTaskName, setNewTaskName] = useState("");
+  const [newTaskDesc, setNewTaskDesc] = useState("");
+  const [newTaskPriority, setNewTaskPriority] = useState("3");
+  const [isCreating, setIsCreating] = useState(false);
 
   // Parse and organize tasks by due date
   const tasksWithDates = tasks
