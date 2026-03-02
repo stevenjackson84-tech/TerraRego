@@ -488,16 +488,17 @@ Generate a realistic land parcel analysis. Include:
             />
           )}
 
-          {/* USGS Quaternary Fault Lines - WMS from earthquake.usgs.gov */}
+          {/* USGS Quaternary Fault Lines - WMS from earthquake.usgs.gov, layer 21 = National Database */}
           {showFaultLines && (
             <WMSTileLayer
               url="https://earthquake.usgs.gov/arcgis/services/haz/Qfaults/MapServer/WMSServer"
-              layers="16,21"
+              layers="21,22"
+              styles=""
               format="image/png"
               transparent={true}
-              opacity={0.8}
-              version="1.3.0"
-              attribution='<a href="https://www.usgs.gov/programs/earthquake-hazards/faults">USGS Quaternary Faults</a>'
+              opacity={0.9}
+              version="1.1.1"
+              attribution='<a href="https://earthquake.usgs.gov/hazards/qfaults/">USGS Quaternary Faults</a>'
               zIndex={11}
             />
           )}
