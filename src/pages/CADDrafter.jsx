@@ -299,11 +299,21 @@ export default function CADDrafter() {
   };
 
   const handleShapeClick = (e, id) => {
-    if (tool !== TOOLS.SELECT) return;
     e.stopPropagation();
-    setSelectedIds(prev =>
-      e.shiftKey ? (prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]) : [id]
-    );
+    if (tool === TOOLS.SELECT) {
+      setSelectedIds(prev =>
+        e.shiftKey ? (prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]) : [id]
+      );
+    } else if (tool === TOOLS.OFFSET) {
+      applyOffset(id);
+    } else if (tool === TOOLS.FILLET) {
+      if (!filletFirst) {
+        setFilletFirst(id);
+      } else {
+        if (filletFirst !== id) applyFillet(filletFirst, id);
+        setFilletFirst(null);
+      }
+    }
   };
 
   const handleShapeMouseDown = (e, id) => {
