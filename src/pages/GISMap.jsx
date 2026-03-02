@@ -684,16 +684,14 @@ Generate a realistic land parcel analysis. Include:
             <Upload className="h-3 w-3" />
             KMZ/KML
           </Button>
-          {kmzLayers.some(l => l.imageOverlays?.length > 0) && (
-            <Button
-              size="sm"
-              variant={showImageOverlays ? "default" : "outline"}
-              onClick={() => { const next = !showImageOverlays; setShowImageOverlays(next); localStorage.setItem("gis_show_image_overlays", JSON.stringify(next)); }}
-              className="text-xs flex items-center gap-1"
-            >
-              🖼️ Image Overlay
-            </Button>
-          )}
+          <Button
+            size="sm"
+            variant={showImageOverlays ? "default" : "outline"}
+            onClick={() => { const next = !showImageOverlays; setShowImageOverlays(next); localStorage.setItem("gis_show_image_overlays", JSON.stringify(next)); }}
+            className="text-xs flex items-center gap-1"
+          >
+            🖼️ Image Overlay
+          </Button>
         </div>
       </div>
 
