@@ -148,6 +148,7 @@ export default function GISMap() {
   const [parcelData, setParcelData] = useState(null);
   const [parcelLoading, setParcelLoading] = useState(false);
   const [dealLocations, setDealLocations] = useState([]);
+  const [activePdfDoc, setActivePdfDoc] = useState(null);
 
   const { data: deals = [] } = useQuery({
     queryKey: ["deals"],
