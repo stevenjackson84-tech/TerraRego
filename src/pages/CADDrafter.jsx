@@ -528,6 +528,7 @@ export default function CADDrafter() {
       if ((e.key === "Delete" || e.key === "Backspace") && selectedIds.length > 0) deleteSelected();
       if (e.ctrlKey && e.key === "z") { e.preventDefault(); undo(); }
       if (e.ctrlKey && e.key === "y") { e.preventDefault(); redo(); }
+      if (e.key === "F8") { e.preventDefault(); setOrthoEnabled(o => !o); }
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
