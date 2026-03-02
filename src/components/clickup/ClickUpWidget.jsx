@@ -289,7 +289,13 @@ export default function ClickUpWidget() {
 
             {/* Calendar Tab */}
             {activeTab === "calendar" && (
-            <ClickUpCalendarView tasks={tasks} />
+              <ClickUpCalendarView
+                tasks={tasks}
+                selectedList={selectedList}
+                selectedSpace={selectedSpace}
+                selectedWorkspace={selectedWorkspace}
+                invoke={invoke}
+              />
             )}
 
             {/* Tasks Tab */}
