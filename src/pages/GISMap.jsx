@@ -222,15 +222,17 @@ Be specific and realistic based on the geographic coordinates provided.`,
             observations: { type: "string" },
             infrastructure: { type: "string" },
             risks: { type: "string" },
-            opportunities: { type: "string" }
+            opportunities: { type: "string" },
+            owner_name: { type: "string" },
+            parcel_id: { type: "string" }
           }
         }
-      });
-      setParcelInfo(result);
-    } finally {
-      setIsAnalyzing(false);
-    }
-  };
+        });
+        setParcelInfo({ ...result, _rawParcel: parcelOwnerData });
+        } finally {
+        setIsAnalyzing(false);
+        }
+        };
 
   const handleSearch = async () => {
     if (!searchQuery.trim()) return;
