@@ -17,7 +17,8 @@ import {
   ChevronRight,
   Folder,
   Sigma,
-  Map
+  Map,
+  Layers
 } from "lucide-react";
 import FloorPlansSection from "@/components/sidebar/FloorPlansSection";
 
