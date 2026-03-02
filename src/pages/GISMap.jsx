@@ -13,6 +13,7 @@ import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import JSZip from "jszip";
 import { kml } from "@tmcw/togeojson";
+import SendToClickUp from "@/components/clickup/SendToClickUp";
 
 // Fix default marker icons
 delete L.Icon.Default.prototype._getIconUrl;
