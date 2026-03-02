@@ -96,6 +96,25 @@ export default function ClickUpWidget() {
     setTasksLoading(false);
   };
 
+  const togglePinDashboard = (dashId, dashName) => {
+    setPinnedDashboards(prev => {
+      const updated = prev.find(d => d.id === dashId)
+        ? prev.filter(d => d.id !== dashId)
+        : [...prev, { id: dashId, name: dashName }];
+      localStorage.setItem("clickup_pinned_dashboards", JSON.stringify(updated));
+      return updated;
+    });
+  };
+
+  const addCustomDashboard = (dashId, dashName) => {
+    const newDash = { id: dashId, name: dashName, custom: true };
+    setPinnedDashboards(prev => {
+      const updated = prev.find(d => d.id === dashId) ? prev : [...prev, newDash];
+      localStorage.setItem("clickup_pinned_dashboards", JSON.stringify(updated));
+      return updated;
+    });
+  };
+
   const refresh = () => {
     if (selectedList) loadTasks(selectedList);
   };
