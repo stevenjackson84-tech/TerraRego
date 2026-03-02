@@ -403,6 +403,14 @@ Generate a realistic land parcel analysis. Include:
           >
             🔥 {wuiLoading ? "Loading WUI..." : "WUI Zone"}
           </Button>
+          <Button
+            size="sm"
+            variant={showFaultLines ? "default" : "outline"}
+            onClick={() => setShowFaultLines(!showFaultLines)}
+            className="text-xs flex items-center gap-1"
+          >
+            ⚡ Fault Lines
+          </Button>
         </div>
       </div>
 
