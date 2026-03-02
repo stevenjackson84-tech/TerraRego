@@ -337,6 +337,54 @@ Be thorough and specific. If a required value cannot be determined from the plan
             <CardTitle className="text-base">Plan Check Setup</CardTitle>
           </CardHeader>
           <CardContent className="space-y-5">
+            {/* Link to Deal / Project */}
+            <div className="space-y-2">
+              <Label className="flex items-center gap-1.5"><Link2 className="h-3.5 w-3.5" /> Link to Deal or Project <span className="text-slate-400 font-normal">(optional — auto-fills fields below)</span></Label>
+              <div className="flex gap-2 flex-wrap">
+                <Select value={linkedEntityType} onValueChange={(v) => { setLinkedEntityType(v); setLinkedEntityId(""); }}>
+                  <SelectTrigger className="w-36">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">None</SelectItem>
+                    <SelectItem value="deal">Deal</SelectItem>
+                    <SelectItem value="project">Project</SelectItem>
+                  </SelectContent>
+                </Select>
+                {linkedEntityType === "deal" && (
+                  <Select value={linkedEntityId} onValueChange={(id) => handleLinkEntity("deal", id)}>
+                    <SelectTrigger className="flex-1 min-w-[200px]">
+                      <SelectValue placeholder="Select a deal..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {deals.map(d => (
+                        <SelectItem key={d.id} value={d.id}>
+                          {d.name}{d.city ? ` — ${d.city}` : ""}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+                {linkedEntityType === "project" && (
+                  <Select value={linkedEntityId} onValueChange={(id) => handleLinkEntity("project", id)}>
+                    <SelectTrigger className="flex-1 min-w-[200px]">
+                      <SelectValue placeholder="Select a project..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {projects.map(p => (
+                        <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              </div>
+              {linkedEntityId && (
+                <p className="text-xs text-green-700 bg-green-50 border border-green-200 rounded px-2 py-1 inline-block">
+                  ✓ Linked — fields below have been pre-filled
+                </p>
+              )}
+            </div>
+
             {/* Project Info */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-1.5">
