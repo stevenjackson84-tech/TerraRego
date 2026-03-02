@@ -149,6 +149,9 @@ export default function GISMap() {
   const [parcelLoading, setParcelLoading] = useState(false);
   const [dealLocations, setDealLocations] = useState([]);
   const [activePdfDoc, setActivePdfDoc] = useState(null);
+  const [showSteepSlopes, setShowSteepSlopes] = useState(false);
+  const [slopeData, setSlopeData] = useState(null);
+  const [slopeLoading, setSlopeLoading] = useState(false);
 
   const { data: deals = [] } = useQuery({
     queryKey: ["deals"],
