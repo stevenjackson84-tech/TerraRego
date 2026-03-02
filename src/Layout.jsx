@@ -20,7 +20,7 @@ import {
   Map,
   Pencil
 } from "lucide-react";
-import FloorPlansSection from "@/components/sidebar/FloorPlansSection";
+
 
 const navigation = [
   { name: "Dashboard", icon: LayoutDashboard, page: "Dashboard" },
