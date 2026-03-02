@@ -248,7 +248,21 @@ export default function GISMap() {
     const stored = localStorage.getItem("gis_show_image_overlays");
     return stored ? JSON.parse(stored) : true;
   });
+  const [pendingKmzFile, setPendingKmzFile] = useState(null);
+  const [kmzCategoryDialog, setKmzCategoryDialog] = useState(false);
+  const [selectedKmzCategory, setSelectedKmzCategory] = useState("custom");
   const kmzInputRef = useRef(null);
+
+  const kmzCategories = [
+    { value: "custom", label: "Custom Layer" },
+    { value: "parcels", label: "Parcels" },
+    { value: "deals", label: "Deals" },
+    { value: "sensitive_lands", label: "Sensitive Lands" },
+    { value: "flood_zones", label: "Flood Zones" },
+    { value: "fault_lines", label: "Fault Lines" },
+    { value: "steep_slopes", label: "Slopes >30%" },
+    { value: "wui", label: "WUI Zone" },
+  ];
 
   const { data: deals = [] } = useQuery({
     queryKey: ["deals"],

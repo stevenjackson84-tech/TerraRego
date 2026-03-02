@@ -57,11 +57,11 @@ import Development from './pages/Development';
 import Entitlements from './pages/Entitlements';
 import GISMap from './pages/GISMap';
 import LeanSixSigma from './pages/LeanSixSigma';
+import PlanCheck from './pages/PlanCheck';
 import ProjectDetails from './pages/ProjectDetails';
 import Projects from './pages/Projects';
 import Reports from './pages/Reports';
 import Tasks from './pages/Tasks';
-import PlanCheck from './pages/PlanCheck';
 import __Layout from './Layout.jsx';
 
 
@@ -76,11 +76,11 @@ export const PAGES = {
     "Entitlements": Entitlements,
     "GISMap": GISMap,
     "LeanSixSigma": LeanSixSigma,
+    "PlanCheck": PlanCheck,
     "ProjectDetails": ProjectDetails,
     "Projects": Projects,
     "Reports": Reports,
     "Tasks": Tasks,
-    "PlanCheck": PlanCheck,
 }
 
 export const pagesConfig = {
