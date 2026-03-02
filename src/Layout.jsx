@@ -60,7 +60,7 @@ export default function Layout({ children, currentPageName }) {
             <div className="w-8 h-8 rounded-lg bg-slate-900 flex items-center justify-center">
               <Building2 className="h-5 w-5 text-white" />
             </div>
-            <span className="text-lg font-semibold text-slate-900">TerraDux</span>
+            <span className="text-lg font-semibold text-slate-900">Parcelr</span>
           </Link>
           <Button 
             variant="ghost" 
@@ -114,7 +114,7 @@ export default function Layout({ children, currentPageName }) {
               <div className="w-8 h-8 rounded-lg bg-slate-900 flex items-center justify-center">
                 <Building2 className="h-5 w-5 text-white" />
               </div>
-              <span className="text-lg font-semibold text-slate-900">TerraDux</span>
+              <span className="text-lg font-semibold text-slate-900">Parcelr</span>
             </Link>
             <div className="w-10" />
           </div>
