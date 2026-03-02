@@ -573,6 +573,15 @@ export default function CADDrafter() {
         >
           <RotateCw className="h-4 w-4" />
         </button>
+        {shapes.length > 0 && (
+          <button
+            title="Clear all"
+            onClick={() => { if (window.confirm("Erase everything on the canvas?")) { pushHistory([]); setSelectedIds([]); } }}
+            className="w-10 h-10 rounded-lg flex items-center justify-center text-red-400 hover:bg-red-50 hover:text-red-600"
+          >
+            <Trash2 className="h-4 w-4" />
+          </button>
+        )}
         {selectedIds.length > 0 && (
           <button
             title="Delete selected (Del)"
