@@ -136,6 +136,12 @@ export default function GISMap() {
     queryFn: () => base44.entities.Deal.list(),
   });
 
+  // Fetch plan PDFs linked to deals
+  const { data: planDocs = [] } = useQuery({
+    queryKey: ["plan-documents"],
+    queryFn: () => base44.entities.Document.filter({ category: "plan", entity_type: "deal" }),
+  });
+
   // Load Salt Lake County parcels as GeoJSON from UGRC SGID when toggled on
   // We fetch dynamically based on current map bounds, so we reset parcelData on each load
   const fetchParcelsForBounds = async (bounds) => {
