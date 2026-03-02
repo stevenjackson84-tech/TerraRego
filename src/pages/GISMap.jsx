@@ -121,20 +121,23 @@ export default function GISMap() {
       .catch(() => setWuiLoading(false));
   }, [showWUI, wuiData]);
 
-  // Geocode deals that have addresses
+  // Geocode deals that have addresses (use stored lat/lng if available)
   useEffect(() => {
     if (!deals.length) return;
-    const dealsWithAddress = deals.filter(d => d.address || d.city);
 
     let cancelled = false;
     const geocodeAll = async () => {
       const results = [];
-      for (const deal of dealsWithAddress) {
+      for (const deal of deals) {
         if (cancelled) break;
-        const coords = await geocodeAddress(deal.address, deal.city, deal.state);
-        if (coords) results.push({ deal, coords });
-        // small delay to be polite to nominatim
-        await new Promise(r => setTimeout(r, 300));
+        // Use stored coordinates first
+        if (deal.latitude && deal.longitude) {
+          results.push({ deal, coords: { lat: deal.latitude, lng: deal.longitude } });
+        } else if (deal.address || deal.city) {
+          const coords = await geocodeAddress(deal.address, deal.city, deal.state);
+          if (coords) results.push({ deal, coords });
+          await new Promise(r => setTimeout(r, 300));
+        }
       }
       if (!cancelled) setDealLocations(results);
     };
