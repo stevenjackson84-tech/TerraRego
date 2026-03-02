@@ -502,7 +502,7 @@ Generate a realistic land parcel analysis. Include:
           )}
 
           {/* Utah High Risk WUI - loaded as GeoJSON from SGID FeatureServer */}
-          {showWUI && wuiData && (
+          {showWUI && wuiData && wuiData.features && wuiData.features.length > 0 && (
             <GeoJSON
               key="wui-layer"
               data={wuiData}
