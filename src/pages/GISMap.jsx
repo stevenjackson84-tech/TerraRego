@@ -363,7 +363,7 @@ Generate a realistic land parcel analysis. Include:
           <Button
             size="sm"
             variant={showParcels ? "default" : "outline"}
-            onClick={() => setShowParcels(!showParcels)}
+            onClick={() => { setShowParcels(!showParcels); setParcelData(null); }}
             className="text-xs flex items-center gap-1"
           >
             <Layers className="h-3 w-3" />
