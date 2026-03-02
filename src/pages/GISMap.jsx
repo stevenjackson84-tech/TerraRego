@@ -253,6 +253,7 @@ export default function GISMap() {
   const [pendingKmzFile, setPendingKmzFile] = useState(null);
   const [kmzCategoryDialog, setKmzCategoryDialog] = useState(false);
   const [selectedKmzCategory, setSelectedKmzCategory] = useState("custom");
+  const [kmzGroupVisibility, setKmzGroupVisibility] = useState({});
   const kmzInputRef = useRef(null);
 
   const kmzCategories = [
