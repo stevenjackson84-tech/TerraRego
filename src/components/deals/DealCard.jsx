@@ -23,7 +23,7 @@ const propertyTypeStyles = {
   multifamily: "bg-rose-50 text-rose-700"
 };
 
-export default function DealCard({ deal, tasks = [], proforma = null }) {
+export default function DealCard({ deal, tasks = [], proforma = null, planDoc = null }) {
   const { score } = computeDealScore(deal, tasks, proforma);
 
   return (
@@ -32,7 +32,17 @@ export default function DealCard({ deal, tasks = [], proforma = null }) {
         "border-0 shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer overflow-hidden group",
         "bg-white"
       )}>
-        {deal.image_url ? (
+        {planDoc ? (
+          <div className="h-32 overflow-hidden relative bg-slate-100">
+            <iframe
+              src={`${planDoc.file_url}#toolbar=0&navpanes=0&scrollbar=0&page=1&view=FitH`}
+              className="w-full h-full border-0 pointer-events-none"
+              title={planDoc.name}
+              style={{ transform: 'scale(1)', transformOrigin: 'top left' }}
+            />
+            <div className="absolute bottom-1 right-1 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded">PDF</div>
+          </div>
+        ) : deal.image_url ? (
           <div className="h-32 overflow-hidden">
             <img 
               src={deal.image_url} 
