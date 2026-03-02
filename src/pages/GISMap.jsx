@@ -537,10 +537,10 @@ Generate a realistic land parcel analysis. Include:
               onEachFeature={(feature, layer) => {
                 const p = feature.properties;
                 const lines = [
-                  p?.PARCEL_ID && `<b>Parcel:</b> ${p.PARCEL_ID}`,
-                  p?.PARCEL_ADD && `<b>Address:</b> ${p.PARCEL_ADD}`,
-                  p?.OWNER && `<b>Owner:</b> ${p.OWNER}`,
-                  p?.PROP_CLASS && `<b>Class:</b> ${p.PROP_CLASS}`,
+                p?.PARCEL_ID && `<b>Parcel:</b> ${p.PARCEL_ID}`,
+                p?.PARCEL_ADD && `<b>Address:</b> ${p.PARCEL_ADD}`,
+                p?.COUNTY_NAME && `<b>County:</b> ${p.COUNTY_NAME}`,
+                p?.PROP_CLASS && `<b>Class:</b> ${p.PROP_CLASS}`,
                   p?.PARCEL_ACRES && `<b>Acres:</b> ${parseFloat(p.PARCEL_ACRES).toFixed(2)}`,
                   p?.TOTAL_MKT_VALUE && `<b>Market Value:</b> $${parseInt(p.TOTAL_MKT_VALUE).toLocaleString()}`,
                 ].filter(Boolean).join("<br/>");
