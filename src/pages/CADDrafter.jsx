@@ -128,6 +128,64 @@ export default function CADDrafter() {
     }
   };
 
+  // Offset a line or rect by offsetDistance
+  const applyOffset = (shapeId) => {
+    const s = shapes.find(sh => sh.id === shapeId);
+    if (!s) return;
+    let newShape;
+    const id = Date.now();
+    if (s.type === TOOLS.LINE) {
+      const dx = s.x2 - s.x1, dy = s.y2 - s.y1;
+      const len = Math.hypot(dx, dy);
+      if (len === 0) return;
+      const nx = (-dy / len) * offsetDistance;
+      const ny = (dx / len) * offsetDistance;
+      newShape = { ...s, id, x1: s.x1 + nx, y1: s.y1 + ny, x2: s.x2 + nx, y2: s.y2 + ny };
+    } else if (s.type === TOOLS.RECT) {
+      const d = offsetDistance;
+      newShape = { ...s, id, x1: s.x1 - d, y1: s.y1 - d, x2: s.x2 + d, y2: s.y2 + d };
+    } else return;
+    pushHistory([...shapes, newShape]);
+  };
+
+  // Fillet: round the corner between two lines
+  const applyFillet = (id1, id2) => {
+    const l1 = shapes.find(s => s.id === id1);
+    const l2 = shapes.find(s => s.id === id2);
+    if (!l1 || !l2 || l1.type !== TOOLS.LINE || l2.type !== TOOLS.LINE) return;
+    const r = filletRadius;
+    // Find shared/closest endpoint
+    const pts1 = [{ x: l1.x1, y: l1.y1 }, { x: l1.x2, y: l1.y2 }];
+    const pts2 = [{ x: l2.x1, y: l2.y1 }, { x: l2.x2, y: l2.y2 }];
+    let minDist = Infinity, ep1i = 0, ep2i = 0;
+    pts1.forEach((p, i) => pts2.forEach((q, j) => {
+      const d = Math.hypot(p.x - q.x, p.y - q.y);
+      if (d < minDist) { minDist = d; ep1i = i; ep2i = j; }
+    }));
+    // Shorten each line by r from the shared corner
+    const corner = pts1[ep1i];
+    const vec1 = ep1i === 0 ? { x: l1.x2 - l1.x1, y: l1.y2 - l1.y1 } : { x: l1.x1 - l1.x2, y: l1.y1 - l1.y2 };
+    const vec2 = ep2i === 0 ? { x: l2.x2 - l2.x1, y: l2.y2 - l2.y1 } : { x: l2.x1 - l2.x2, y: l2.y1 - l2.y2 };
+    const len1 = Math.hypot(vec1.x, vec1.y), len2 = Math.hypot(vec2.x, vec2.y);
+    if (len1 === 0 || len2 === 0) return;
+    const t = Math.min(r, len1 * 0.4, len2 * 0.4);
+    const p1 = { x: corner.x + (vec1.x / len1) * t, y: corner.y + (vec1.y / len1) * t };
+    const p2 = { x: corner.x + (vec2.x / len2) * t, y: corner.y + (vec2.y / len2) * t };
+    // Trim lines
+    let nl1, nl2;
+    if (ep1i === 0) nl1 = { ...l1, x1: p1.x, y1: p1.y };
+    else nl1 = { ...l1, x2: p1.x, y2: p1.y };
+    if (ep2i === 0) nl2 = { ...l2, x1: p2.x, y1: p2.y };
+    else nl2 = { ...l2, x2: p2.x, y2: p2.y };
+    // Arc from p1 to p2
+    const arcId = Date.now();
+    const arcShape = {
+      id: arcId, type: 'arc', strokeColor: l1.strokeColor, strokeWidth: l1.strokeWidth,
+      x1: p1.x, y1: p1.y, x2: p2.x, y2: p2.y, corner,
+    };
+    pushHistory(shapes.map(s => s.id === id1 ? nl1 : s.id === id2 ? nl2 : s).concat(arcShape));
+  };
+
   const handleMouseMove = (e) => {
     if (isPanning && panStart) {
       setPan({ x: e.clientX - panStart.x, y: e.clientY - panStart.y });
