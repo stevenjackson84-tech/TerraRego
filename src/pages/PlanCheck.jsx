@@ -492,10 +492,14 @@ Be thorough and specific. If a required value cannot be determined from the plan
               </div>
             </Card>
 
-            {/* Re-run button */}
-            <div className="flex justify-end">
+            {/* Action buttons */}
+            <div className="flex justify-between">
               <Button variant="outline" onClick={() => { setResults(null); }}>
                 Clear Results & Start Over
+              </Button>
+              <Button onClick={exportToPDF} className="bg-slate-900 hover:bg-slate-700">
+                <Download className="h-4 w-4 mr-2" />
+                Export PDF Report
               </Button>
             </div>
           </div>
