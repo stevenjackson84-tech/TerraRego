@@ -326,25 +326,66 @@ export default function GISMap() {
     }
   };
 
-  // Parse a KMZ (or KML) file and add it as a GeoJSON layer
+  // Parse a KMZ (or KML) file and add it as a GeoJSON layer + image overlays
   const handleKmzUpload = useCallback(async (e) => {
     const file = e.target.files[0];
     if (!file) return;
     e.target.value = "";
     const name = file.name.replace(/\.(kmz|kml)$/i, "");
     let kmlText;
+    let zip = null;
+
     if (file.name.toLowerCase().endsWith(".kmz")) {
-      const zip = await JSZip.loadAsync(file);
+      zip = await JSZip.loadAsync(file);
       const kmlFile = Object.values(zip.files).find(f => f.name.toLowerCase().endsWith(".kml"));
       if (!kmlFile) return alert("No KML found inside KMZ.");
       kmlText = await kmlFile.async("text");
     } else {
       kmlText = await file.text();
     }
+
     const parser = new DOMParser();
     const xmlDoc = parser.parseFromString(kmlText, "text/xml");
     const geojson = kml(xmlDoc);
-    setKmzLayers(prev => [...prev, { name, geojson, id: Date.now() }]);
+
+    // Extract GroundOverlay image overlays
+    const imageOverlays = [];
+    const groundOverlays = xmlDoc.getElementsByTagName("GroundOverlay");
+    for (let i = 0; i < groundOverlays.length; i++) {
+      const overlay = groundOverlays[i];
+      const overlayName = overlay.getElementsByTagName("name")[0]?.textContent || `Overlay ${i + 1}`;
+      const href = overlay.getElementsByTagName("href")[0]?.textContent?.trim();
+      const latLonBox = overlay.getElementsByTagName("LatLonBox")[0];
+      if (!href || !latLonBox) continue;
+
+      const north = parseFloat(latLonBox.getElementsByTagName("north")[0]?.textContent);
+      const south = parseFloat(latLonBox.getElementsByTagName("south")[0]?.textContent);
+      const east = parseFloat(latLonBox.getElementsByTagName("east")[0]?.textContent);
+      const west = parseFloat(latLonBox.getElementsByTagName("west")[0]?.textContent);
+      const rotation = parseFloat(latLonBox.getElementsByTagName("rotation")[0]?.textContent || "0");
+
+      if (isNaN(north) || isNaN(south) || isNaN(east) || isNaN(west)) continue;
+
+      // Get image URL: either from zip or external
+      let imageUrl = href;
+      if (zip) {
+        // href may be a relative path inside the KMZ
+        const imgEntry = zip.files[href] || Object.values(zip.files).find(f => f.name.endsWith(href) || f.name === href);
+        if (imgEntry) {
+          const blob = await imgEntry.async("blob");
+          imageUrl = URL.createObjectURL(blob);
+        }
+      }
+
+      imageOverlays.push({
+        imageUrl,
+        bounds: [[south, west], [north, east]],
+        overlayName,
+        rotation,
+      });
+    }
+
+    setKmzLayers(prev => [...prev, { name, geojson, imageOverlays, id: Date.now() }]);
   }, []);
 
   // Slope analysis: fetch elevation grid and compute >30% slopes
