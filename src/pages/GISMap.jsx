@@ -45,6 +45,23 @@ const stageLabels = {
   dead: "Dead",
 };
 
+function createPDFIcon() {
+  const svg = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="36" viewBox="0 0 32 36">
+      <rect x="2" y="0" width="28" height="34" rx="4" fill="#ef4444" stroke="white" stroke-width="1.5"/>
+      <rect x="2" y="0" width="28" height="14" rx="4" fill="#dc2626"/>
+      <text x="16" y="10" font-family="Arial,sans-serif" font-size="7" font-weight="bold" fill="white" text-anchor="middle">PDF</text>
+      <text x="16" y="24" font-family="Arial,sans-serif" font-size="6" fill="white" text-anchor="middle">PLAN</text>
+    </svg>`;
+  return L.divIcon({
+    html: svg,
+    iconSize: [32, 36],
+    iconAnchor: [16, 36],
+    popupAnchor: [0, -38],
+    className: "",
+  });
+}
+
 function createColoredIcon(color) {
   const svg = `
     <svg xmlns="http://www.w3.org/2000/svg" width="28" height="40" viewBox="0 0 28 40">
