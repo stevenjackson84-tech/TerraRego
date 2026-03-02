@@ -242,7 +242,7 @@ export default function GISMap() {
   const [showSteepSlopes, setShowSteepSlopes] = useState(false);
   const [slopeData, setSlopeData] = useState(null);
   const [slopeLoading, setSlopeLoading] = useState(false);
-  const [kmzLayers, setKmzLayers] = useState([]); // [{name, geojson}]
+  const [kmzLayers, setKmzLayers] = useState([]); // [{name, geojson, imageOverlays}]
   const kmzInputRef = useRef(null);
 
   const { data: deals = [] } = useQuery({
