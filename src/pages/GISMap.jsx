@@ -161,22 +161,74 @@ export default function GISMap() {
     queryFn: () => base44.entities.Document.filter({ category: "plan", entity_type: "deal" }),
   });
 
-  // Fetch parcels as GeoJSON using the correct AGRC FeatureServer
+  // Map of Utah county name → UGRC AGRC FeatureServer service name
+  const UTAH_COUNTY_SERVICES = {
+    "Beaver": "Parcels_Beaver_LIR",
+    "Box Elder": "Parcels_BoxElder_LIR",
+    "Cache": "Parcels_Cache_LIR",
+    "Carbon": "Parcels_Carbon_LIR",
+    "Daggett": "Parcels_Daggett_LIR",
+    "Davis": "Parcels_Davis_LIR",
+    "Duchesne": "Parcels_Duchesne_LIR",
+    "Emery": "Parcels_Emery_LIR",
+    "Garfield": "Parcels_Garfield_LIR",
+    "Grand": "Parcels_Grand_LIR",
+    "Iron": "Parcels_Iron_LIR",
+    "Juab": "Parcels_Juab_LIR",
+    "Kane": "Parcels_Kane_LIR",
+    "Millard": "Parcels_Millard_LIR",
+    "Morgan": "Parcels_Morgan_LIR",
+    "Piute": "Parcels_Piute_LIR",
+    "Rich": "Parcels_Rich_LIR",
+    "Salt Lake": "Parcels_SaltLake_LIR",
+    "San Juan": "Parcels_SanJuan_LIR",
+    "Sanpete": "Parcels_Sanpete_LIR",
+    "Sevier": "Parcels_Sevier_LIR",
+    "Summit": "Parcels_Summit_LIR",
+    "Tooele": "Parcels_Tooele_LIR",
+    "Uintah": "Parcels_Uintah_LIR",
+    "Utah": "Parcels_Utah_LIR",
+    "Wasatch": "Parcels_Wasatch_LIR",
+    "Washington": "Parcels_Washington_LIR",
+    "Wayne": "Parcels_Wayne_LIR",
+    "Weber": "Parcels_Weber_LIR",
+  };
+
+  // Reverse-geocode center lat/lng to find which Utah county we're in, then fetch that county's parcels
   const fetchParcelsForBounds = async (bounds) => {
     if (!bounds) return;
     setParcelLoading(true);
     const { _southWest: sw, _northEast: ne } = bounds;
+    const centerLat = (sw.lat + ne.lat) / 2;
+    const centerLng = (sw.lng + ne.lng) / 2;
     const bbox = `${sw.lng},${sw.lat},${ne.lng},${ne.lat}`;
-    const url = `https://services1.arcgis.com/99lidPhWCzftIe9K/arcgis/rest/services/Parcels_SaltLake_LIR/FeatureServer/0/query?where=1%3D1&outFields=PARCEL_ID,PARCEL_ADD,COUNTY_NAME,TOTAL_MKT_VALUE,PROP_CLASS,PARCEL_ACRES&outSR=4326&f=geojson&resultRecordCount=300&geometry=${bbox}&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects&inSR=4326`;
-    fetch(url)
-      .then(r => r.json())
-      .then(data => {
-        if (data && data.features) {
-          setParcelData(data);
+
+    try {
+      // Detect which Utah county the center falls in via Nominatim reverse geocode
+      let serviceName = "Parcels_SaltLake_LIR"; // fallback
+      try {
+        const revRes = await fetch(
+          `https://nominatim.openstreetmap.org/reverse?format=json&lat=${centerLat}&lon=${centerLng}`,
+          { headers: { "Accept": "application/json" } }
+        );
+        const revData = await revRes.json();
+        const county = revData?.address?.county?.replace(" County", "");
+        if (county && UTAH_COUNTY_SERVICES[county]) {
+          serviceName = UTAH_COUNTY_SERVICES[county];
         }
-        setParcelLoading(false);
-      })
-      .catch(() => setParcelLoading(false));
+      } catch (e) {
+        // use fallback
+      }
+
+      const url = `https://services1.arcgis.com/99lidPhWCzftIe9K/arcgis/rest/services/${serviceName}/FeatureServer/0/query?where=1%3D1&outFields=PARCEL_ID,PARCEL_ADD,COUNTY_NAME,TOTAL_MKT_VALUE,PROP_CLASS,PARCEL_ACRES&outSR=4326&f=geojson&resultRecordCount=300&geometry=${bbox}&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects&inSR=4326`;
+      const res = await fetch(url);
+      const data = await res.json();
+      if (data && data.features) {
+        setParcelData(data);
+      }
+    } finally {
+      setParcelLoading(false);
+    }
   };
 
   // Load WUI GeoJSON data when toggled on
