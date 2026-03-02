@@ -883,7 +883,7 @@ Generate a realistic land parcel analysis. Include:
                     weight: 2,
                     opacity: 0.9,
                     fillColor: "#7c3aed",
-                    fillOpacity: 0.2,
+                    fillOpacity: 0.0,
                   })}
                   pointToLayer={(feature, latlng) => L.circleMarker(latlng, {
                     radius: 6,
