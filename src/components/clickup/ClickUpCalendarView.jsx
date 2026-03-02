@@ -53,6 +53,33 @@ export default function ClickUpCalendarView({ tasks = [], selectedList, selected
     setSelectedDate(day);
   };
 
+  const handleCreateTask = async () => {
+    if (!newTaskName.trim() || !selectedList) return;
+    
+    setIsCreating(true);
+    try {
+      const dueDate = new Date(selectedDate);
+      dueDate.setHours(23, 59, 59, 999);
+      
+      await invoke("createTask", {
+        listId: selectedList,
+        name: newTaskName,
+        description: newTaskDesc,
+        priority: parseInt(newTaskPriority),
+        dueDate: dueDate.getTime(),
+      });
+      
+      setNewTaskName("");
+      setNewTaskDesc("");
+      setNewTaskPriority("3");
+      setShowCreateDialog(false);
+    } catch (error) {
+      console.error("Failed to create task:", error);
+    } finally {
+      setIsCreating(false);
+    }
+  };
+
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
