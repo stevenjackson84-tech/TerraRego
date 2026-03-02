@@ -112,6 +112,13 @@ Deno.serve(async (req) => {
       return Response.json(data);
     }
 
+    // Get dashboards for a team
+    if (action === "getDashboards") {
+      const res = await fetch(`${CLICKUP_API}/team/${params.teamId}/dashboard`, { headers });
+      const data = await res.json();
+      return Response.json(data);
+    }
+
     return Response.json({ error: "Unknown action" }, { status: 400 });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
