@@ -9,6 +9,7 @@ import UpcomingTasks from "@/components/dashboard/UpcomingTasks";
 import QuarterlyDealsWidget from "@/components/dashboard/QuarterlyDealsWidget";
 import AvgProfitByTypeWidget from "@/components/dashboard/AvgProfitByTypeWidget";
 import TaskNotifications from "@/components/tasks/TaskNotifications";
+import ClickUpWidget from "@/components/clickup/ClickUpWidget";
 
 export default function Dashboard() {
   const queryClient = useQueryClient();
