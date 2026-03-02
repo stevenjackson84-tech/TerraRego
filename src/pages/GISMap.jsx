@@ -322,6 +322,16 @@ export default function GISMap() {
     }
   };
 
+  // Slope analysis: fetch elevation grid and compute >30% slopes
+  const fetchSlopeData = async (bounds) => {
+    if (!bounds) return;
+    setSlopeLoading(true);
+    setSlopeData(null);
+    const data = await computeSteepSlopes(bounds);
+    setSlopeData(data);
+    setSlopeLoading(false);
+  };
+
   // Load WUI GeoJSON data when toggled on
   useEffect(() => {
     if (!showWUI || wuiData) return;
