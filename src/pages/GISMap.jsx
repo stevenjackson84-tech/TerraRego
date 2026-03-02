@@ -415,11 +415,14 @@ export default function GISMap() {
       });
     }
 
-    setKmzLayers(prev => [...prev, { name, geojson, imageOverlays, id: Date.now(), category: selectedKmzCategory }]);
+    const newLayer = { name, geojson, imageOverlays, id: Date.now(), category: selectedKmzCategory, opacity: 0.8 };
+    setKmzLayers(prev => [...prev, newLayer]);
     setShowImageOverlays(true);
     setKmzCategoryDialog(false);
     setPendingKmzFile(null);
     setSelectedKmzCategory("custom");
+    // Auto-show category group
+    setKmzGroupVisibility(prev => ({ ...prev, [selectedKmzCategory]: true }));
   }, [pendingKmzFile, selectedKmzCategory]);
 
   // Slope analysis: fetch elevation grid and compute >30% slopes
