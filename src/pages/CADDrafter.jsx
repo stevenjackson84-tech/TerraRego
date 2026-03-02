@@ -118,6 +118,16 @@ export default function CADDrafter() {
       return;
     }
 
+    if (tool === TOOLS.OFFSET) {
+      // handled via shape click
+      return;
+    }
+
+    if (tool === TOOLS.FILLET) {
+      // handled via shape click
+      return;
+    }
+
     if (tool === TOOLS.TEXT) {
       setTextInput({ x: pt.x, y: pt.y, value: "" });
       return;
