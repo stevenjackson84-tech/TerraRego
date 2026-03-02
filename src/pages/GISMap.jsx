@@ -620,6 +620,7 @@ Generate a realistic land parcel analysis. Include:
           />
           <ClickHandler onMapClick={handleMapClick} />
           <ParcelBoundsLoader showParcels={showParcels} onBoundsChange={fetchParcelsForBounds} />
+          <SlopeBoundsLoader showSteepSlopes={showSteepSlopes} onBoundsChange={fetchSlopeData} />
 
           {/* FEMA Flood Zones - official FEMA WMS service */}
           {showFloodZones && (
