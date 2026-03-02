@@ -35,6 +35,11 @@ export default function Deals() {
     queryFn: () => base44.entities.Proforma.list()
   });
 
+  const { data: planDocs = [] } = useQuery({
+    queryKey: ['plan-documents'],
+    queryFn: () => base44.entities.Document.filter({ category: "plan", entity_type: "deal" }),
+  });
+
   const createMutation = useMutation({
     mutationFn: (data) => base44.entities.Deal.create(data),
     onSuccess: () => {
