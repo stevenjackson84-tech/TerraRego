@@ -285,9 +285,14 @@ export default function ClickUpWidget() {
                 <p className="text-xs text-slate-400 text-center py-4">No dashboards available</p>
               )}
             </>
-          )}
+            )}
 
-          {/* Tasks Tab */}
+            {/* Calendar Tab */}
+            {activeTab === "calendar" && (
+            <ClickUpCalendarView tasks={tasks} />
+            )}
+
+            {/* Tasks Tab */}
           {activeTab === "tasks" && (
             <>
               {/* Filters */}
