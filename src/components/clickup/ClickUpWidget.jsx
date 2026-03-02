@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ExternalLink, RefreshCw, CheckCircle2, Circle, Clock, AlertCircle, ChevronDown, ChevronRight } from "lucide-react";
+import { ExternalLink, RefreshCw, CheckCircle2, Circle, Clock, AlertCircle, ChevronDown, ChevronRight, Star } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const priorityConfig = {
