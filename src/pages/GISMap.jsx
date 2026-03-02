@@ -341,7 +341,7 @@ Generate a realistic land parcel analysis. Include:
             className="text-xs flex items-center gap-1"
           >
             <Layers className="h-3 w-3" />
-            Parcels
+            {parcelLoading ? "Loading..." : "Parcels"}
           </Button>
           <Button
             size="sm"
