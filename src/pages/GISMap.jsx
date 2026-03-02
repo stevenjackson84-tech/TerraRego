@@ -111,17 +111,19 @@ export default function GISMap() {
     queryFn: () => base44.entities.Deal.list(),
   });
 
-  // Load Utah County parcels as GeoJSON when toggled on
-  useEffect(() => {
-    if (!showParcels || parcelData) return;
+  // Load Salt Lake County parcels as GeoJSON from UGRC SGID when toggled on
+  // We fetch dynamically based on current map bounds, so we reset parcelData on each load
+  const fetchParcelsForBounds = async (bounds) => {
+    if (!bounds) return;
     setParcelLoading(true);
-    // Utah County parcels from UGRC SGID FeatureServer - Utah county only
-    const url = "https://services1.arcgis.com/99lidPhWCzftIe9K/arcgis/rest/services/Parcels_Utah_LIR/FeatureServer/0/query?where=1%3D1&outFields=PARCEL_ID,OWNER,SHAPE_Area&outSR=4326&f=geojson&resultRecordCount=3000&geometryType=esriGeometryEnvelope&geometry=-112.2,40.0,-111.3,40.7";
+    const { _southWest: sw, _northEast: ne } = bounds;
+    // Limit bbox size to avoid huge requests
+    const url = `https://services1.arcgis.com/99lidPhWCzftIe9K/arcgis/rest/services/Parcels_SaltLake_LIR/FeatureServer/0/query?where=1%3D1&outFields=PARCEL_ID,PARCEL_ADD,OWNER,TOTAL_MKT_VALUE,PROP_CLASS,PARCEL_ACRES&outSR=4326&f=geojson&resultRecordCount=500&geometry=${sw.lng},${sw.lat},${ne.lng},${ne.lat}&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects`;
     fetch(url)
       .then(r => r.json())
       .then(data => { setParcelData(data); setParcelLoading(false); })
       .catch(() => setParcelLoading(false));
-  }, [showParcels, parcelData]);
+  };
 
   // Load WUI GeoJSON data when toggled on
   useEffect(() => {
