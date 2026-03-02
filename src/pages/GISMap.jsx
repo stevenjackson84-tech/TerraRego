@@ -243,18 +243,8 @@ export default function GISMap() {
   const [showSteepSlopes, setShowSteepSlopes] = useState(false);
   const [slopeData, setSlopeData] = useState(null);
   const [slopeLoading, setSlopeLoading] = useState(false);
-  const [kmzLayers, setKmzLayers] = useState(() => {
-    try {
-      const saved = localStorage.getItem("gis_kmz_layers_meta");
-      return saved ? JSON.parse(saved) : [];
-    } catch { return []; }
-  });
-  const [showImageOverlays, setShowImageOverlays] = useState(() => {
-    try {
-      const saved = localStorage.getItem("gis_show_image_overlays");
-      return saved === null ? true : JSON.parse(saved);
-    } catch { return true; }
-  });
+  const [kmzLayers, setKmzLayers] = useState([]);
+  const [showImageOverlays, setShowImageOverlays] = useState(true);
   const kmzInputRef = useRef(null);
 
   const { data: deals = [] } = useQuery({
