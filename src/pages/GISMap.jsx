@@ -454,6 +454,20 @@ Generate a realistic land parcel analysis. Include:
             />
           )}
 
+          {/* USGS Quaternary Fault Lines - WMS from earthquake.usgs.gov */}
+          {showFaultLines && (
+            <WMSTileLayer
+              url="https://earthquake.usgs.gov/arcgis/services/haz/Qfaults/MapServer/WMSServer"
+              layers="16,21"
+              format="image/png"
+              transparent={true}
+              opacity={0.8}
+              version="1.3.0"
+              attribution='<a href="https://www.usgs.gov/programs/earthquake-hazards/faults">USGS Quaternary Faults</a>'
+              zIndex={11}
+            />
+          )}
+
           {/* Utah High Risk WUI - loaded as GeoJSON from SGID FeatureServer */}
           {showWUI && wuiData && (
             <GeoJSON
