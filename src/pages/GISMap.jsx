@@ -466,6 +466,32 @@ export default function GISMap() {
       .catch(() => setWuiLoading(false));
   }, [showWUI, wuiData]);
 
+  // Fetch Zillow for sale properties for current map bounds
+  const fetchZillowComps = useCallback(async (bounds) => {
+    if (!bounds) return;
+    setZillowLoading(true);
+    setZillowData(null);
+    try {
+      const { _southWest: sw, _northEast: ne } = bounds;
+      const bbox = `${sw.lng},${sw.lat},${ne.lng},${ne.lat}`;
+      // Using Zillow API through Rapid API - alternatives include direct Zillow API or public real estate data sources
+      const response = await base44.functions.invoke('zillowComps', {
+        bbox: bbox,
+        south: sw.lat,
+        west: sw.lng,
+        north: ne.lat,
+        east: ne.lng
+      });
+      if (response.data && response.data.features) {
+        setZillowData(response.data);
+      }
+    } catch (error) {
+      console.warn('Failed to fetch Zillow data:', error);
+    } finally {
+      setZillowLoading(false);
+    }
+  }, []);
+
   // Geocode deals that have addresses (use stored lat/lng if available)
   useEffect(() => {
     if (!deals.length) return;
