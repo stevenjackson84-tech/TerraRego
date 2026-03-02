@@ -177,6 +177,104 @@ Be thorough and specific. If a required value cannot be determined from the plan
     conditional: "bg-amber-50 border-amber-200 text-amber-800",
   };
 
+  const [projectName, setProjectName] = useState("");
+  const [preparedBy, setPreparedBy] = useState("");
+  const [projectAddress, setProjectAddress] = useState("");
+
+  const exportToPDF = () => {
+    const munLabel = municipality === "custom"
+      ? customMunicipality
+      : MUNICIPALITIES.find(m => m.value === municipality)?.label || municipality;
+
+    const statusLabel = { pass: "PASS", fail: "FAIL", conditional: "CONDITIONAL APPROVAL" };
+    const statusColor = { pass: "#16a34a", fail: "#dc2626", conditional: "#d97706" };
+
+    const rows = results.checks?.map((check, i) => `
+      <tr style="background:${check.status === "fail" ? "#fff1f2" : check.status === "warning" ? "#fffbeb" : i % 2 === 0 ? "#fff" : "#f8fafc"}">
+        <td style="padding:8px 10px;border:1px solid #e2e8f0;font-size:12px;color:#64748b">${i + 1}</td>
+        <td style="padding:8px 10px;border:1px solid #e2e8f0;font-size:12px;font-weight:600">${check.item}</td>
+        <td style="padding:8px 10px;border:1px solid #e2e8f0;font-size:11px;color:#475569">${check.required || "—"}</td>
+        <td style="padding:8px 10px;border:1px solid #e2e8f0;font-size:11px;color:#475569">${check.found || "—"}</td>
+        <td style="padding:8px 10px;border:1px solid #e2e8f0;font-size:11px;text-align:center">
+          <span style="display:inline-block;padding:2px 8px;border-radius:4px;font-weight:700;font-size:10px;background:${check.status==="pass"?"#dcfce7":check.status==="fail"?"#fee2e2":check.status==="warning"?"#fef3c7":"#f1f5f9"};color:${check.status==="pass"?"#166534":check.status==="fail"?"#991b1b":check.status==="warning"?"#92400e":"#475569"}">${check.status?.toUpperCase()||"N/A"}</span>
+          ${check.notes ? `<div style="font-size:10px;color:#64748b;margin-top:3px">${check.notes}</div>` : ""}
+        </td>
+      </tr>`).join("");
+
+    const html = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title>Plan Check Report</title>
+  <style>
+    body { font-family: Arial, sans-serif; color: #1e293b; margin: 0; padding: 40px; }
+    @media print { body { padding: 20px; } }
+  </style>
+</head>
+<body>
+  <div style="border-bottom:3px solid #0f172a;padding-bottom:16px;margin-bottom:24px;display:flex;align-items:flex-start;justify-content:space-between">
+    <div>
+      <h1 style="margin:0;font-size:26px;font-weight:800;color:#0f172a">PLAN CHECK REPORT</h1>
+      <p style="margin:4px 0 0;font-size:13px;color:#64748b">Civil Plan Set Review — Municipal Code Compliance</p>
+    </div>
+    <div style="text-align:right;font-size:12px;color:#64748b">
+      <div><strong>Date:</strong> ${new Date().toLocaleDateString("en-US", { year:"numeric", month:"long", day:"numeric" })}</div>
+      ${preparedBy ? `<div><strong>Prepared by:</strong> ${preparedBy}</div>` : ""}
+    </div>
+  </div>
+
+  <table style="width:100%;border-collapse:collapse;margin-bottom:24px">
+    <tr>
+      ${projectName ? `<td style="padding:6px 0;width:50%"><strong style="font-size:12px">Project:</strong> <span style="font-size:12px">${projectName}</span></td>` : "<td></td>"}
+      <td style="padding:6px 0;width:50%"><strong style="font-size:12px">Municipality:</strong> <span style="font-size:12px">${munLabel}</span></td>
+    </tr>
+    <tr>
+      ${projectAddress ? `<td style="padding:6px 0"><strong style="font-size:12px">Address:</strong> <span style="font-size:12px">${projectAddress}</span></td>` : "<td></td>"}
+      <td style="padding:6px 0"><strong style="font-size:12px">Zoning:</strong> <span style="font-size:12px">${zoningDistrict || "Not specified"}</span></td>
+    </tr>
+    ${results.municipality_code_version ? `<tr><td colspan="2" style="padding:6px 0"><strong style="font-size:12px">Code Reference:</strong> <span style="font-size:12px">${results.municipality_code_version}</span></td></tr>` : ""}
+  </table>
+
+  <div style="background:${results.overall_status==="pass"?"#f0fdf4":results.overall_status==="fail"?"#fff1f2":"#fffbeb"};border:2px solid ${statusColor[results.overall_status]||"#e2e8f0"};border-radius:8px;padding:16px;margin-bottom:24px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+      <span style="font-size:18px;font-weight:800;color:${statusColor[results.overall_status]||"#1e293b"}">${statusLabel[results.overall_status]||results.overall_status?.toUpperCase()}</span>
+      <div style="display:flex;gap:8px">
+        <span style="background:#dcfce7;color:#166534;padding:2px 10px;border-radius:4px;font-size:11px;font-weight:700">${passCount} PASS</span>
+        ${warnCount > 0 ? `<span style="background:#fef3c7;color:#92400e;padding:2px 10px;border-radius:4px;font-size:11px;font-weight:700">${warnCount} WARNING</span>` : ""}
+        ${failCount > 0 ? `<span style="background:#fee2e2;color:#991b1b;padding:2px 10px;border-radius:4px;font-size:11px;font-weight:700">${failCount} FAIL</span>` : ""}
+      </div>
+    </div>
+    <p style="margin:0;font-size:13px;line-height:1.6;color:#374151">${results.overall_summary}</p>
+  </div>
+
+  <h2 style="font-size:14px;font-weight:700;margin-bottom:10px;color:#0f172a;text-transform:uppercase;letter-spacing:0.05em">Code Check Results</h2>
+  <table style="width:100%;border-collapse:collapse;font-size:12px">
+    <thead>
+      <tr style="background:#0f172a;color:#fff">
+        <th style="padding:10px;border:1px solid #0f172a;text-align:left;width:30px">#</th>
+        <th style="padding:10px;border:1px solid #0f172a;text-align:left;width:20%">Item</th>
+        <th style="padding:10px;border:1px solid #0f172a;text-align:left;width:25%">Required</th>
+        <th style="padding:10px;border:1px solid #0f172a;text-align:left;width:25%">Found in Plans</th>
+        <th style="padding:10px;border:1px solid #0f172a;text-align:left;width:15%">Status / Notes</th>
+      </tr>
+    </thead>
+    <tbody>${rows}</tbody>
+  </table>
+
+  <div style="margin-top:40px;border-top:1px solid #e2e8f0;padding-top:16px;display:flex;justify-content:space-between">
+    <div style="font-size:10px;color:#94a3b8">Generated by TerraRego Plan Check • ${new Date().toLocaleDateString()}</div>
+    <div style="font-size:10px;color:#94a3b8">This report is AI-assisted and should be verified by a licensed engineer.</div>
+  </div>
+</body>
+</html>`;
+
+    const win = window.open("", "_blank");
+    win.document.write(html);
+    win.document.close();
+    win.focus();
+    setTimeout(() => win.print(), 500);
+  };
+
   const passCount = results?.checks?.filter(c => c.status === "pass").length || 0;
   const failCount = results?.checks?.filter(c => c.status === "fail").length || 0;
   const warnCount = results?.checks?.filter(c => c.status === "warning").length || 0;
