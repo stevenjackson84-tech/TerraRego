@@ -272,8 +272,10 @@ export default function ClickUpWidget() {
           ) : (
             <p className="text-xs text-slate-400 text-center py-4">Select a space and list to view tasks</p>
           )}
-        </CardContent>
-      )}
+            </>
+          )}
+          </CardContent>
+          )}
     </Card>
   );
 }
