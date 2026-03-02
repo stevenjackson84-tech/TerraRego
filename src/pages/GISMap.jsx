@@ -826,6 +826,32 @@ Generate a realistic land parcel analysis. Include:
             );
           })}
 
+          {/* KMZ/KML layers */}
+          {kmzLayers.map((layer) => (
+            <GeoJSON
+              key={layer.id}
+              data={layer.geojson}
+              style={() => ({
+                color: "#7c3aed",
+                weight: 2,
+                opacity: 0.9,
+                fillColor: "#7c3aed",
+                fillOpacity: 0.2,
+              })}
+              pointToLayer={(feature, latlng) => L.circleMarker(latlng, {
+                radius: 6,
+                color: "#7c3aed",
+                weight: 2,
+                fillColor: "#7c3aed",
+                fillOpacity: 0.7,
+              })}
+              onEachFeature={(feature, layer) => {
+                const name = feature.properties?.name || feature.properties?.Name;
+                if (name) layer.bindTooltip(name, { sticky: true });
+              }}
+            />
+          ))}
+
           {/* Clicked location pin */}
           {clickedLocation && (
             <Marker position={[clickedLocation.lat, clickedLocation.lng]}>
