@@ -276,6 +276,6 @@ export default function ClickUpWidget() {
           )}
           </CardContent>
           )}
-    </Card>
-  );
-}
+          </Card>
+          );
+          }
