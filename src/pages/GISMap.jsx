@@ -768,6 +768,14 @@ Generate a realistic land parcel analysis. Include:
           >
             🖼️ Image Overlay
           </Button>
+          <Button
+            size="sm"
+            variant={showZillow ? "default" : "outline"}
+            onClick={() => setShowZillow(!showZillow)}
+            className="text-xs flex items-center gap-1"
+          >
+            🏠 {zillowLoading ? "Loading Zillow..." : "Zillow"}
+          </Button>
         </div>
       </div>
 
