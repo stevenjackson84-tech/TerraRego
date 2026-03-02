@@ -181,6 +181,42 @@ Be thorough and specific. If a required value cannot be determined from the plan
   const [projectName, setProjectName] = useState("");
   const [preparedBy, setPreparedBy] = useState("");
   const [projectAddress, setProjectAddress] = useState("");
+  const [linkedEntityType, setLinkedEntityType] = useState("none");
+  const [linkedEntityId, setLinkedEntityId] = useState("");
+
+  const { data: deals = [] } = useQuery({
+    queryKey: ["deals"],
+    queryFn: () => base44.entities.Deal.list("-created_date"),
+  });
+
+  const { data: projects = [] } = useQuery({
+    queryKey: ["projects"],
+    queryFn: () => base44.entities.Project.list("-created_date"),
+  });
+
+  const handleLinkEntity = (type, id) => {
+    setLinkedEntityType(type);
+    setLinkedEntityId(id);
+    if (type === "deal") {
+      const deal = deals.find(d => d.id === id);
+      if (deal) {
+        if (!projectName) setProjectName(deal.name);
+        if (!projectAddress && deal.address) setProjectAddress([deal.address, deal.city, deal.state].filter(Boolean).join(", "));
+        if (!zoningDistrict && deal.zoning_current) setZoningDistrict(deal.zoning_current);
+        // Auto-select municipality from city
+        if (!municipality && deal.city) {
+          const cityLower = deal.city.toLowerCase().replace(/\s+/g, "_");
+          const match = MUNICIPALITIES.find(m => m.value.startsWith(cityLower));
+          if (match) setMunicipality(match.value);
+        }
+      }
+    } else if (type === "project") {
+      const project = projects.find(p => p.id === id);
+      if (project) {
+        if (!projectName) setProjectName(project.name);
+      }
+    }
+  };
 
   const exportToPDF = () => {
     const munLabel = municipality === "custom"
