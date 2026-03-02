@@ -48,10 +48,23 @@ export default function ClickUpWidget() {
         const first = teams[0];
         setSelectedWorkspace(first);
         loadSpaces(first.id);
+        loadDashboards(first.id);
       }
       setLoading(false);
     }).catch(() => setLoading(false));
   }, []);
+
+  const loadDashboards = async (teamId) => {
+    setDashboardsLoading(true);
+    try {
+      const data = await invoke("getDashboards", { teamId });
+      setDashboards(data.dashboards || []);
+    } catch (e) {
+      console.warn("Failed to load dashboards:", e);
+      setDashboards([]);
+    }
+    setDashboardsLoading(false);
+  };
 
   const loadSpaces = async (teamId) => {
     const data = await invoke("getSpaces", { teamId });
