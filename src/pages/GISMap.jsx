@@ -435,6 +435,15 @@ Generate a realistic land parcel analysis. Include:
           >
             ⚡ Fault Lines
           </Button>
+          <Button
+            size="sm"
+            variant={showPlanDocs ? "default" : "outline"}
+            onClick={() => setShowPlanDocs(!showPlanDocs)}
+            className="text-xs flex items-center gap-1"
+          >
+            <FileText className="h-3 w-3" />
+            Plan PDFs
+          </Button>
         </div>
       </div>
 
