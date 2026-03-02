@@ -869,7 +869,7 @@ Generate a realistic land parcel analysis. Include:
                   key={`${layer.id}-img-${i}`}
                   url={ov.imageUrl}
                   bounds={ov.bounds}
-                  opacity={0.85}
+                  opacity={1.0}
                   zIndex={20}
                 />
               ))}
