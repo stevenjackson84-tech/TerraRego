@@ -876,7 +876,7 @@ Generate a realistic land parcel analysis. Include:
           {kmzLayers.map((layer) => (
             <>
               {/* Image overlays (GroundOverlay) */}
-              {layer.imageOverlays?.map((ov, i) => (
+              {showImageOverlays && layer.imageOverlays?.map((ov, i) => (
                 <ImageOverlay
                   key={`${layer.id}-img-${i}`}
                   url={ov.imageUrl}
