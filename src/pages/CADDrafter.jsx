@@ -83,9 +83,17 @@ export default function CADDrafter() {
     y: (sy - pan.y) / zoom,
   });
 
-  const snapPt = (x, y) => {
-    if (!snapToGridEnabled) return { x, y };
-    return { x: snapToGrid(x, gridSize), y: snapToGrid(y, gridSize) };
+  const snapPt = (x, y, anchorX, anchorY) => {
+    let sx = x, sy = y;
+    if (snapToGridEnabled) { sx = snapToGrid(sx, gridSize); sy = snapToGrid(sy, gridSize); }
+    // Ortho: lock to horizontal or vertical from anchor
+    if (orthoEnabled && anchorX !== undefined && anchorY !== undefined) {
+      const dx = Math.abs(sx - anchorX);
+      const dy = Math.abs(sy - anchorY);
+      if (dx >= dy) sy = anchorY;
+      else sx = anchorX;
+    }
+    return { x: sx, y: sy };
   };
 
   const getSVGPoint = (e) => {
