@@ -16,6 +16,7 @@ import L from "leaflet";
 import JSZip from "jszip";
 import { kml } from "@tmcw/togeojson";
 import SendToClickUp from "@/components/clickup/SendToClickUp";
+import GISFilterPanel from "@/components/gis/GISFilterPanel";
 
 // Fix default marker icons
 delete L.Icon.Default.prototype._getIconUrl;
@@ -266,6 +267,19 @@ export default function GISMap() {
   const [showSITLA, setShowSITLA] = useState(false);
   const [sitlaData, setSitlaData] = useState(null);
   const [sitlaLoading, setSitlaLoading] = useState(false);
+  const [filterPanelOpen, setFilterPanelOpen] = useState(false);
+  const [filters, setFilters] = useState({
+    dealStage: '',
+    minAcreage: null,
+    maxAcreage: null,
+    assignedUser: '',
+    layers: {
+      wui: true,
+      floodZones: true,
+      faultLines: true,
+      sitla: true,
+    },
+  });
 
   // Persist KMZ layers to localStorage
   useEffect(() => {
@@ -544,6 +558,21 @@ export default function GISMap() {
     return () => { cancelled = true; };
   }, [deals]);
 
+  // Filter deals based on active filters
+  const filteredDealLocations = dealLocations.filter(({ deal }) => {
+    if (filters.dealStage && deal.stage !== filters.dealStage) return false;
+    if (filters.assignedUser && deal.assigned_to !== filters.assignedUser) return false;
+    if (filters.minAcreage !== null && (!deal.acreage || deal.acreage < filters.minAcreage)) return false;
+    if (filters.maxAcreage !== null && (!deal.acreage || deal.acreage > filters.maxAcreage)) return false;
+    return true;
+  });
+
+  // Control layer visibility based on filters
+  const showWUIFiltered = showWUI && filters.layers.wui;
+  const showFloodZonesFiltered = showFloodZones && filters.layers.floodZones;
+  const showFaultLinesFiltered = showFaultLines && filters.layers.faultLines;
+  const showSITLAFiltered = showSITLA && filters.layers.sitla;
+
   const tileLayers = {
     street: {
       url: "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
@@ -691,8 +720,25 @@ Generate a realistic land parcel analysis. Include:
 
   return (
     <div className="flex flex-col h-screen relative">
+      {/* Filter Panel */}
+      <GISFilterPanel
+        deals={deals}
+        users={[]}
+        onFilterChange={setFilters}
+        isOpen={filterPanelOpen}
+        onToggle={() => setFilterPanelOpen(!filterPanelOpen)}
+      />
+
       {/* Top Bar */}
       <div className="bg-white border-b border-slate-200 px-4 py-3 flex items-center gap-3 z-10 flex-wrap">
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={() => setFilterPanelOpen(!filterPanelOpen)}
+          className="text-xs"
+        >
+          {filterPanelOpen ? "Close" : "Filters"}
+        </Button>
         <h1 className="text-lg font-semibold text-slate-900 whitespace-nowrap">GIS Map</h1>
         <div className="flex-1 flex gap-2 max-w-xl">
           <Input
@@ -836,7 +882,7 @@ Generate a realistic land parcel analysis. Include:
           )}
 
           {/* FEMA Flood Zones - official FEMA WMS service */}
-          {showFloodZones && (
+          {showFloodZonesFiltered && (
             <WMSTileLayer
               url="https://hazards.fema.gov/arcgis/services/public/NFHLWMS/MapServer/WMSServer"
               layers="28"
@@ -860,7 +906,7 @@ Generate a realistic land parcel analysis. Include:
           )}
 
           {/* USGS Quaternary Fault Lines - WMS from earthquake.usgs.gov, layer 21 = National Database */}
-          {showFaultLines && (
+          {showFaultLinesFiltered && (
             <WMSTileLayer
               url="https://earthquake.usgs.gov/arcgis/services/haz/Qfaults/MapServer/WMSServer"
               layers="21,22"
@@ -896,7 +942,7 @@ Generate a realistic land parcel analysis. Include:
           )}
 
           {/* Utah High Risk WUI - loaded as GeoJSON from SGID FeatureServer */}
-          {showWUI && wuiData && wuiData.features && wuiData.features.length > 0 && (
+          {showWUIFiltered && wuiData && wuiData.features && wuiData.features.length > 0 && (
             <GeoJSON
               key="wui-layer"
               data={wuiData}
@@ -940,7 +986,7 @@ Generate a realistic land parcel analysis. Include:
           )}
 
           {/* Deal pins */}
-          {showDeals && dealLocations.map(({ deal, coords }) => (
+          {showDeals && filteredDealLocations.map(({ deal, coords }) => (
             <Marker
               key={deal.id}
               position={[coords.lat, coords.lng]}
@@ -1028,7 +1074,7 @@ Generate a realistic land parcel analysis. Include:
           )}
 
           {/* SITLA Land Ownership */}
-          {showSITLA && sitlaData && sitlaData.features && sitlaData.features.length > 0 && (
+          {showSITLAFiltered && sitlaData && sitlaData.features && sitlaData.features.length > 0 && (
             <GeoJSON
               key="sitla-lands"
               data={sitlaData}
@@ -1194,7 +1240,7 @@ Generate a realistic land parcel analysis. Include:
         )}
 
         {/* Legend */}
-        {showDeals && dealLocations.length > 0 && (
+        {showDeals && filteredDealLocations.length > 0 && (
           <div className="absolute bottom-6 left-4 z-10 bg-white/95 border border-slate-200 rounded-lg p-3 shadow text-xs max-w-[200px]">
             <div className="font-semibold text-slate-700 mb-2">Deal Stages</div>
             <div className="space-y-1">
