@@ -18,6 +18,7 @@ import ExpenseForm from "@/components/projects/ExpenseForm.jsx";
 import GanttChart from "@/components/projects/GanttChart.jsx";
 import DocumentList from "@/components/documents/DocumentList";
 import DevelopmentTab from "@/components/projects/DevelopmentTab";
+import ZoningCodes from "@/components/projects/ZoningCodes";
 
 const statusConfig = {
   planning: { color: "bg-slate-100 text-slate-700" },
