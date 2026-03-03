@@ -187,6 +187,17 @@ export default function Dashboard() {
           {isWidgetEnabled('upcomingTasks') && (
             <UpcomingTasks tasks={tasks} deals={deals} onToggleTask={handleToggleTask} />
           )}
+
+          {/* Financial Dashboard Widgets */}
+          {isWidgetEnabled('financialKPIs') && (
+            <FinancialKPIsWidget deals={deals} proformas={proformas} />
+          )}
+          {isWidgetEnabled('financialCharts') && (
+            <FinancialChartsWidget deals={deals} proformas={proformas} />
+          )}
+          {isWidgetEnabled('performanceRankings') && (
+            <PerformanceRankingsWidget deals={deals} proformas={proformas} />
+          )}
         </div>
       </div>
 
