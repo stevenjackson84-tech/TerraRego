@@ -316,7 +316,7 @@ export default function DealDetails() {
 
         {/* Tabs */}
         <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="bg-white border">
+          <TabsList className="bg-white border flex-wrap h-auto gap-1 p-1">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="proforma">Proforma</TabsTrigger>
             <TabsTrigger value="timeline">Timeline</TabsTrigger>

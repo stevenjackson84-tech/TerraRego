@@ -56,6 +56,7 @@ import DealDetails from './pages/DealDetails';
 import Deals from './pages/Deals';
 import Development from './pages/Development';
 import Entitlements from './pages/Entitlements';
+import FloorPlansLibrary from './pages/FloorPlansLibrary';
 import GISMap from './pages/GISMap';
 import LeanSixSigma from './pages/LeanSixSigma';
 import PlanCheck from './pages/PlanCheck';
@@ -63,7 +64,6 @@ import ProjectDetails from './pages/ProjectDetails';
 import Projects from './pages/Projects';
 import Reports from './pages/Reports';
 import Tasks from './pages/Tasks';
-import FloorPlansLibrary from './pages/FloorPlansLibrary';
 import __Layout from './Layout.jsx';
 
 
@@ -77,6 +77,7 @@ export const PAGES = {
     "Deals": Deals,
     "Development": Development,
     "Entitlements": Entitlements,
+    "FloorPlansLibrary": FloorPlansLibrary,
     "GISMap": GISMap,
     "LeanSixSigma": LeanSixSigma,
     "PlanCheck": PlanCheck,
@@ -84,7 +85,6 @@ export const PAGES = {
     "Projects": Projects,
     "Reports": Reports,
     "Tasks": Tasks,
-    "FloorPlansLibrary": FloorPlansLibrary,
 }
 
 export const pagesConfig = {
