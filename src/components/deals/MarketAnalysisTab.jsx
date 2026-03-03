@@ -213,10 +213,8 @@ export default function MarketAnalysisTab({ dealId, proforma, deal }) {
               {csvStatus.message}
             </div>
           )}
-          <input ref={fileInputRef} type="file" accept=".csv,.xlsx,.xls" className="hidden" onChange={handleCsvUpload} />
-          <Button variant="outline" onClick={() => fileInputRef.current?.click()} disabled={csvStatus?.state === "loading"}>
-            {csvStatus?.state === "loading" ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Upload className="h-4 w-4 mr-2" />}
-            Import CSV / Excel
+          <Button variant="outline" onClick={() => setImportDialogOpen(true)}>
+            <Upload className="h-4 w-4 mr-2" /> Import CSV / Excel
           </Button>
           <Button variant="outline" onClick={handleAutoFetch} disabled={autoFetching} className="border-purple-200 text-purple-700 hover:bg-purple-50">
             {autoFetching ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Sparkles className="h-4 w-4 mr-2" />}
