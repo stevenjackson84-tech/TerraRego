@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
-import { Building2, Users, ClipboardList, FileCheck, DollarSign, TrendingUp } from "lucide-react";
+import { Building2, Users, ClipboardList, FileCheck, DollarSign, TrendingUp, Settings } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import StatsCard from "@/components/dashboard/StatsCard";
 import DealPipelineChart from "@/components/dashboard/DealPipelineChart";
 import RecentActivity from "@/components/dashboard/RecentActivity";
@@ -10,6 +11,8 @@ import QuarterlyDealsWidget from "@/components/dashboard/QuarterlyDealsWidget";
 import AvgProfitByTypeWidget from "@/components/dashboard/AvgProfitByTypeWidget";
 import TaskNotifications from "@/components/tasks/TaskNotifications";
 import ClickUpWidget from "@/components/clickup/ClickUpWidget";
+import DashboardCustomizer from "@/components/dashboard/DashboardCustomizer";
+import WidgetGrid from "@/components/dashboard/WidgetGrid";
 
 export default function Dashboard() {
   const queryClient = useQueryClient();
