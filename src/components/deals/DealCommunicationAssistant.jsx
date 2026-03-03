@@ -128,12 +128,18 @@ Provide a concise summary that includes:
         activityByHour[hour] = (activityByHour[hour] || 0) + 1;
       });
 
+      const topHours = Object.entries(activityByHour)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 3)
+        .map(e => e[0] + ":00")
+        .join(", ");
+
       const result = await base44.integrations.Core.InvokeLLM({
         prompt: `Based on the communication patterns shown in the activity analysis for deal "${deal?.name}", suggest optimal times to contact key stakeholders.
 
 Communication Pattern Analysis:
 - Most active days: ${Object.entries(activityByDay).sort((a, b) => b[1] - a[1]).slice(0, 3).map(e => e[0]).join(", ")}
-- Most active hours: ${Object.entries(activityByHour).sort((a, b) => b[1] - a[1]).slice(0, 3).map(e => \`\${e[0]}:00\`).join(", ")}
+- Most active hours: ${topHours}
 - Total communications: ${emailHistory.length}
 - Deal Stage: ${deal?.stage?.replace('_', ' ')}
 
