@@ -26,6 +26,7 @@ export default function Deals() {
   const [showForm, setShowForm] = useState(false);
   const [editingDeal, setEditingDeal] = useState(null);
   const [filterStage, setFilterStage] = useState("all");
+  const [deleteConfirm, setDeleteConfirm] = useState(null);
   
   const queryClient = useQueryClient();
 
