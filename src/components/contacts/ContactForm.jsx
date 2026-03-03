@@ -2,198 +2,271 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { X } from "lucide-react";
 
-const defaultContact = {
-  first_name: "",
-  last_name: "",
-  company: "",
-  title: "",
-  email: "",
-  phone: "",
-  contact_type: "other",
-  address: "",
-  city: "",
-  state: "",
-  zip: "",
-  notes: "",
-  status: "active"
-};
+const contactTypes = [
+  { value: "landowner", label: "Landowner" },
+  { value: "broker", label: "Broker" },
+  { value: "attorney", label: "Attorney" },
+  { value: "consultant", label: "Consultant" },
+  { value: "investor", label: "Investor" },
+  { value: "contractor", label: "Contractor" },
+  { value: "government", label: "Government" },
+  { value: "other", label: "Other" },
+];
 
-export default function ContactForm({ contact, open, onClose, onSave, isLoading }) {
-  const [formData, setFormData] = useState(contact || defaultContact);
+export default function ContactForm({ contact, onSubmit, onCancel, isLoading }) {
+  const [formData, setFormData] = useState(
+    contact || {
+      first_name: "",
+      last_name: "",
+      email: "",
+      phone: "",
+      company: "",
+      title: "",
+      contact_type: "other",
+      address: "",
+      city: "",
+      state: "",
+      zip: "",
+      notes: "",
+    }
+  );
 
-  const handleChange = (field, value) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSelectChange = (name, value) => {
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSave(formData);
+    onSubmit(formData);
   };
 
   return (
-    <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="text-xl font-semibold">
-            {contact ? "Edit Contact" : "Add New Contact"}
-          </DialogTitle>
-        </DialogHeader>
-        
+    <Card className="w-full max-w-2xl shadow-xl">
+      <CardHeader className="flex flex-row items-center justify-between pb-3">
+        <CardTitle>{contact ? "Edit Contact" : "Add New Contact"}</CardTitle>
+        <button
+          onClick={onCancel}
+          disabled={isLoading}
+          className="text-slate-400 hover:text-slate-600"
+        >
+          <X className="h-5 w-5" />
+        </button>
+      </CardHeader>
+      <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
+          {/* Name Row */}
+          <div className="grid grid-cols-2 gap-3">
             <div>
-              <Label htmlFor="first_name">First Name *</Label>
+              <Label htmlFor="first_name" className="text-sm">
+                First Name *
+              </Label>
               <Input
                 id="first_name"
+                name="first_name"
                 value={formData.first_name}
-                onChange={(e) => handleChange("first_name", e.target.value)}
+                onChange={handleChange}
                 required
+                placeholder="John"
+                className="mt-1"
               />
             </div>
-
             <div>
-              <Label htmlFor="last_name">Last Name *</Label>
+              <Label htmlFor="last_name" className="text-sm">
+                Last Name *
+              </Label>
               <Input
                 id="last_name"
+                name="last_name"
                 value={formData.last_name}
-                onChange={(e) => handleChange("last_name", e.target.value)}
+                onChange={handleChange}
                 required
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="company">Company</Label>
-              <Input
-                id="company"
-                value={formData.company}
-                onChange={(e) => handleChange("company", e.target.value)}
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="title">Title</Label>
-              <Input
-                id="title"
-                value={formData.title}
-                onChange={(e) => handleChange("title", e.target.value)}
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                value={formData.email}
-                onChange={(e) => handleChange("email", e.target.value)}
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="phone">Phone</Label>
-              <Input
-                id="phone"
-                value={formData.phone}
-                onChange={(e) => handleChange("phone", e.target.value)}
-              />
-            </div>
-
-            <div>
-              <Label>Contact Type</Label>
-              <Select value={formData.contact_type} onValueChange={(v) => handleChange("contact_type", v)}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="landowner">Landowner</SelectItem>
-                  <SelectItem value="broker">Broker</SelectItem>
-                  <SelectItem value="attorney">Attorney</SelectItem>
-                  <SelectItem value="consultant">Consultant</SelectItem>
-                  <SelectItem value="investor">Investor</SelectItem>
-                  <SelectItem value="contractor">Contractor</SelectItem>
-                  <SelectItem value="government">Government</SelectItem>
-                  <SelectItem value="other">Other</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div>
-              <Label>Status</Label>
-              <Select value={formData.status} onValueChange={(v) => handleChange("status", v)}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="active">Active</SelectItem>
-                  <SelectItem value="inactive">Inactive</SelectItem>
-                  <SelectItem value="lead">Lead</SelectItem>
-                  <SelectItem value="prospect">Prospect</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="col-span-2">
-              <Label htmlFor="address">Address</Label>
-              <Input
-                id="address"
-                value={formData.address}
-                onChange={(e) => handleChange("address", e.target.value)}
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="city">City</Label>
-              <Input
-                id="city"
-                value={formData.city}
-                onChange={(e) => handleChange("city", e.target.value)}
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-2">
-              <div>
-                <Label htmlFor="state">State</Label>
-                <Input
-                  id="state"
-                  value={formData.state}
-                  onChange={(e) => handleChange("state", e.target.value)}
-                />
-              </div>
-              <div>
-                <Label htmlFor="zip">ZIP</Label>
-                <Input
-                  id="zip"
-                  value={formData.zip}
-                  onChange={(e) => handleChange("zip", e.target.value)}
-                />
-              </div>
-            </div>
-
-            <div className="col-span-2">
-              <Label htmlFor="notes">Notes</Label>
-              <Textarea
-                id="notes"
-                value={formData.notes}
-                onChange={(e) => handleChange("notes", e.target.value)}
-                rows={3}
+                placeholder="Doe"
+                className="mt-1"
               />
             </div>
           </div>
 
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={onClose}>
+          {/* Contact Info Row */}
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <Label htmlFor="email" className="text-sm">
+                Email
+              </Label>
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                value={formData.email}
+                onChange={handleChange}
+                placeholder="john@example.com"
+                className="mt-1"
+              />
+            </div>
+            <div>
+              <Label htmlFor="phone" className="text-sm">
+                Phone
+              </Label>
+              <Input
+                id="phone"
+                name="phone"
+                value={formData.phone}
+                onChange={handleChange}
+                placeholder="(555) 123-4567"
+                className="mt-1"
+              />
+            </div>
+          </div>
+
+          {/* Company & Title Row */}
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <Label htmlFor="company" className="text-sm">
+                Company
+              </Label>
+              <Input
+                id="company"
+                name="company"
+                value={formData.company}
+                onChange={handleChange}
+                placeholder="Acme Corp"
+                className="mt-1"
+              />
+            </div>
+            <div>
+              <Label htmlFor="title" className="text-sm">
+                Role/Title
+              </Label>
+              <Input
+                id="title"
+                name="title"
+                value={formData.title}
+                onChange={handleChange}
+                placeholder="Project Manager"
+                className="mt-1"
+              />
+            </div>
+          </div>
+
+          {/* Contact Type */}
+          <div>
+            <Label htmlFor="contact_type" className="text-sm">
+              Contact Type
+            </Label>
+            <Select
+              value={formData.contact_type}
+              onValueChange={(value) => handleSelectChange("contact_type", value)}
+            >
+              <SelectTrigger className="mt-1">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {contactTypes.map((type) => (
+                  <SelectItem key={type.value} value={type.value}>
+                    {type.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Address */}
+          <div>
+            <Label htmlFor="address" className="text-sm">
+              Address
+            </Label>
+            <Input
+              id="address"
+              name="address"
+              value={formData.address}
+              onChange={handleChange}
+              placeholder="123 Main St"
+              className="mt-1"
+            />
+          </div>
+
+          {/* City, State, Zip */}
+          <div className="grid grid-cols-3 gap-3">
+            <div>
+              <Label htmlFor="city" className="text-sm">
+                City
+              </Label>
+              <Input
+                id="city"
+                name="city"
+                value={formData.city}
+                onChange={handleChange}
+                placeholder="Salt Lake City"
+                className="mt-1"
+              />
+            </div>
+            <div>
+              <Label htmlFor="state" className="text-sm">
+                State
+              </Label>
+              <Input
+                id="state"
+                name="state"
+                value={formData.state}
+                onChange={handleChange}
+                placeholder="UT"
+                className="mt-1 uppercase"
+              />
+            </div>
+            <div>
+              <Label htmlFor="zip" className="text-sm">
+                ZIP
+              </Label>
+              <Input
+                id="zip"
+                name="zip"
+                value={formData.zip}
+                onChange={handleChange}
+                placeholder="84101"
+                className="mt-1"
+              />
+            </div>
+          </div>
+
+          {/* Notes */}
+          <div>
+            <Label htmlFor="notes" className="text-sm">
+              Notes
+            </Label>
+            <textarea
+              id="notes"
+              name="notes"
+              value={formData.notes}
+              onChange={handleChange}
+              placeholder="Additional notes about this contact..."
+              rows={3}
+              className="mt-1 w-full px-3 py-2 border border-slate-200 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
+            />
+          </div>
+
+          {/* Actions */}
+          <div className="flex gap-3 justify-end pt-4">
+            <Button variant="outline" onClick={onCancel} disabled={isLoading}>
               Cancel
             </Button>
-            <Button type="submit" disabled={isLoading} className="bg-slate-900 hover:bg-slate-800">
+            <Button
+              type="submit"
+              disabled={isLoading}
+              className="bg-slate-900 hover:bg-slate-800"
+            >
               {isLoading ? "Saving..." : contact ? "Update Contact" : "Add Contact"}
             </Button>
-          </DialogFooter>
+          </div>
         </form>
-      </DialogContent>
-    </Dialog>
+      </CardContent>
+    </Card>
   );
 }
