@@ -869,6 +869,7 @@ export default function ProformaTab({ proforma, onSave, isLoading, deal }) {
           { label: "Total Costs", val: fmt(totalCosts), sub: `${fmt(totalCostPerUnit)} / unit` },
           { label: "Net Profit", val: fmt(profit), sub: fmtPct(grossMarginPct) + " margin", color: profit >= 0 ? "text-emerald-700" : "text-red-700" },
           { label: "Unlevered IRR", val: unleveredIRR ? fmtPct(unleveredIRR) : "—", sub: "annualized", color: unleveredIRR && unleveredIRR >= 0 ? "text-blue-700" : "text-slate-400" },
+          { label: "Peak Capital", val: fmt(peakCapital.amount), sub: peakCapital.date ? `Peak: ${format(new Date(peakCapital.date), "MMM yyyy")}` : "Add timeline data", color: "text-amber-700" },
         ].map(k => (
           <Card key={k.label} className="border-0 shadow-sm">
             <CardContent className="p-5">
