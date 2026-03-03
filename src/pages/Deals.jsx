@@ -163,6 +163,7 @@ export default function Deals() {
           <DealPipeline 
             deals={filteredDeals} 
             onUpdateDeal={handleUpdateDeal}
+            onDelete={(id) => setDeleteConfirm(id)}
           />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -173,13 +174,22 @@ export default function Deals() {
                 return scoreB - scoreA;
               })
               .map(deal => (
-              <DealCard 
-                key={deal.id} 
-                deal={deal} 
-                tasks={allTasks.filter(t => t.deal_id === deal.id)}
-                proforma={allProformas.find(p => p.deal_id === deal.id)}
-                planDoc={planDocs.find(d => d.entity_id === deal.id)}
-              />
+              <div key={deal.id} className="relative group">
+                <DealCard 
+                  deal={deal} 
+                  tasks={allTasks.filter(t => t.deal_id === deal.id)}
+                  proforma={allProformas.find(p => p.deal_id === deal.id)}
+                  planDoc={planDocs.find(d => d.entity_id === deal.id)}
+                />
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="absolute top-2 right-2 text-red-600 hover:text-red-700 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-opacity"
+                  onClick={() => setDeleteConfirm(deal.id)}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
             ))}
             {filteredDeals.length === 0 && (
               <div className="col-span-full text-center py-12 text-slate-500">
@@ -188,6 +198,25 @@ export default function Deals() {
             )}
           </div>
         )}
+
+        <AlertDialog open={!!deleteConfirm} onOpenChange={() => setDeleteConfirm(null)}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Delete Deal</AlertDialogTitle>
+              <AlertDialogDescription>
+                Are you sure you want to delete this deal? This action cannot be undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogAction
+              onClick={() => handleDelete(deleteConfirm)}
+              disabled={deleteMutation.isPending}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              {deleteMutation.isPending ? "Deleting..." : "Delete"}
+            </AlertDialogAction>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+          </AlertDialogContent>
+        </AlertDialog>
 
         {/* Form Modal */}
         <DealForm
