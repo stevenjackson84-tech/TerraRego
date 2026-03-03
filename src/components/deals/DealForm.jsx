@@ -266,6 +266,54 @@ export default function DealForm({ deal, open, onClose, onSave, isLoading }) {
               />
             </div>
 
+            <div className="col-span-2">
+              <Label>Deal Photo</Label>
+              <div className="mt-1 space-y-2">
+                {formData.image_url ? (
+                  <div className="relative w-full h-40 rounded-lg overflow-hidden border border-slate-200">
+                    <img src={formData.image_url} alt="Deal" className="w-full h-full object-cover" />
+                    <button
+                      type="button"
+                      onClick={() => handleChange("image_url", "")}
+                      className="absolute top-2 right-2 bg-white/80 hover:bg-white rounded-full p-1 shadow"
+                    >
+                      <X className="h-4 w-4 text-slate-700" />
+                    </button>
+                  </div>
+                ) : (
+                  <div
+                    onClick={() => fileInputRef.current?.click()}
+                    className="w-full h-32 border-2 border-dashed border-slate-200 rounded-lg flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-slate-400 hover:bg-slate-50 transition-colors"
+                  >
+                    {uploadingImage ? (
+                      <Loader2 className="h-6 w-6 text-slate-400 animate-spin" />
+                    ) : (
+                      <>
+                        <ImageIcon className="h-6 w-6 text-slate-400" />
+                        <span className="text-sm text-slate-500">Click to upload a photo</span>
+                      </>
+                    )}
+                  </div>
+                )}
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleImageUpload}
+                />
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-slate-400">or paste an image URL:</span>
+                  <Input
+                    value={formData.image_url || ""}
+                    onChange={(e) => handleChange("image_url", e.target.value)}
+                    placeholder="https://..."
+                    className="h-7 text-xs"
+                  />
+                </div>
+              </div>
+            </div>
+
             <LatLngPasteInput
               latitude={formData.latitude}
               longitude={formData.longitude}
