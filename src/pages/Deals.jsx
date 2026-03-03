@@ -67,6 +67,14 @@ export default function Deals() {
     }
   });
 
+  const deleteMutation = useMutation({
+    mutationFn: (id) => base44.entities.Deal.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['deals'] });
+      setDeleteConfirm(null);
+    }
+  });
+
   const handleSave = (data) => {
     if (editingDeal) {
       updateMutation.mutate({ id: editingDeal.id, data });
@@ -77,6 +85,10 @@ export default function Deals() {
 
   const handleUpdateDeal = (id, data) => {
     updateMutation.mutate({ id, data });
+  };
+
+  const handleDelete = (id) => {
+    deleteMutation.mutate(id);
   };
 
   const filteredDeals = deals.filter(deal => {
