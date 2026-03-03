@@ -97,77 +97,103 @@ export default function Dashboard() {
     <div className="min-h-screen bg-slate-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Dashboard</h1>
-          <p className="text-slate-500 mt-1">Overview of your land development portfolio</p>
-        </div>
-
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
-          <StatsCard
-            title="Active Deals"
-            value={activeDeals.length}
-            icon={Building2}
-            subtitle={`${deals.filter(d => d.stage === 'prospecting').length} in prospecting`}
-          />
-          <StatsCard
-            title="Pipeline Value"
-            value={`$${(totalPipelineValue / 1000000).toFixed(1)}M`}
-            icon={DollarSign}
-            trend="12%"
-            trendDirection="up"
-          />
-          <StatsCard
-            title="Pipeline Lots"
-            value={totalPipelineLots.toLocaleString()}
-            icon={TrendingUp}
-            subtitle="Total lot count"
-          />
-          <StatsCard
-            title="Contacts"
-            value={contacts.length}
-            icon={Users}
-            subtitle={`${contacts.filter(c => c.contact_type === 'landowner').length} landowners`}
-          />
-          <StatsCard
-            title="Pending Tasks"
-            value={pendingTasks}
-            icon={ClipboardList}
-            subtitle={`${pendingEntitlements} entitlements in progress`}
-          />
-        </div>
-
-        {/* KPI Widgets */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-          <QuarterlyDealsWidget deals={deals} />
-          <AvgProfitByTypeWidget deals={deals} proformas={proformas} />
-        </div>
-
-        {/* Task Notifications */}
-        <div className="mb-6">
-          <TaskNotifications />
-        </div>
-
-        {/* ClickUp Widget */}
-        <div className="mb-6">
-          <ClickUpWidget />
-        </div>
-
-        {/* Charts and Activity */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2">
-            <DealPipelineChart deals={deals} />
-          </div>
+        <div className="flex items-center justify-between mb-8">
           <div>
-            <RecentActivity activities={activities} deals={deals} />
+            <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Dashboard</h1>
+            <p className="text-slate-500 mt-1">Overview of your land development portfolio</p>
           </div>
+          <Button 
+            variant="outline" 
+            onClick={() => setCustomizerOpen(true)}
+            className="flex items-center gap-2"
+          >
+            <Settings className="h-4 w-4" /> Customize
+          </Button>
         </div>
 
-        {/* Tasks Section */}
-        <div className="mt-6">
-          <UpcomingTasks tasks={tasks} deals={deals} onToggleTask={handleToggleTask} />
+        {/* Widgets */}
+        <div className="space-y-8">
+          {/* Stats Grid */}
+          {isWidgetEnabled('stats') && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+              <StatsCard
+                title="Active Deals"
+                value={activeDeals.length}
+                icon={Building2}
+                subtitle={`${deals.filter(d => d.stage === 'prospecting').length} in prospecting`}
+              />
+              <StatsCard
+                title="Pipeline Value"
+                value={`$${(totalPipelineValue / 1000000).toFixed(1)}M`}
+                icon={DollarSign}
+                trend="12%"
+                trendDirection="up"
+              />
+              <StatsCard
+                title="Pipeline Lots"
+                value={totalPipelineLots.toLocaleString()}
+                icon={TrendingUp}
+                subtitle="Total lot count"
+              />
+              <StatsCard
+                title="Contacts"
+                value={contacts.length}
+                icon={Users}
+                subtitle={`${contacts.filter(c => c.contact_type === 'landowner').length} landowners`}
+              />
+              <StatsCard
+                title="Pending Tasks"
+                value={pendingTasks}
+                icon={ClipboardList}
+                subtitle={`${pendingEntitlements} entitlements in progress`}
+              />
+            </div>
+          )}
+
+          {/* KPI Widgets Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {isWidgetEnabled('quarterly') && <QuarterlyDealsWidget deals={deals} />}
+            {isWidgetEnabled('profitByType') && <AvgProfitByTypeWidget deals={deals} proformas={proformas} />}
+          </div>
+
+          {/* Task Notifications */}
+          {isWidgetEnabled('taskNotifications') && (
+            <TaskNotifications />
+          )}
+
+          {/* ClickUp Widget */}
+          {isWidgetEnabled('clickUp') && (
+            <ClickUpWidget />
+          )}
+
+          {/* Charts and Activity */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {isWidgetEnabled('pipeline') && (
+              <div className="lg:col-span-2">
+                <DealPipelineChart deals={deals} />
+              </div>
+            )}
+            {isWidgetEnabled('recentActivity') && (
+              <div>
+                <RecentActivity activities={activities} deals={deals} />
+              </div>
+            )}
+          </div>
+
+          {/* Tasks Section */}
+          {isWidgetEnabled('upcomingTasks') && (
+            <UpcomingTasks tasks={tasks} deals={deals} onToggleTask={handleToggleTask} />
+          )}
         </div>
       </div>
+
+      {/* Customizer Dialog */}
+      <DashboardCustomizer 
+        open={customizerOpen} 
+        onOpenChange={setCustomizerOpen}
+        onSave={handleWidgetSave}
+        enabledWidgets={enabledWidgets}
+      />
     </div>
   );
 }
