@@ -13,6 +13,9 @@ import TaskNotifications from "@/components/tasks/TaskNotifications";
 import ClickUpWidget from "@/components/clickup/ClickUpWidget";
 import DashboardCustomizer from "@/components/dashboard/DashboardCustomizer";
 import WidgetGrid from "@/components/dashboard/WidgetGrid";
+import FinancialKPIsWidget from "@/components/dashboard/FinancialKPIsWidget";
+import FinancialChartsWidget from "@/components/dashboard/FinancialChartsWidget";
+import PerformanceRankingsWidget from "@/components/dashboard/PerformanceRankingsWidget";
 
 export default function Dashboard() {
   const queryClient = useQueryClient();
