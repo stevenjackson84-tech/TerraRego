@@ -13,6 +13,7 @@ export default function FloorPlansLibrary() {
   const [showForm, setShowForm] = useState(false);
   const [editingPlan, setEditingPlan] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [sortBy, setSortBy] = useState("name");
   const [formData, setFormData] = useState({
     name: "",
     square_footage: "",
