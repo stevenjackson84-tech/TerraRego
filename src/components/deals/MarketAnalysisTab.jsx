@@ -315,7 +315,7 @@ export default function MarketAnalysisTab({ dealId, proforma, deal }) {
                         </div>
                         <p className="text-lg font-bold text-slate-900">{formatCurrency(sale.sale_price)}</p>
                       </div>
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+                      <div className="grid grid-cols-2 md:grid-cols-5 gap-3 text-sm">
                         {sale.square_footage && (
                           <div>
                             <p className="text-slate-500">Sq. Ft.</p>
@@ -338,6 +338,12 @@ export default function MarketAnalysisTab({ dealId, proforma, deal }) {
                           <div>
                             <p className="text-slate-500">Sale Date</p>
                             <p className="font-medium">{new Date(sale.sale_date).toLocaleDateString()}</p>
+                          </div>
+                        )}
+                        {sale.source && (
+                          <div>
+                            <p className="text-slate-500">Source</p>
+                            <p className="font-medium text-xs">{sale.source}</p>
                           </div>
                         )}
                       </div>
