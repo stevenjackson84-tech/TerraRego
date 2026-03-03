@@ -15,6 +15,9 @@ const AVAILABLE_WIDGETS = [
   { id: 'upcomingTasks', label: 'Upcoming Tasks', category: 'tasks' },
   { id: 'taskNotifications', label: 'Task Notifications', category: 'tasks' },
   { id: 'clickUp', label: 'ClickUp Integration', category: 'integration' },
+  { id: 'financialKPIs', label: 'Financial KPIs Overview', category: 'financial' },
+  { id: 'financialCharts', label: 'Profit & Margin Charts', category: 'financial' },
+  { id: 'performanceRankings', label: 'Deal Performance Rankings', category: 'financial' },
 ];
 
 export default function DashboardCustomizer({ open, onOpenChange, onSave, enabledWidgets = [] }) {
@@ -47,7 +50,7 @@ export default function DashboardCustomizer({ open, onOpenChange, onSave, enable
     }
   };
 
-  const categories = ['overview', 'market', 'performance', 'deals', 'activity', 'tasks', 'integration'];
+  const categories = ['overview', 'market', 'performance', 'deals', 'activity', 'tasks', 'financial', 'integration'];
   const categoryLabels = {
     overview: 'Overview',
     market: 'Market Insights',
@@ -55,6 +58,7 @@ export default function DashboardCustomizer({ open, onOpenChange, onSave, enable
     deals: 'Deals',
     activity: 'Activity',
     tasks: 'Tasks',
+    financial: '💰 Financial Dashboard',
     integration: 'Integrations'
   };
 
