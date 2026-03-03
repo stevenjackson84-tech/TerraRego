@@ -12,7 +12,6 @@ import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import DDDocumentPanel from "./DDDocumentPanel";
 import DDDeadlineReminders from "./DDDeadlineReminders";
-import SoilsReportAnalysis from "./SoilsReportAnalysis";
 import GeotechAnalysis from "./GeotechAnalysis";
 
 const defaultChecklist = [
@@ -341,9 +340,6 @@ Based on these specifics, suggest 5-10 additional due diligence items that are m
         <DDDocumentPanel dealId={dealId} />
         <DDDeadlineReminders dealId={dealId} deal={deal} />
       </div>
-
-      {/* Soils Report Analysis */}
-      <SoilsReportAnalysis dealId={dealId} />
 
       {/* Geotech Analysis - Focus Areas */}
       <GeotechAnalysis dealId={dealId} deal={deal} />
