@@ -280,6 +280,11 @@ export default function DealDetails() {
                 {deal.address}, {deal.city}, {deal.state}
               </div>
             )}
+            {currentUserEmail && (
+              <div className="mt-3">
+                <RealtimeUserIndicator dealId={dealId} currentUserEmail={currentUserEmail} />
+              </div>
+            )}
           </div>
           <div className="flex gap-2">
             <Button 
