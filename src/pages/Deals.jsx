@@ -4,7 +4,16 @@ import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, Search, LayoutGrid, Kanban } from "lucide-react";
+import { Plus, Search, LayoutGrid, Kanban, Trash2 } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import DealCard from "@/components/deals/DealCard";
 import DealPipeline from "@/components/deals/DealPipeline";
 import DealForm from "@/components/deals/DealForm";
