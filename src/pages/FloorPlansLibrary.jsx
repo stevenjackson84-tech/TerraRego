@@ -30,10 +30,24 @@ export default function FloorPlansLibrary() {
     queryFn: () => base44.entities.FloorPlan.list()
   });
 
-  const filteredPlans = floorPlans.filter(plan =>
-    plan.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    plan.product_type?.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredPlans = floorPlans
+    .filter(plan =>
+      plan.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      plan.product_type?.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+    .sort((a, b) => {
+      switch (sortBy) {
+        case "sqft_asc": return (a.square_footage || 0) - (b.square_footage || 0);
+        case "sqft_desc": return (b.square_footage || 0) - (a.square_footage || 0);
+        case "beds_asc": return (a.bedrooms || 0) - (b.bedrooms || 0);
+        case "beds_desc": return (b.bedrooms || 0) - (a.bedrooms || 0);
+        case "baths_asc": return (a.bathrooms || 0) - (b.bathrooms || 0);
+        case "baths_desc": return (b.bathrooms || 0) - (a.bathrooms || 0);
+        case "garage_asc": return (a.garage_count || 0) - (b.garage_count || 0);
+        case "garage_desc": return (b.garage_count || 0) - (a.garage_count || 0);
+        default: return (a.name || "").localeCompare(b.name || "");
+      }
+    });
 
   const planMutation = useMutation({
     mutationFn: (data) => editingPlan 
