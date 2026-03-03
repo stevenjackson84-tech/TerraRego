@@ -31,6 +31,7 @@ import ProformaTab from "@/components/deals/ProformaTab";
 import TimelineTab from "@/components/deals/TimelineTab";
 import MarketAnalysisTab from "@/components/deals/MarketAnalysisTab";
 import DocumentList from "@/components/documents/DocumentList";
+import DocumentUpload from "@/components/documents/DocumentUpload";
 import DocumentFieldLinker from "@/components/documents/DocumentFieldLinker";
 import DueDiligenceTab from "@/components/deals/DueDiligenceTab";
 import BurnScheduleTab from "@/components/deals/BurnScheduleTab";
@@ -87,6 +88,7 @@ export default function DealDetails() {
   const [editingTask, setEditingTask] = useState(null);
   const [currentUserEmail, setCurrentUserEmail] = useState(null);
   const [showEmailComposer, setShowEmailComposer] = useState(false);
+  const [showDocumentUpload, setShowDocumentUpload] = useState(false);
 
   const queryClient = useQueryClient();
 
@@ -609,6 +611,16 @@ export default function DealDetails() {
 
           <TabsContent value="documents">
             <div className="space-y-6">
+              <div className="flex justify-between items-center">
+                <h2 className="text-lg font-semibold text-slate-900">Documents</h2>
+                <Button 
+                  onClick={() => setShowDocumentUpload(true)}
+                  className="bg-slate-900 hover:bg-slate-800"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Upload Document
+                </Button>
+              </div>
               <EmailHistoryPanel dealId={dealId} />
               <DocumentFieldLinker
                 dealId={dealId}
@@ -730,6 +742,13 @@ export default function DealDetails() {
           dealId={dealId}
           dealName={deal.name}
           dealAddress={`${deal.address}, ${deal.city}, ${deal.state}`}
+        />
+
+        <DocumentUpload
+          entityType="deal"
+          entityId={dealId}
+          open={showDocumentUpload}
+          onClose={() => setShowDocumentUpload(false)}
         />
 
       </div>
