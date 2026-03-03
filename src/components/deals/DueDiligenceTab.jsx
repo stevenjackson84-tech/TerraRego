@@ -310,21 +310,25 @@ Based on these specifics, suggest 5-10 additional due diligence items that are m
 
   if (items.length === 0) {
     return (
-      <Card className="border-0 shadow-sm">
-        <CardContent className="py-12 text-center">
-          <FileCheck className="h-12 w-12 text-slate-300 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-slate-900 mb-2">No Due Diligence Checklist</h3>
-          <p className="text-slate-500 mb-6">Create a comprehensive due diligence checklist for this deal</p>
-          <Button 
-            onClick={() => createDefaultItems.mutate()} 
-            disabled={createDefaultItems.isPending}
-            className="bg-slate-900 hover:bg-slate-800"
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            {createDefaultItems.isPending ? "Creating..." : "Create Standard Checklist"}
-          </Button>
-        </CardContent>
-      </Card>
+      <div className="space-y-6">
+        <Card className="border-0 shadow-sm">
+          <CardContent className="py-12 text-center">
+            <FileCheck className="h-12 w-12 text-slate-300 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-slate-900 mb-2">No Due Diligence Checklist</h3>
+            <p className="text-slate-500 mb-6">Create a comprehensive due diligence checklist for this deal</p>
+            <Button 
+              onClick={() => createDefaultItems.mutate()} 
+              disabled={createDefaultItems.isPending}
+              className="bg-slate-900 hover:bg-slate-800"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              {createDefaultItems.isPending ? "Creating..." : "Create Standard Checklist"}
+            </Button>
+          </CardContent>
+        </Card>
+        <DDDocumentPanel dealId={dealId} />
+        <DDDeadlineReminders dealId={dealId} deal={deal} />
+      </div>
     );
   }
 
