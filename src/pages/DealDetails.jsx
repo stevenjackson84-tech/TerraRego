@@ -35,6 +35,8 @@ import DocumentFieldLinker from "@/components/documents/DocumentFieldLinker";
 import DueDiligenceTab from "@/components/deals/DueDiligenceTab";
 import BurnScheduleTab from "@/components/deals/BurnScheduleTab";
 import ZondaMarketAnalysis from "@/components/deals/ZondaMarketAnalysis";
+import DealComments from "@/components/deals/DealComments";
+import RealtimeUserIndicator from "@/components/deals/RealtimeUserIndicator";
 
 const stageStyles = {
   prospecting: "bg-slate-100 text-slate-700",
