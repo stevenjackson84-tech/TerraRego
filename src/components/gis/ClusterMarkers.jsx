@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useMap } from 'react-leaflet';
 import L from 'leaflet';
+import 'leaflet.markercluster';
 
 export default function ClusterMarkers({ deals, stageColors, stageLabels, showClusters }) {
   const map = useMap();
@@ -15,8 +16,10 @@ export default function ClusterMarkers({ deals, stageColors, stageLabels, showCl
       }
     });
 
-    // Create marker cluster group
-    const markerClusterGroup = L.markerClusterGroup({
+    // Create marker cluster group with proper initialization
+    let markerClusterGroup;
+    try {
+      markerClusterGroup = L.markerClusterGroup({
       maxClusterRadius: 80,
       iconCreateFunction: (cluster) => {
         const count = cluster.getChildCount();
@@ -73,14 +76,18 @@ export default function ClusterMarkers({ deals, stageColors, stageLabels, showCl
         markerClusterGroup.addLayer(marker);
       });
 
-    markerClusterGroup._clusterGroup = true;
-    markerClusterGroup.addTo(map);
+      markerClusterGroup._clusterGroup = true;
+      markerClusterGroup.addTo(map);
 
-    return () => {
-      if (map && markerClusterGroup) {
-        map.removeLayer(markerClusterGroup);
-      }
-    };
+      return () => {
+        if (map && markerClusterGroup) {
+          map.removeLayer(markerClusterGroup);
+        }
+      };
+    } catch (err) {
+      console.warn('Marker cluster initialization failed:', err);
+      return;
+    }
   }, [map, deals, showClusters, stageColors, stageLabels]);
 
   return null;
