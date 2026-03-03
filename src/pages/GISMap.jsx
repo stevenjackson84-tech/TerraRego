@@ -1205,11 +1205,12 @@ Generate a realistic land parcel analysis. Include:
                 const baths = props.baths ? `${props.baths}ba` : "";
                 const sqft = props.sqft ? `${parseInt(props.sqft).toLocaleString()} sqft` : "";
                 const details = [beds, baths, sqft].filter(Boolean).join(" • ");
+                const detailsPageUrl = createPageUrl(`PropertyDetails?url=${encodeURIComponent(props.url || '')}`);
                 const popup = `<div style="font-size:11px;line-height:1.5">
                   <b>${props.address || "Property"}</b><br/>
                   ${price}<br/>
                   ${details}<br/>
-                  <a href="${props.url || '#'}" target="_blank" style="color:#3b82f6">View on Zillow →</a>
+                  <a href="${detailsPageUrl}" style="color:#3b82f6;text-decoration:underline">View Details →</a>
                 </div>`;
                 layer.bindPopup(popup);
                 layer.bindTooltip(`${price}`, { sticky: true });
@@ -1224,6 +1225,7 @@ Generate a realistic land parcel analysis. Include:
               pointToLayer={(feature, latlng) => {
                 const price = feature.properties.price || 0;
                 const color = price > 500000 ? '#dc2626' : price > 300000 ? '#f97316' : price > 150000 ? '#eab308' : '#22c55e';
+                const detailsPageUrl = createPageUrl(`PropertyDetails?url=${encodeURIComponent(feature.properties.url || '')}`);
                 return L.circleMarker(latlng, {
                   radius: 6,
                   fillColor: color,
@@ -1239,7 +1241,7 @@ Generate a realistic land parcel analysis. Include:
                     <strong>Sq Ft:</strong> ${feature.properties.sqft?.toLocaleString() || 'N/A'}<br/>
                     <strong>Price/Sq Ft:</strong> $${feature.properties.pricePerSqft || 'N/A'}<br/>
                     <strong>Sale Date:</strong> ${feature.properties.saleDate ? new Date(feature.properties.saleDate).toLocaleDateString() : 'N/A'}<br/>
-                    <a href="${feature.properties.url}" target="_blank" rel="noopener noreferrer" style="color: #0066cc;">View on Redfin →</a>
+                    <a href="${detailsPageUrl}" style="color: #0066cc;text-decoration:underline">View Details →</a>
                   </div>
                 `, { maxWidth: 250 });
               }}
