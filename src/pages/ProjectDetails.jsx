@@ -377,6 +377,12 @@ export default function ProjectDetails() {
                       </div>
                     </div>
                     <div className="flex gap-1">
+                      <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-500" title="Create task" onClick={() => {
+                        setTaskPrefill({ title: `Complete: ${milestone.name}`, description: `Task for milestone: ${milestone.name}` });
+                        setShowTaskCreate(true);
+                      }}>
+                        <ClipboardPlus className="h-4 w-4" />
+                      </Button>
                       <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => {
                         setEditingMilestone(milestone);
                         setShowMilestoneForm(true);
