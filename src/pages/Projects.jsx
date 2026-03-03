@@ -252,6 +252,25 @@ export default function Projects() {
           onSave={(data) => projectMutation.mutate(data)}
           isLoading={projectMutation.isPending}
         />
+
+        <AlertDialog open={!!deleteConfirm} onOpenChange={() => setDeleteConfirm(null)}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Delete Project</AlertDialogTitle>
+              <AlertDialogDescription>
+                Are you sure you want to delete this project? This action cannot be undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogAction
+              onClick={() => deleteProjectMutation.mutate(deleteConfirm)}
+              disabled={deleteProjectMutation.isPending}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              {deleteProjectMutation.isPending ? "Deleting..." : "Delete"}
+            </AlertDialogAction>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </div>
   );
