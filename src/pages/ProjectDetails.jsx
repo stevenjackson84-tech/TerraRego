@@ -245,6 +245,7 @@ export default function ProjectDetails() {
             <TabsTrigger value="budget">Budget & Expenses</TabsTrigger>
             <TabsTrigger value="documents">Documents</TabsTrigger>
             <TabsTrigger value="team">Team</TabsTrigger>
+            <TabsTrigger value="zoning">Zoning Codes</TabsTrigger>
           </TabsList>
 
           <TabsContent value="timeline">
