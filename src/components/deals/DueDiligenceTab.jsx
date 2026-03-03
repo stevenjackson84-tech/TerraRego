@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import DDDocumentPanel from "./DDDocumentPanel";
 import DDDeadlineReminders from "./DDDeadlineReminders";
+import SoilsReportAnalysis from "./SoilsReportAnalysis";
 
 const defaultChecklist = [
   {
