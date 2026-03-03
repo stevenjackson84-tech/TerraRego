@@ -471,7 +471,7 @@ export default function ProjectDetails() {
           </TabsContent>
 
           <TabsContent value="documents">
-            <DocumentList entityType="project" entityId={projectId} />
+            <DocumentList entityType="project" entityId={projectId} phases={phases} milestones={milestones} />
           </TabsContent>
 
           <TabsContent value="zoning">
