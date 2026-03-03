@@ -16,6 +16,23 @@ import WidgetGrid from "@/components/dashboard/WidgetGrid";
 
 export default function Dashboard() {
   const queryClient = useQueryClient();
+  const [customizerOpen, setCustomizerOpen] = useState(false);
+  const [enabledWidgets, setEnabledWidgets] = useState([
+    'stats', 'quarterly', 'profitByType', 'taskNotifications', 'clickUp', 'pipeline', 'recentActivity', 'upcomingTasks'
+  ]);
+  const [user, setUser] = useState(null);
+
+  // Fetch user preferences
+  useEffect(() => {
+    const loadUser = async () => {
+      const u = await base44.auth.me();
+      setUser(u);
+      if (u?.dashboard_widgets) {
+        setEnabledWidgets(u.dashboard_widgets);
+      }
+    };
+    loadUser();
+  }, []);
 
   const { data: deals = [] } = useQuery({
     queryKey: ['deals'],
@@ -62,12 +79,19 @@ export default function Dashboard() {
     });
   };
 
+  const handleWidgetSave = (selected) => {
+    setEnabledWidgets(selected);
+  };
+
   // Calculate stats
   const activeDeals = deals.filter(d => !['closed', 'dead'].includes(d.stage));
   const totalPipelineValue = activeDeals.reduce((sum, d) => sum + (d.estimated_value || 0), 0);
   const totalPipelineLots = activeDeals.reduce((sum, d) => sum + (d.number_of_lots || 0), 0);
   const pendingTasks = tasks.filter(t => t.status !== 'completed').length;
   const pendingEntitlements = entitlements.filter(e => !['approved', 'denied', 'expired'].includes(e.status)).length;
+
+  // Helper to check if widget is enabled
+  const isWidgetEnabled = (widgetId) => enabledWidgets.includes(widgetId);
 
   return (
     <div className="min-h-screen bg-slate-50">
