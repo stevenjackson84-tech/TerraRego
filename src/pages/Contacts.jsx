@@ -4,9 +4,11 @@ import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
-import { Plus, Search, Trash2 } from "lucide-react";
+import { Plus, Search, Trash2, Mail } from "lucide-react";
 import ContactForm from "@/components/contacts/ContactForm";
 import ContactCard from "@/components/contacts/ContactCard";
+import EmailComposer from "@/components/email/EmailComposer";
+import EmailHistoryPanel from "@/components/email/EmailHistoryPanel";
 
 export default function Contacts() {
   const [showForm, setShowForm] = useState(false);
