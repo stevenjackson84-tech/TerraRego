@@ -38,6 +38,7 @@ import ZondaMarketAnalysis from "@/components/deals/ZondaMarketAnalysis";
 import DealComments from "@/components/deals/DealComments";
 import RealtimeUserIndicator from "@/components/deals/RealtimeUserIndicator";
 import CalendarSyncButton from "@/components/deals/CalendarSyncButton";
+import TitleInfo from "@/components/deals/TitleInfo";
 
 const stageStyles = {
   prospecting: "bg-slate-100 text-slate-700",
@@ -356,6 +357,9 @@ export default function DealDetails() {
               </div>
               <div className="lg:col-span-2">
                 <DealRiskAssessment deal={deal} tasks={tasks} entitlements={entitlements} proforma={proforma} />
+              </div>
+              <div className="lg:col-span-2">
+                <TitleInfo dealId={dealId} dealName={deal.name} />
               </div>
               <Card className="border-0 shadow-sm">
                 <CardHeader>
