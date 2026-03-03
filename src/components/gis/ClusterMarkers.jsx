@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 import { useMap } from 'react-leaflet';
 import L from 'leaflet';
-import 'leaflet.markercluster/dist/leaflet.markercluster.css';
 
 export default function ClusterMarkers({ deals, stageColors, stageLabels, showClusters }) {
   const map = useMap();
