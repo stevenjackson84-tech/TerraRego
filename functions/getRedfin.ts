@@ -15,50 +15,64 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'latitude and longitude required' }, { status: 400 });
     }
 
-    // Convert radius miles to degrees (approximately 1 mile = 0.0145 degrees)
+    const apiKey = Deno.env.get('SCRAPER_API_KEY');
+    if (!apiKey) {
+      return Response.json({ error: 'ScraperAPI key not configured' }, { status: 500 });
+    }
+
+    // Build Redfin search URL with bounding box
     const latDelta = radius * 0.0145;
     const lngDelta = radius * 0.0145 / Math.cos(latitude * Math.PI / 180);
+    
+    const minLat = latitude - latDelta;
+    const maxLat = latitude + latDelta;
+    const minLng = longitude - lngDelta;
+    const maxLng = longitude + lngDelta;
 
-    // Redfin API endpoint for property search
-    const url = `https://www.redfin.com/stingray/api/gis?al=1&num_homes=100&ltlat=${latitude - latDelta}&lnglat=${longitude - lngDelta}&rtlat=${latitude + latDelta}&rnglat=${longitude + lngDelta}&type=2,3,6,9&status=9&offset=0&count=100`;
+    // Redfin search URL with coordinates
+    const redfinUrl = `https://www.redfin.com/search?bounds=${minLat},${minLng},${maxLat},${maxLng}&include=sold`;
 
-    const response = await fetch(url, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-      },
-    });
+    // Call ScraperAPI structured endpoint
+    const scraperUrl = new URL('https://api.scraperapi.com/structured/redfin/search');
+    scraperUrl.searchParams.append('api_key', apiKey);
+    scraperUrl.searchParams.append('url', redfinUrl);
+    scraperUrl.searchParams.append('country_code', 'US');
+    scraperUrl.searchParams.append('tld', 'com');
+
+    const response = await fetch(scraperUrl.toString());
 
     if (!response.ok) {
       return Response.json(
-        { error: 'Failed to fetch Redfin data', status: response.status },
+        { error: 'Failed to fetch from ScraperAPI', status: response.status },
         { status: response.status }
       );
     }
 
     const data = await response.json();
 
-    // Convert Redfin response to GeoJSON
+    // Convert ScraperAPI response to GeoJSON
     const features = [];
-    if (data.payload?.homes) {
-      data.payload.homes.forEach((home) => {
-        if (home.latLng) {
+    if (data.properties && Array.isArray(data.properties)) {
+      data.properties.forEach((property) => {
+        if (property.latitude && property.longitude) {
           features.push({
             type: 'Feature',
             geometry: {
               type: 'Point',
-              coordinates: [home.latLng.lng, home.latLng.lat],
+              coordinates: [property.longitude, property.latitude],
             },
             properties: {
-              id: home.id,
-              price: home.price,
-              address: home.streetLine?.full,
-              beds: home.beds,
-              baths: home.baths,
-              sqft: home.sqft,
-              saleDate: home.saleDate,
-              pricePerSqft: home.pricePerSqft,
-              url: home.url,
-              source: 'Redfin',
+              id: property.id || property.url,
+              price: property.price || property.last_sale_price,
+              address: property.address,
+              beds: property.beds,
+              baths: property.baths,
+              sqft: property.sqft,
+              saleDate: property.last_sale_date,
+              pricePerSqft: property.price_per_sqft,
+              url: property.url,
+              source: 'Redfin (ScraperAPI)',
+              status: property.status,
             },
           });
         }
