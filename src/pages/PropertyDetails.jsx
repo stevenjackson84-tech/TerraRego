@@ -20,6 +20,8 @@ import {
   Zap,
   Image as ImageIcon,
   Heart,
+  Activity,
+  AlertCircle,
 } from "lucide-react";
 
 export default function PropertyDetails() {
@@ -69,6 +71,36 @@ export default function PropertyDetails() {
       return favorited;
     },
     enabled: !!currentUserEmail && !!propertyUrl,
+  });
+
+  // Fetch comparable properties
+  const { data: compsData, isLoading: compsLoading } = useQuery({
+    queryKey: ["comps", property?.latitude, property?.longitude],
+    queryFn: async () => {
+      if (!property?.latitude || !property?.longitude) return null;
+      const response = await base44.functions.invoke("getPropertyComps", {
+        latitude: property.latitude,
+        longitude: property.longitude,
+        radius: 0.5,
+      });
+      return response.data;
+    },
+    enabled: !!property?.latitude && !!property?.longitude,
+  });
+
+  // Fetch market trends
+  const { data: marketTrends, isLoading: marketLoading } = useQuery({
+    queryKey: ["marketTrends", property?.address],
+    queryFn: async () => {
+      if (!property?.address || !property?.latitude) return null;
+      const response = await base44.functions.invoke("getMarketTrends", {
+        latitude: property.latitude,
+        longitude: property.longitude,
+        address: property.address,
+      });
+      return response.data;
+    },
+    enabled: !!property?.address && !!property?.latitude,
   });
 
   // Toggle favorite mutation
@@ -207,6 +239,8 @@ export default function PropertyDetails() {
         <Tabs defaultValue="overview" className="space-y-6">
           <TabsList className="bg-white border flex-wrap h-auto gap-1 p-1">
             <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="comps">Comps</TabsTrigger>
+            <TabsTrigger value="market">Market Trends</TabsTrigger>
             {property.images?.length > 0 && (
               <TabsTrigger value="images">Images ({property.images.length})</TabsTrigger>
             )}
@@ -217,6 +251,188 @@ export default function PropertyDetails() {
               <TabsTrigger value="schools">Schools</TabsTrigger>
             )}
           </TabsList>
+
+          {/* Comps Tab */}
+          <TabsContent value="comps">
+            <Card className="border-0 shadow-sm">
+              <CardHeader>
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <Home className="h-5 w-5" />
+                  Comparable Properties
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {compsLoading ? (
+                  <div className="flex items-center justify-center py-8">
+                    <div className="animate-spin h-6 w-6 border-2 border-slate-300 border-t-slate-900 rounded-full" />
+                  </div>
+                ) : compsData?.comps?.length > 0 ? (
+                  <div className="space-y-3">
+                    {compsData.comps.map((comp, idx) => (
+                      <div key={idx} className="p-4 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors">
+                        <div className="flex items-start justify-between mb-2">
+                          <h4 className="font-medium text-slate-900">{comp.address}</h4>
+                          <span className="text-sm font-semibold text-indigo-600">
+                            ${comp.price?.toLocaleString()}
+                          </span>
+                        </div>
+                        <div className="grid grid-cols-4 gap-4 text-sm">
+                          <div>
+                            <p className="text-slate-500">Beds</p>
+                            <p className="font-medium">{comp.beds || "—"}</p>
+                          </div>
+                          <div>
+                            <p className="text-slate-500">Baths</p>
+                            <p className="font-medium">{comp.baths || "—"}</p>
+                          </div>
+                          <div>
+                            <p className="text-slate-500">Sq Ft</p>
+                            <p className="font-medium">{comp.sqft?.toLocaleString() || "—"}</p>
+                          </div>
+                          <div>
+                            <p className="text-slate-500">$/Sq Ft</p>
+                            <p className="font-medium">${comp.pricePerSqft?.toLocaleString() || "—"}</p>
+                          </div>
+                        </div>
+                        {comp.saleDate && (
+                          <p className="text-xs text-slate-500 mt-2">Sold: {comp.saleDate}</p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-center py-8 text-slate-500">No comparable properties found nearby</p>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Market Trends Tab */}
+          <TabsContent value="market">
+            <Card className="border-0 shadow-sm">
+              <CardHeader>
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <TrendingUp className="h-5 w-5" />
+                  Market Trends & Analysis
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {marketLoading ? (
+                  <div className="flex items-center justify-center py-8">
+                    <div className="animate-spin h-6 w-6 border-2 border-slate-300 border-t-slate-900 rounded-full" />
+                  </div>
+                ) : marketTrends ? (
+                  <div className="space-y-6">
+                    {/* Market Overview Cards */}
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      {marketTrends.avgPrice && (
+                        <div className="bg-slate-50 rounded-lg p-3">
+                          <p className="text-xs text-slate-500">Avg Price</p>
+                          <p className="text-lg font-semibold text-slate-900">
+                            ${(marketTrends.avgPrice / 1000).toFixed(0)}K
+                          </p>
+                        </div>
+                      )}
+                      {marketTrends.pricePerSqft && (
+                        <div className="bg-slate-50 rounded-lg p-3">
+                          <p className="text-xs text-slate-500">Price/Sqft</p>
+                          <p className="text-lg font-semibold text-slate-900">
+                            ${marketTrends.pricePerSqft}
+                          </p>
+                        </div>
+                      )}
+                      {marketTrends.daysOnMarket && (
+                        <div className="bg-slate-50 rounded-lg p-3">
+                          <p className="text-xs text-slate-500">Days on Market</p>
+                          <p className="text-lg font-semibold text-slate-900">
+                            {marketTrends.daysOnMarket}
+                          </p>
+                        </div>
+                      )}
+                      <div className="bg-slate-50 rounded-lg p-3">
+                        <p className="text-xs text-slate-500">Outlook</p>
+                        <p className={`text-lg font-semibold ${
+                          marketTrends.marketOutlook === 'bullish' ? 'text-green-600' :
+                          marketTrends.marketOutlook === 'bearish' ? 'text-red-600' :
+                          'text-yellow-600'
+                        }`}>
+                          {marketTrends.marketOutlook?.charAt(0).toUpperCase() + marketTrends.marketOutlook?.slice(1) || "—"}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Price Trend */}
+                    {marketTrends.priceeTrend && (
+                      <div className={`p-4 rounded-lg border ${
+                        marketTrends.priceeTrend === 'up' ? 'bg-green-50 border-green-200' :
+                        marketTrends.priceeTrend === 'down' ? 'bg-red-50 border-red-200' :
+                        'bg-blue-50 border-blue-200'
+                      }`}>
+                        <p className={`font-medium ${
+                          marketTrends.priceeTrend === 'up' ? 'text-green-800' :
+                          marketTrends.priceeTrend === 'down' ? 'text-red-800' :
+                          'text-blue-800'
+                        }`}>
+                          {marketTrends.priceeTrend === 'up' ? '📈' : marketTrends.priceeTrend === 'down' ? '📉' : '→'} 
+                          {' '} Price Trend: {marketTrends.priceChange12m || 'Stable'}
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Inventory Level */}
+                    {marketTrends.inventoryLevel && (
+                      <div className="p-4 bg-slate-50 rounded-lg">
+                        <p className="text-sm text-slate-600 mb-2">Inventory Level</p>
+                        <div className="flex items-center gap-2">
+                          <div className="flex-1 bg-slate-200 rounded-full h-2">
+                            <div
+                              className={`h-2 rounded-full ${
+                                marketTrends.inventoryLevel === 'high' ? 'bg-red-500' :
+                                marketTrends.inventoryLevel === 'moderate' ? 'bg-yellow-500' :
+                                'bg-green-500'
+                              }`}
+                              style={{
+                                width: marketTrends.inventoryLevel === 'high' ? '100%' :
+                                       marketTrends.inventoryLevel === 'moderate' ? '60%' : '30%'
+                              }}
+                            />
+                          </div>
+                          <span className="text-sm font-medium">
+                            {marketTrends.inventoryLevel.charAt(0).toUpperCase() + marketTrends.inventoryLevel.slice(1)}
+                          </span>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Key Factors */}
+                    {marketTrends.keyFactors?.length > 0 && (
+                      <div className="p-4 bg-slate-50 rounded-lg">
+                        <p className="text-sm font-medium text-slate-900 mb-3">Key Market Factors</p>
+                        <ul className="space-y-2">
+                          {marketTrends.keyFactors.map((factor, idx) => (
+                            <li key={idx} className="text-sm text-slate-700 flex items-start gap-2">
+                              <span className="text-indigo-600 font-semibold mt-0.5">•</span>
+                              {factor}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+
+                    {/* Analysis */}
+                    {marketTrends.analysis && (
+                      <div className="p-4 border border-slate-200 rounded-lg">
+                        <p className="text-sm font-medium text-slate-900 mb-2">Analysis</p>
+                        <p className="text-sm text-slate-600 leading-relaxed">{marketTrends.analysis}</p>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <p className="text-center py-8 text-slate-500">Unable to load market trends at this time</p>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
 
           {/* Overview Tab */}
           <TabsContent value="overview">
