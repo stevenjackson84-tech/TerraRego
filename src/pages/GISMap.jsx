@@ -263,6 +263,9 @@ export default function GISMap() {
   const [showZillow, setShowZillow] = useState(false);
   const [zillowData, setZillowData] = useState(null);
   const [zillowLoading, setZillowLoading] = useState(false);
+  const [showSITLA, setShowSITLA] = useState(false);
+  const [sitlaData, setSitlaData] = useState(null);
+  const [sitlaLoading, setSitlaLoading] = useState(false);
 
   // Persist KMZ layers to localStorage
   useEffect(() => {
@@ -465,6 +468,21 @@ export default function GISMap() {
       .then(data => { setWuiData(data); setWuiLoading(false); })
       .catch(() => setWuiLoading(false));
   }, [showWUI, wuiData]);
+
+  // Load SITLA land ownership data when toggled on
+  useEffect(() => {
+    if (!showSITLA || sitlaData) return;
+    setSitlaLoading(true);
+    // Fetch SITLA (State of Utah School and Institutional Trust Lands Administration) land ownership
+    const url = "https://gis.trustlands.org/arcgis/rest/services/Public/SITLA_Ownership/MapServer/0/query?where=1%3D1&outFields=*&outSR=4326&f=geojson&resultRecordCount=5000";
+    fetch(url)
+      .then(r => r.json())
+      .then(data => { setSitlaData(data); setSitlaLoading(false); })
+      .catch(err => {
+        console.warn("SITLA fetch failed, trying alternative source:", err);
+        setSitlaLoading(false);
+      });
+  }, [showSITLA, sitlaData]);
 
   // Fetch Zillow for sale properties for current map bounds
   const fetchZillowComps = useCallback(async (bounds) => {
@@ -776,6 +794,14 @@ Generate a realistic land parcel analysis. Include:
           >
             🏠 {zillowLoading ? "Loading Zillow..." : "Zillow"}
           </Button>
+          <Button
+            size="sm"
+            variant={showSITLA ? "default" : "outline"}
+            onClick={() => setShowSITLA(!showSITLA)}
+            className="text-xs flex items-center gap-1"
+          >
+            🏛️ {sitlaLoading ? "Loading SITLA..." : "SITLA Lands"}
+          </Button>
         </div>
       </div>
 
@@ -987,6 +1013,34 @@ Generate a realistic land parcel analysis. Include:
                 </div>`;
                 layer.bindPopup(popup);
                 layer.bindTooltip(`${price}`, { sticky: true });
+              }}
+            />
+          )}
+
+          {/* SITLA Land Ownership */}
+          {showSITLA && sitlaData && sitlaData.features && sitlaData.features.length > 0 && (
+            <GeoJSON
+              key="sitla-lands"
+              data={sitlaData}
+              style={() => ({
+                color: "#059669",
+                weight: 1.5,
+                opacity: 0.8,
+                fillColor: "#86efac",
+                fillOpacity: 0.25,
+              })}
+              onEachFeature={(feature, layer) => {
+                const props = feature.properties;
+                const name = props.NAME || props.name || "SITLA Land";
+                const type = props.TYPE || props.type || "State Land";
+                const acres = props.ACRES || props.acres;
+                const lines = [
+                  `<b>${name}</b>`,
+                  `<b>Type:</b> ${type}`,
+                  acres ? `<b>Acres:</b> ${parseFloat(acres).toLocaleString('en-US', { maximumFractionDigits: 0 })}` : null,
+                ].filter(Boolean).join("<br/>");
+                layer.bindPopup(`<div style="font-size:11px;line-height:1.5">${lines}</div>`);
+                if (name) layer.bindTooltip(name, { sticky: true });
               }}
             />
           )}
