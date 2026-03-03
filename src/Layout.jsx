@@ -42,6 +42,7 @@ const navigation = [
   { name: "Reports", icon: FileText, page: "Reports" },
   { name: "Process Improvement", icon: Sigma, page: "LeanSixSigma" },
   { name: "GIS Map", icon: Map, page: "GISMap" },
+  { name: "Favorites", icon: Building2, page: "Favorites" },
   { name: "Plan Check", icon: FileCheck, page: "PlanCheck" },
   { name: "CAD Drafter", icon: Pencil, page: "CADDrafter" },
 ];

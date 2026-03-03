@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
 import {
   ArrowLeft,
   MapPin,
@@ -17,12 +19,27 @@ import {
   School,
   Zap,
   Image as ImageIcon,
+  Heart,
 } from "lucide-react";
 
 export default function PropertyDetails() {
   const urlParams = new URLSearchParams(window.location.search);
   const propertyUrl = urlParams.get("url");
   const [imageIndex, setImageIndex] = useState(0);
+  const [currentUserEmail, setCurrentUserEmail] = useState(null);
+  const [isFavorited, setIsFavorited] = useState(false);
+  const [notesDialog, setNotesDialog] = useState(false);
+  const [tempNotes, setTempNotes] = useState("");
+  const queryClient = useQueryClient();
+
+  // Get current user
+  useEffect(() => {
+    const getUser = async () => {
+      const user = await base44.auth.me();
+      if (user) setCurrentUserEmail(user.email);
+    };
+    getUser();
+  }, []);
 
   const { data: property, isLoading, error } = useQuery({
     queryKey: ["property", propertyUrl],
@@ -33,6 +50,56 @@ export default function PropertyDetails() {
       return response.data;
     },
     enabled: !!propertyUrl,
+  });
+
+  // Check if property is favorited
+  useQuery({
+    queryKey: ["isFavorited", propertyUrl, currentUserEmail],
+    queryFn: async () => {
+      if (!currentUserEmail) return false;
+      const favorites = await base44.entities.FavoriteProperty.filter({
+        user_email: currentUserEmail,
+        property_url: decodeURIComponent(propertyUrl || ""),
+      });
+      const favorited = favorites.length > 0;
+      setIsFavorited(favorited);
+      if (favorited && favorites[0].notes) {
+        setTempNotes(favorites[0].notes);
+      }
+      return favorited;
+    },
+    enabled: !!currentUserEmail && !!propertyUrl,
+  });
+
+  // Toggle favorite mutation
+  const toggleFavoriteMutation = useMutation({
+    mutationFn: async () => {
+      if (isFavorited) {
+        const favorites = await base44.entities.FavoriteProperty.filter({
+          user_email: currentUserEmail,
+          property_url: decodeURIComponent(propertyUrl || ""),
+        });
+        if (favorites[0]) {
+          await base44.entities.FavoriteProperty.delete(favorites[0].id);
+        }
+      } else {
+        await base44.entities.FavoriteProperty.create({
+          user_email: currentUserEmail,
+          property_url: decodeURIComponent(propertyUrl || ""),
+          address: property?.address || "",
+          price: property?.price || null,
+          beds: property?.beds || null,
+          baths: property?.baths || null,
+          sqft: property?.sqft || null,
+          latitude: property?.latitude || null,
+          longitude: property?.longitude || null,
+          notes: tempNotes || "",
+          cached_data: property || {},
+        });
+      }
+      setIsFavorited(!isFavorited);
+      queryClient.invalidateQueries({ queryKey: ["isFavorited"] });
+    },
   });
 
   if (isLoading) {
@@ -236,9 +303,20 @@ export default function PropertyDetails() {
                         View on Redfin
                       </a>
                     </Button>
-                    <Button variant="outline" className="w-full">
-                      Save to Deals
+                    <Button
+                      onClick={() => toggleFavoriteMutation.mutate()}
+                      disabled={toggleFavoriteMutation.isPending}
+                      variant={isFavorited ? "default" : "outline"}
+                      className={`w-full ${isFavorited ? "bg-red-500 hover:bg-red-600" : ""}`}
+                    >
+                      <Heart className={`h-4 w-4 mr-2 ${isFavorited ? "fill-current" : ""}`} />
+                      {isFavorited ? "Favorited" : "Add to Favorites"}
                     </Button>
+                    {isFavorited && (
+                      <Button variant="outline" className="w-full" onClick={() => setNotesDialog(true)}>
+                        Edit Notes
+                      </Button>
+                    )}
                   </CardContent>
                 </Card>
               </div>
