@@ -13,10 +13,11 @@ import { toast } from "sonner";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { cn } from "@/lib/utils";
 
-export default function MarketAnalysisTab({ dealId, proforma }) {
+export default function MarketAnalysisTab({ dealId, proforma, deal }) {
   const [showForm, setShowForm] = useState(false);
   const [editingSale, setEditingSale] = useState(null);
-  const [csvStatus, setCsvStatus] = useState(null); // { state: 'loading'|'success'|'error', message: string }
+  const [csvStatus, setCsvStatus] = useState(null);
+  const [autoFetching, setAutoFetching] = useState(false); // { state: 'loading'|'success'|'error', message: string }
   const fileInputRef = useRef(null);
   const [formData, setFormData] = useState({
     competitor_name: "",
