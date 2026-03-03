@@ -10,7 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   ArrowLeft, MapPin, Calendar, DollarSign, User, Building2, Edit, 
   Plus, FileText, ClipboardList, MessageSquare, Trash2, HardHat, 
-  CheckCircle2, Clock, AlertCircle, TrendingUp, Folder, X
+  CheckCircle2, Clock, AlertCircle, TrendingUp, Folder, X, Mail
 } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
@@ -41,6 +41,8 @@ import CalendarSyncButton from "@/components/deals/CalendarSyncButton";
 import TitleInfo from "@/components/deals/TitleInfo";
 import DealContactLinker from "@/components/deals/DealContactLinker";
 import ContactCard from "@/components/contacts/ContactCard";
+import EmailComposer from "@/components/email/EmailComposer";
+import EmailHistoryPanel from "@/components/email/EmailHistoryPanel";
 
 const stageStyles = {
   prospecting: "bg-slate-100 text-slate-700",
@@ -84,6 +86,7 @@ export default function DealDetails() {
   const [showTaskForm, setShowTaskForm] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
   const [currentUserEmail, setCurrentUserEmail] = useState(null);
+  const [showEmailComposer, setShowEmailComposer] = useState(false);
 
   const queryClient = useQueryClient();
 
@@ -299,6 +302,13 @@ export default function DealDetails() {
           </div>
           <div className="flex gap-2 flex-wrap">
             <CalendarSyncButton dealId={dealId} />
+            <Button 
+              onClick={() => setShowEmailComposer(true)}
+              variant="outline"
+            >
+              <Mail className="h-4 w-4 mr-2" />
+              Send Email
+            </Button>
             <Button 
               onClick={() => convertToProjectMutation.mutate()} 
               disabled={convertToProjectMutation.isPending}
@@ -599,6 +609,7 @@ export default function DealDetails() {
 
           <TabsContent value="documents">
             <div className="space-y-6">
+              <EmailHistoryPanel dealId={dealId} />
               <DocumentFieldLinker
                 dealId={dealId}
                 deal={deal}
@@ -713,6 +724,13 @@ export default function DealDetails() {
           isLoading={taskMutation.isPending}
         />
 
+        <EmailComposer
+          open={showEmailComposer}
+          onClose={() => setShowEmailComposer(false)}
+          dealId={dealId}
+          dealName={deal.name}
+          dealAddress={`${deal.address}, ${deal.city}, ${deal.state}`}
+        />
 
       </div>
     </div>
