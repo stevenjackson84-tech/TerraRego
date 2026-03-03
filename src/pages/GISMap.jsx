@@ -237,7 +237,7 @@ export default function GISMap() {
   const [showDeals, setShowDeals] = useState(true);
   const [showSensitiveLands, setShowSensitiveLands] = useState(false);
   const [showFloodZones, setShowFloodZones] = useState(false);
-  const [showFaultLines, setShowFaultLines] = useState(false);
+  const [showGeologicalHazards, setShowGeologicalHazards] = useState(false);
   const [showPlanDocs, setShowPlanDocs] = useState(true);
   const [showWUI, setShowWUI] = useState(false);
   const [wuiData, setWuiData] = useState(null);
@@ -295,7 +295,7 @@ export default function GISMap() {
     layers: {
       wui: true,
       floodZones: true,
-      faultLines: true,
+      geologicalHazards: true,
       sitla: true,
     },
   });
@@ -676,7 +676,7 @@ export default function GISMap() {
   // Control layer visibility based on filters
   const showWUIFiltered = showWUI && filters.layers.wui;
   const showFloodZonesFiltered = showFloodZones && filters.layers.floodZones;
-  const showFaultLinesFiltered = showFaultLines && filters.layers.faultLines;
+  const showGeologicalHazardsFiltered = showGeologicalHazards && filters.layers.geologicalHazards;
   const showSITLAFiltered = showSITLA && filters.layers.sitla;
 
   const tileLayers = {
@@ -1025,11 +1025,11 @@ Generate a realistic land parcel analysis. Include:
           </Button>
           <Button
             size="sm"
-            variant={showFaultLines ? "default" : "outline"}
-            onClick={() => setShowFaultLines(!showFaultLines)}
+            variant={showGeologicalHazards ? "default" : "outline"}
+            onClick={() => setShowGeologicalHazards(!showGeologicalHazards)}
             className="text-xs flex items-center gap-1"
           >
-            ⚡ Fault Lines
+            ⚠️ Geological Hazards
           </Button>
 
           <Button
@@ -1170,19 +1170,32 @@ Generate a realistic land parcel analysis. Include:
             />
           )}
 
-          {/* USGS Quaternary Fault Lines - WMS from earthquake.usgs.gov, layer 21 = National Database */}
-          {showFaultLinesFiltered && (
-            <WMSTileLayer
-              url="https://earthquake.usgs.gov/arcgis/services/haz/Qfaults/MapServer/WMSServer"
-              layers="21,22"
-              styles=""
-              format="image/png"
-              transparent={true}
-              opacity={0.9}
-              version="1.1.1"
-              attribution='<a href="https://earthquake.usgs.gov/hazards/qfaults/">USGS Quaternary Faults</a>'
-              zIndex={11}
-            />
+          {/* Utah Geological Hazards - WMS from Utah Geological Survey */}
+          {showGeologicalHazardsFiltered && (
+            <>
+              <WMSTileLayer
+                url="https://maps.geology.utah.gov/arcgis/services/Hazards/Quaternary_Faults/MapServer/WMSServer"
+                layers="0,1,2,3"
+                styles=""
+                format="image/png"
+                transparent={true}
+                opacity={0.8}
+                version="1.1.1"
+                attribution='<a href="https://maps.geology.utah.gov/hazards">Utah Geological Survey</a>'
+                zIndex={11}
+              />
+              <WMSTileLayer
+                url="https://maps.geology.utah.gov/arcgis/services/Hazards/Liquefaction/MapServer/WMSServer"
+                layers="0"
+                styles=""
+                format="image/png"
+                transparent={true}
+                opacity={0.6}
+                version="1.1.1"
+                attribution='<a href="https://maps.geology.utah.gov/hazards">Utah Geological Survey - Liquefaction</a>'
+                zIndex={10}
+              />
+            </>
           )}
 
           {/* Steep Slopes >30% - computed from USGS 3DEP elevation */}

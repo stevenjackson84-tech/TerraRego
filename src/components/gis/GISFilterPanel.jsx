@@ -14,7 +14,7 @@ export default function GISFilterPanel({ deals, users, onFilterChange, isOpen, o
   const [assignedUserFilter, setAssignedUserFilter] = useState('');
   const [wuiFilter, setWuiFilter] = useState(true);
   const [floodZoneFilter, setFloodZoneFilter] = useState(true);
-  const [faultLineFilter, setFaultLineFilter] = useState(true);
+  const [geologicalHazardsFilter, setGeologicalHazardsFilter] = useState(true);
   const [sitlaFilter, setSitlaFilter] = useState(true);
 
   const stageOptions = [
@@ -40,7 +40,7 @@ export default function GISFilterPanel({ deals, users, onFilterChange, isOpen, o
       layers: {
         wui: wuiFilter,
         floodZones: floodZoneFilter,
-        faultLines: faultLineFilter,
+        geologicalHazards: geologicalHazardsFilter,
         sitla: sitlaFilter,
       },
     });
@@ -53,7 +53,7 @@ export default function GISFilterPanel({ deals, users, onFilterChange, isOpen, o
     setAssignedUserFilter('');
     setWuiFilter(true);
     setFloodZoneFilter(true);
-    setFaultLineFilter(true);
+    setGeologicalHazardsFilter(true);
     setSitlaFilter(true);
     onFilterChange({
       dealStage: '',
@@ -63,7 +63,7 @@ export default function GISFilterPanel({ deals, users, onFilterChange, isOpen, o
       layers: {
         wui: true,
         floodZones: true,
-        faultLines: true,
+        geologicalHazards: true,
         sitla: true,
       },
     });
@@ -168,11 +168,11 @@ export default function GISFilterPanel({ deals, users, onFilterChange, isOpen, o
                 </div>
                 <div className="flex items-center gap-2">
                   <Checkbox
-                    id="fault-check"
-                    checked={faultLineFilter}
-                    onCheckedChange={setFaultLineFilter}
+                    id="hazards-check"
+                    checked={geologicalHazardsFilter}
+                    onCheckedChange={setGeologicalHazardsFilter}
                   />
-                  <Label htmlFor="fault-check" className="text-xs cursor-pointer">⚡ Fault Lines</Label>
+                  <Label htmlFor="hazards-check" className="text-xs cursor-pointer">⚠️ Geological Hazards</Label>
                 </div>
                 <div className="flex items-center gap-2">
                   <Checkbox
