@@ -595,6 +595,15 @@ export default function ProjectDetails() {
           onSave={(data) => expenseMutation.mutate(data)}
           isLoading={expenseMutation.isPending}
         />
+
+        <QuickTaskCreate
+          open={showTaskCreate}
+          onClose={() => setShowTaskCreate(false)}
+          project={project}
+          prefillTitle={taskPrefill.title}
+          prefillDescription={taskPrefill.description}
+          dealId={project.deal_id}
+        />
       </div>
     </div>
   );
