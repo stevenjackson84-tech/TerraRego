@@ -82,7 +82,8 @@
     "pdfjs-dist": "^3.11.174",
     "@react-leaflet/core": "^2.1.0",
     "leaflet-draw": "^1.0.4",
-    "@types/leaflet-draw": "^1.0.9"
+    "@types/leaflet-draw": "^1.0.9",
+    "react-leaflet-draw": "^0.20.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.19.0",
