@@ -15,6 +15,8 @@ import { cn } from "@/lib/utils";
 export default function MarketAnalysisTab({ dealId, proforma }) {
   const [showForm, setShowForm] = useState(false);
   const [editingSale, setEditingSale] = useState(null);
+  const [csvStatus, setCsvStatus] = useState(null); // { state: 'loading'|'success'|'error', message: string }
+  const fileInputRef = useRef(null);
   const [formData, setFormData] = useState({
     competitor_name: "",
     subdivision_name: "",
