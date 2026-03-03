@@ -226,6 +226,62 @@ export default function DueDiligenceTab({ dealId, deal }) {
     }
   });
 
+  const generateAIChecklist = async () => {
+    setGeneratingAI(true);
+    try {
+      const result = await base44.integrations.Core.InvokeLLM({
+        prompt: `You are a real estate due diligence expert. Generate a prioritized list of additional due diligence checklist items specific to this deal.
+
+Deal details:
+- Property type: ${deal?.property_type || "land"}
+- Deal stage: ${deal?.stage || "prospecting"}
+- Zoning (current): ${deal?.zoning_current || "unknown"}
+- Zoning (target): ${deal?.zoning_target || "unknown"}
+- Location: ${deal?.city || ""}, ${deal?.state || ""}
+- Acreage: ${deal?.acreage || "unknown"}
+
+Based on these specifics, suggest 5-10 additional due diligence items that are most critical for this type of deal and stage. Focus on items NOT already in a standard checklist (avoid generic items like soils report, ALTA, title policy).`,
+        response_json_schema: {
+          type: "object",
+          properties: {
+            items: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  category: { type: "string" },
+                  description: { type: "string" },
+                  priority: { type: "string", enum: ["critical", "high", "medium"] },
+                  rationale: { type: "string" }
+                }
+              }
+            }
+          }
+        }
+      });
+
+      const newItems = (result.items || []).map((item, i) => ({
+        deal_id: dealId,
+        category: `AI RECOMMENDATIONS — ${item.category}`,
+        item_code: `AI${i + 1}`,
+        description: `${item.description}${item.rationale ? ` — ${item.rationale}` : ""}`,
+        applicable: true,
+        document_received: false,
+        potential_problems: false,
+        comments: `Priority: ${item.priority}`,
+        order: 9000 + i
+      }));
+
+      if (newItems.length > 0) {
+        await base44.entities.DueDiligenceItem.bulkCreate(newItems);
+        queryClient.invalidateQueries({ queryKey: ['dueDiligence', dealId] });
+        toast.success(`Added ${newItems.length} AI-recommended items`);
+      }
+    } finally {
+      setGeneratingAI(false);
+    }
+  };
+
   const toggleCategory = (category) => {
     setExpandedCategories(prev => ({ ...prev, [category]: !prev[category] }));
   };
