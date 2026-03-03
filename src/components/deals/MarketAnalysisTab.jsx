@@ -213,14 +213,29 @@ export default function MarketAnalysisTab({ dealId, proforma }) {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-lg font-semibold text-slate-900">Market Analysis</h2>
-        <Button onClick={() => {
-          resetForm();
-          setEditingSale(null);
-          setShowForm(true);
-        }} className="bg-slate-900 hover:bg-slate-800">
-          <Plus className="h-4 w-4 mr-2" />
-          Add Competitor Sale
-        </Button>
+        <div className="flex gap-2 items-center">
+          {csvStatus && (
+            <div className={`flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-lg ${csvStatus.state === "loading" ? "bg-blue-50 text-blue-700" : csvStatus.state === "success" ? "bg-emerald-50 text-emerald-700" : "bg-red-50 text-red-700"}`}>
+              {csvStatus.state === "loading" && <Loader2 className="h-4 w-4 animate-spin" />}
+              {csvStatus.state === "success" && <CheckCircle2 className="h-4 w-4" />}
+              {csvStatus.state === "error" && <AlertCircle className="h-4 w-4" />}
+              {csvStatus.message}
+            </div>
+          )}
+          <input ref={fileInputRef} type="file" accept=".csv,.xlsx,.xls" className="hidden" onChange={handleCsvUpload} />
+          <Button variant="outline" onClick={() => fileInputRef.current?.click()} disabled={csvStatus?.state === "loading"}>
+            {csvStatus?.state === "loading" ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Upload className="h-4 w-4 mr-2" />}
+            Import CSV / Excel
+          </Button>
+          <Button onClick={() => {
+            resetForm();
+            setEditingSale(null);
+            setShowForm(true);
+          }} className="bg-slate-900 hover:bg-slate-800">
+            <Plus className="h-4 w-4 mr-2" />
+            Add Sale
+          </Button>
+        </div>
       </div>
 
       {/* Price Comparison Chart */}
