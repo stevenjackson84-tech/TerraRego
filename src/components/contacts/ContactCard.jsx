@@ -79,10 +79,12 @@ export default function ContactCard({ contact, onEdit, onDelete }) {
 
           <div className="mt-3 space-y-1.5">
             {contact.email && (
-              <a href={`mailto:${contact.email}`} className="flex items-center gap-2 text-sm text-slate-600 hover:text-amber-600 transition-colors">
-                <Mail className="h-3.5 w-3.5" />
-                {contact.email}
-              </a>
+              <div className="flex items-center gap-2">
+                <button onClick={() => setShowEmail(true)} className="flex items-center gap-2 text-sm text-slate-600 hover:text-amber-600 transition-colors flex-1 min-w-0">
+                  <Mail className="h-3.5 w-3.5 shrink-0" />
+                  <span className="truncate">{contact.email}</span>
+                </button>
+              </div>
             )}
             {contact.phone && (
               <a href={`tel:${contact.phone}`} className="flex items-center gap-2 text-sm text-slate-600 hover:text-amber-600 transition-colors">
