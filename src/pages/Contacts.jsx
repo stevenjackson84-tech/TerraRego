@@ -142,6 +142,18 @@ export default function Contacts() {
                   <Button
                     size="sm"
                     variant="ghost"
+                    onClick={() => {
+                      setSelectedContactForEmail(contact);
+                      setShowEmailComposer(true);
+                    }}
+                    className="h-8 w-8 p-0"
+                    title="Send email"
+                  >
+                    <Mail className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="ghost"
                     onClick={() => handleEdit(contact)}
                     className="h-8 w-8 p-0"
                   >
@@ -160,6 +172,19 @@ export default function Contacts() {
               </div>
             ))}
           </div>
+        )}
+
+        {selectedContactForEmail && (
+          <EmailComposer
+            open={showEmailComposer}
+            onClose={() => {
+              setShowEmailComposer(false);
+              setSelectedContactForEmail(null);
+            }}
+            contactEmail={selectedContactForEmail.email}
+            contactName={`${selectedContactForEmail.first_name} ${selectedContactForEmail.last_name}`}
+            contactId={selectedContactForEmail.id}
+          />
         )}
       </div>
     </div>
