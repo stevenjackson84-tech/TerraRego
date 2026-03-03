@@ -12,6 +12,8 @@ export default function Contacts() {
   const [showForm, setShowForm] = useState(false);
   const [editingContact, setEditingContact] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [showEmailComposer, setShowEmailComposer] = useState(false);
+  const [selectedContactForEmail, setSelectedContactForEmail] = useState(null);
   const queryClient = useQueryClient();
 
   const { data: contacts = [] } = useQuery({
