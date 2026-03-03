@@ -80,19 +80,19 @@ export default function MarketPredictions({ competitorSales, deal }) {
     decelerating: 'text-amber-600'
   };
 
-  const currentPrice = prediction.historical.avgPriceHistory[prediction.historical.avgPriceHistory.length - 1]?.avg_price || 0;
-  const forecastedPrice = prediction.forecasts[prediction.forecasts.length - 1]?.predicted_price || currentPrice;
+  const currentPrice = prediction.historical?.avgPriceHistory?.[prediction.historical.avgPriceHistory.length - 1]?.avg_price || 0;
+  const forecastedPrice = prediction.forecasts?.[prediction.forecasts.length - 1]?.predicted_price || currentPrice;
   const totalAppreciation = currentPrice > 0 ? ((forecastedPrice - currentPrice) / currentPrice) * 100 : 0;
 
   // Combine historical and forecasted data for visualization
   const chartData = [
-    ...prediction.historical.avgPriceHistory.slice(-6).map(h => ({
+    ...(prediction.historical?.avgPriceHistory || []).slice(-6).map(h => ({
       month: new Date(h.month + '-01').toLocaleDateString('en-US', { month: 'short', year: '2-digit' }),
       price: h.avg_price,
       absorption: null,
       type: 'historical'
     })),
-    ...prediction.forecasts.map(f => ({
+    ...(prediction.forecasts || []).map(f => ({
       month: f.month_label,
       price: f.predicted_price,
       absorption: f.predicted_absorption,
