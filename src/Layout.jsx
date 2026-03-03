@@ -30,6 +30,7 @@ const navigation = [
   { name: "Deals", icon: Building2, page: "Deals" },
   { name: "Projects", icon: Folder, page: "Projects" },
   { name: "Contacts", icon: Users, page: "Contacts" },
+  { name: "Calendar", icon: Calendar, page: "Calendar" },
   { name: "Tasks", icon: ClipboardList, page: "Tasks" },
   { name: "Entitlements", icon: FileCheck, page: "Entitlements" },
   { name: "Development", icon: HardHat, page: "Development" },
