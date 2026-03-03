@@ -10,7 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   ArrowLeft, MapPin, Calendar, DollarSign, User, Building2, Edit, 
   Plus, FileText, ClipboardList, MessageSquare, Trash2, HardHat, 
-  CheckCircle2, Clock, AlertCircle, TrendingUp, Folder
+  CheckCircle2, Clock, AlertCircle, TrendingUp, Folder, X
 } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
@@ -39,6 +39,8 @@ import DealComments from "@/components/deals/DealComments";
 import RealtimeUserIndicator from "@/components/deals/RealtimeUserIndicator";
 import CalendarSyncButton from "@/components/deals/CalendarSyncButton";
 import TitleInfo from "@/components/deals/TitleInfo";
+import DealContactLinker from "@/components/deals/DealContactLinker";
+import ContactCard from "@/components/contacts/ContactCard";
 
 const stageStyles = {
   prospecting: "bg-slate-100 text-slate-700",
@@ -164,6 +166,13 @@ export default function DealDetails() {
     queryKey: ['deals'],
     queryFn: () => base44.entities.Deal.list()
   });
+
+  const { data: allContacts = [] } = useQuery({
+    queryKey: ['contacts'],
+    queryFn: () => base44.entities.Contact.list()
+  });
+
+  const [linkedContacts, setLinkedContacts] = useState([]);
 
   const updateDealMutation = useMutation({
     mutationFn: (data) => base44.entities.Deal.update(dealId, data),
@@ -347,6 +356,7 @@ export default function DealDetails() {
             <TabsTrigger value="tasks">Tasks ({tasks.length})</TabsTrigger>
             <TabsTrigger value="burn">Burn Schedule</TabsTrigger>
             <TabsTrigger value="documents">Documents</TabsTrigger>
+            <TabsTrigger value="contacts">Contacts</TabsTrigger>
             <TabsTrigger value="activity">Activity</TabsTrigger>
           </TabsList>
 
@@ -597,6 +607,45 @@ export default function DealDetails() {
                 onProformaUpdate={(data) => proformaMutation.mutate(data)}
               />
               <DocumentList entityType="deal" entityId={dealId} />
+            </div>
+          </TabsContent>
+
+          <TabsContent value="contacts">
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-lg font-semibold text-slate-900">Deal Contacts</h2>
+                  <p className="text-sm text-slate-500 mt-1">{linkedContacts.length} contact{linkedContacts.length !== 1 ? 's' : ''} linked</p>
+                </div>
+                <DealContactLinker 
+                  dealId={dealId}
+                  contacts={allContacts}
+                  onContactsChange={setLinkedContacts}
+                />
+              </div>
+              {linkedContacts.length === 0 ? (
+                <Card className="border-0 shadow-sm p-12 text-center">
+                  <Building2 className="h-12 w-12 text-slate-300 mx-auto mb-3" />
+                  <p className="text-slate-600 font-medium">No contacts linked</p>
+                  <p className="text-sm text-slate-400 mt-1">Link contacts to keep track of key stakeholders for this deal</p>
+                </Card>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {linkedContacts.map((contact) => (
+                    <div key={contact.id} className="relative">
+                      <ContactCard contact={contact} />
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => setLinkedContacts(linkedContacts.filter(c => c.id !== contact.id))}
+                        className="absolute top-2 right-2 h-8 w-8 p-0 text-red-600 hover:text-red-700"
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </TabsContent>
 
