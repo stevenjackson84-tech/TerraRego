@@ -19,6 +19,7 @@ const typeStyles = {
 };
 
 export default function ContactCard({ contact, onEdit, onDelete }) {
+  const [showEmail, setShowEmail] = useState(false);
   const fullName = `${contact.first_name} ${contact.last_name}`;
   const initials = `${contact.first_name?.[0] || ''}${contact.last_name?.[0] || ''}`.toUpperCase();
 
