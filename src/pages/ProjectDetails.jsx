@@ -204,10 +204,16 @@ export default function ProjectDetails() {
               <p className="text-slate-600">{project.description}</p>
             )}
           </div>
-          <Button onClick={() => setShowProjectForm(true)} variant="outline">
-            <Edit className="h-4 w-4 mr-2" />
-            Edit Project
-          </Button>
+          <div className="flex gap-2">
+            <Button onClick={() => { setTaskPrefill({ title: "", description: "" }); setShowTaskCreate(true); }} variant="outline">
+              <ClipboardPlus className="h-4 w-4 mr-2" />
+              New Task
+            </Button>
+            <Button onClick={() => setShowProjectForm(true)} variant="outline">
+              <Edit className="h-4 w-4 mr-2" />
+              Edit Project
+            </Button>
+          </div>
         </div>
 
         {/* Stats */}
