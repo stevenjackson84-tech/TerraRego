@@ -501,6 +501,9 @@ export default function ProformaTab({ proforma, onSave, isLoading, deal }) {
         </div>
 
         <div className="space-y-6">
+          {/* ── AI Validator ── */}
+          <ProformaAIValidator formData={formData} deal={deal} />
+
           {/* ── 1. LAND ACQUISITION ── */}
           <Section title="1. Land Acquisition">
             <div>
