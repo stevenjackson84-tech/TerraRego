@@ -33,9 +33,20 @@ const defaultDeal = {
 
 export default function DealForm({ deal, open, onClose, onSave, isLoading }) {
   const [formData, setFormData] = useState(deal || defaultDeal);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const fileInputRef = useRef(null);
 
   const handleChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleImageUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingImage(true);
+    const { file_url } = await base44.integrations.Core.UploadFile({ file });
+    handleChange("image_url", file_url);
+    setUploadingImage(false);
   };
 
   const handleSubmit = (e) => {
