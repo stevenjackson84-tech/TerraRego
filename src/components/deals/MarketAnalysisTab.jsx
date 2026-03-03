@@ -14,6 +14,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsive
 import { cn } from "@/lib/utils";
 import MarketTrendsAnalysis from "./MarketTrendsAnalysis";
 import MarketPredictions from "./MarketPredictions";
+import DataImportDialog from "@/components/shared/DataImportDialog";
 
 export default function MarketAnalysisTab({ dealId, proforma, deal }) {
   const [showForm, setShowForm] = useState(false);
