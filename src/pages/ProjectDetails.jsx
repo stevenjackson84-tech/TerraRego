@@ -43,6 +43,8 @@ export default function ProjectDetails() {
   const [editingExpense, setEditingExpense] = useState(null);
   const [showDevForm, setShowDevForm] = useState(false);
   const [editingDevUpdate, setEditingDevUpdate] = useState(null);
+  const [showTaskCreate, setShowTaskCreate] = useState(false);
+  const [taskPrefill, setTaskPrefill] = useState({ title: "", description: "" });
 
   const queryClient = useQueryClient();
 
