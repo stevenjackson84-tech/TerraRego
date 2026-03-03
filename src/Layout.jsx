@@ -126,8 +126,14 @@ export default function Layout({ children, currentPageName }) {
               <img src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/698a2099619afaafce3010e1/5f5761863_c3a3fee7-5d59-4dc1-94cc-4c194769f87f.png" alt="Parcelr" className="w-10 h-10 object-contain" />
               <span className="text-lg font-semibold text-slate-900">Parcelr</span>
             </Link>
-            <div className="w-10" />
+            {userEmail && <NotificationCenter userEmail={userEmail} />}
           </div>
+        </header>
+
+        {/* Desktop header with notification center */}
+        <header className="hidden lg:flex sticky top-0 z-30 bg-white border-b border-slate-200 h-16 px-4 items-center justify-between">
+          <div className="flex-1" />
+          {userEmail && <NotificationCenter userEmail={userEmail} />}
         </header>
 
         {/* Page content */}
