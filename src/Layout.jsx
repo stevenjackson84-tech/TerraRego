@@ -33,6 +33,7 @@ const navigation = [
   { name: "Floor Plans", icon: Building2, page: "FloorPlansLibrary" },
   { name: "Business Plan", icon: FileText, page: "BusinessPlan" },
   { name: "Analytics", icon: TrendingUp, page: "Analytics" },
+  { name: "Financial Dashboard", icon: DollarSign, page: "FinancialDashboard" },
   { name: "Reports", icon: FileText, page: "Reports" },
   { name: "Process Improvement", icon: Sigma, page: "LeanSixSigma" },
   { name: "GIS Map", icon: Map, page: "GISMap" },
