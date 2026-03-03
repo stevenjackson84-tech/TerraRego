@@ -126,10 +126,10 @@ export default function TaskCard({ task, onEdit, onDelete, onStatusChange }) {
                 </div>
               )}
 
-              {task.assigned_to && (
+              {task.assigned_to?.length > 0 && (
                 <div className="flex items-center gap-1 text-xs text-slate-500">
                   <UserIcon className="h-3 w-3" />
-                  {task.assigned_to}
+                  {task.assigned_to.length === 1 ? task.assigned_to[0] : `${task.assigned_to.length} assignees`}
                 </div>
               )}
             </div>
