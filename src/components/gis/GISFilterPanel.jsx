@@ -70,7 +70,7 @@ export default function GISFilterPanel({ deals, users, onFilterChange, isOpen, o
   };
 
   return (
-    <div className="absolute top-4 left-4 z-20 w-80 max-h-[85vh] overflow-y-auto">
+    <div className="absolute top-20 left-4 z-20 w-80 max-h-[85vh] overflow-y-auto">
       <Card className="shadow-lg border-slate-200">
         <CardHeader className="flex flex-row items-center justify-between pb-3">
           <CardTitle className="text-sm">Filters</CardTitle>
