@@ -56,6 +56,14 @@ export default function Projects() {
     }
   });
 
+  const deleteProjectMutation = useMutation({
+    mutationFn: (id) => base44.entities.Project.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['projects'] });
+      setDeleteConfirm(null);
+    }
+  });
+
   const filteredProjects = projects.filter(p => 
     filterStatus === "all" || p.status === filterStatus
   );
