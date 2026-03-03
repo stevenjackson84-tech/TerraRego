@@ -79,8 +79,18 @@ export default function DealDetails() {
   const [editingEntitlement, setEditingEntitlement] = useState(null);
   const [showTaskForm, setShowTaskForm] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
+  const [currentUserEmail, setCurrentUserEmail] = useState(null);
 
   const queryClient = useQueryClient();
+
+  // Get current user
+  useEffect(() => {
+    const getUser = async () => {
+      const user = await base44.auth.me();
+      if (user) setCurrentUserEmail(user.email);
+    };
+    getUser();
+  }, []);
 
   const defaultEntitlements = [
     { name: "Zoning Approval", type: "zoning_change", status: "not_started" },
