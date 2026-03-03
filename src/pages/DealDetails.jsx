@@ -37,6 +37,7 @@ import BurnScheduleTab from "@/components/deals/BurnScheduleTab";
 import ZondaMarketAnalysis from "@/components/deals/ZondaMarketAnalysis";
 import DealComments from "@/components/deals/DealComments";
 import RealtimeUserIndicator from "@/components/deals/RealtimeUserIndicator";
+import CalendarSyncButton from "@/components/deals/CalendarSyncButton";
 
 const stageStyles = {
   prospecting: "bg-slate-100 text-slate-700",
