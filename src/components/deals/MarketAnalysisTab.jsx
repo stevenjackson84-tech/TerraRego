@@ -57,6 +57,23 @@ export default function MarketAnalysisTab({ dealId, proforma, deal }) {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['competitorSales', dealId] })
   });
 
+  const handleAutoFetch = async () => {
+    setAutoFetching(true);
+    try {
+      const res = await base44.functions.invoke('autoFetchCompetitorSales', { deal_id: dealId, data: deal });
+      if (res.data?.skipped) {
+        toast.info(res.data.reason || 'Auto-fetch skipped');
+      } else if (res.data?.success) {
+        toast.success(`Auto-fetched ${res.data.imported} competitor sales`);
+        queryClient.invalidateQueries({ queryKey: ['competitorSales', dealId] });
+      }
+    } catch (e) {
+      toast.error('Auto-fetch failed: ' + e.message);
+    } finally {
+      setAutoFetching(false);
+    }
+  };
+
   const resetForm = () => {
     setFormData({
       competitor_name: "",
