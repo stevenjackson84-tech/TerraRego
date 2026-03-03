@@ -74,6 +74,24 @@ export default function MarketTrendsAnalysis({ competitorSales, deal }) {
     return bins.filter(b => b.count > 0);
   }, [competitorSales]);
 
+  const salesVelocity = useMemo(() => {
+    const salesByMonth = {};
+    competitorSales
+      .filter(s => s.sale_date)
+      .forEach(sale => {
+        const date = new Date(sale.sale_date);
+        const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+        salesByMonth[monthKey] = (salesByMonth[monthKey] || 0) + 1;
+      });
+    
+    return Object.entries(salesByMonth)
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([month, count]) => ({
+        month: new Date(month + '-01').toLocaleDateString('en-US', { month: 'short', year: '2-digit' }),
+        sales: count
+      }));
+  }, [competitorSales]);
+
   if (!analysis) {
     return (
       <Card className="border-0 shadow-sm">
