@@ -595,25 +595,31 @@ export default function DealDetails() {
           </TabsContent>
 
           <TabsContent value="activity">
-            <div className="space-y-4">
-              {activities.map(activity => (
-                <Card key={activity.id} className="border-0 shadow-sm p-4">
-                  <div className="flex items-start gap-3">
-                    <div className="p-2 rounded-lg bg-slate-100">
-                      <MessageSquare className="h-4 w-4 text-slate-600" />
-                    </div>
-                    <div>
-                      <p className="text-sm text-slate-900">{activity.description}</p>
-                      <p className="text-xs text-slate-500 mt-1">
-                        {format(new Date(activity.created_date), 'MMM d, yyyy h:mm a')}
-                      </p>
-                    </div>
-                  </div>
-                </Card>
-              ))}
-              {activities.length === 0 && (
-                <p className="text-center py-8 text-slate-500">No activity recorded yet</p>
+            <div className="space-y-6">
+              {currentUserEmail && (
+                <DealComments dealId={dealId} currentUserEmail={currentUserEmail} />
               )}
+              <div className="space-y-4">
+                <h3 className="font-semibold text-slate-900">Change Log</h3>
+                {activities.map(activity => (
+                  <Card key={activity.id} className="border-0 shadow-sm p-4">
+                    <div className="flex items-start gap-3">
+                      <div className="p-2 rounded-lg bg-slate-100">
+                        <MessageSquare className="h-4 w-4 text-slate-600" />
+                      </div>
+                      <div>
+                        <p className="text-sm text-slate-900">{activity.description}</p>
+                        <p className="text-xs text-slate-500 mt-1">
+                          {format(new Date(activity.created_date), 'MMM d, yyyy h:mm a')}
+                        </p>
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+                {activities.length === 0 && (
+                  <p className="text-center py-8 text-slate-500">No activity recorded yet</p>
+                )}
+              </div>
             </div>
           </TabsContent>
         </Tabs>
