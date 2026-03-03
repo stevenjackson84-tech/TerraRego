@@ -120,7 +120,10 @@ export default function FloorPlansLibrary() {
       {filteredPlans.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredPlans.map(plan => (
-            <Card key={plan.id} className="hover:shadow-lg transition-shadow">
+            <Card key={plan.id} className="hover:shadow-lg transition-shadow overflow-hidden">
+              {plan.image_url && (
+                <img src={plan.image_url} alt={plan.name} className="w-full h-44 object-cover" />
+              )}
               <CardContent className="p-4">
                 <div className="flex items-start justify-between mb-3">
                   <div>
