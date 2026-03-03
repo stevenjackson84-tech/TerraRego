@@ -71,10 +71,10 @@ export default function Layout({ children, currentPageName }) {
 
       {/* Sidebar */}
       <aside className={cn(
-        "fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-slate-200 transform transition-transform duration-200 lg:translate-x-0",
+        "fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-slate-200 transform transition-transform duration-200 lg:translate-x-0 flex flex-col",
         sidebarOpen ? "translate-x-0" : "-translate-x-full"
       )}>
-        <div className="flex items-center justify-between h-16 px-6 border-b border-slate-200">
+        <div className="flex items-center justify-between h-14 px-4 border-b border-slate-200">
           <Link to={createPageUrl("Dashboard")} className="flex items-center gap-2">
             <img src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/698a2099619afaafce3010e1/5f5761863_c3a3fee7-5d59-4dc1-94cc-4c194769f87f.png" alt="Parcelr" className="w-10 h-10 object-contain" />
             <span className="text-lg font-semibold text-slate-900">Parcelr</span>
