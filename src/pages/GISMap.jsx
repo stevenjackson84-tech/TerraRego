@@ -520,14 +520,20 @@ export default function GISMap() {
       });
   }, [showSITLA, sitlaData]);
 
-  // Load Redfin sales data when toggled on
+  // Load Redfin sales data when toggled on (deferred until map ready)
+  const [mapReady, setMapReady] = useState(false);
+
   useEffect(() => {
-    if (!showRedfin || redfinData || !map) return;
+    if (!showRedfin || redfinData || !mapReady) return;
     setRedfinLoading(true);
-    const center = map.getCenter();
+    
+    // Use default Utah center if map not available yet
+    const defaultLat = 40.3916;
+    const defaultLng = -111.8507;
+    
     base44.functions.invoke('getRedfin', {
-      latitude: center.lat,
-      longitude: center.lng,
+      latitude: defaultLat,
+      longitude: defaultLng,
       radius: 5,
     })
       .then(res => {
@@ -538,7 +544,7 @@ export default function GISMap() {
         console.warn("Redfin fetch failed:", err);
         setRedfinLoading(false);
       });
-  }, [showRedfin, map, redfinData]);
+  }, [showRedfin, redfinData, mapReady]);
 
   // Load zoning data when toggled on
   useEffect(() => {
@@ -1005,6 +1011,7 @@ Generate a realistic land parcel analysis. Include:
           zoom={12}
           style={{ height: "100%", width: "100%" }}
           className="z-0"
+          whenCreated={() => setMapReady(true)}
         >
           <TileLayer
             key={tileLayer}
