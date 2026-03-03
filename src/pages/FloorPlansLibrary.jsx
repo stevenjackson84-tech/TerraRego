@@ -108,8 +108,8 @@ export default function FloorPlansLibrary() {
         <p className="text-slate-600">Manage your floor plan templates and specifications</p>
       </div>
 
-      {/* Search and Add */}
-      <div className="flex gap-3 mb-6">
+      {/* Search, Sort and Add */}
+      <div className="flex gap-3 mb-6 flex-wrap">
         <div className="flex-1 relative">
           <Search className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
           <Input
