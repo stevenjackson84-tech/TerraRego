@@ -56,6 +56,7 @@ import Dashboard from './pages/Dashboard';
 import DealDetails from './pages/DealDetails';
 import Deals from './pages/Deals';
 import Development from './pages/Development';
+import EmailTemplates from './pages/EmailTemplates';
 import Entitlements from './pages/Entitlements';
 import Favorites from './pages/Favorites';
 import FinancialDashboard from './pages/FinancialDashboard';
@@ -68,7 +69,6 @@ import Projects from './pages/Projects';
 import PropertyDetails from './pages/PropertyDetails';
 import Reports from './pages/Reports';
 import Tasks from './pages/Tasks';
-import EmailTemplates from './pages/EmailTemplates';
 import __Layout from './Layout.jsx';
 
 
@@ -82,6 +82,7 @@ export const PAGES = {
     "DealDetails": DealDetails,
     "Deals": Deals,
     "Development": Development,
+    "EmailTemplates": EmailTemplates,
     "Entitlements": Entitlements,
     "Favorites": Favorites,
     "FinancialDashboard": FinancialDashboard,
@@ -94,7 +95,6 @@ export const PAGES = {
     "PropertyDetails": PropertyDetails,
     "Reports": Reports,
     "Tasks": Tasks,
-    "EmailTemplates": EmailTemplates,
 }
 
 export const pagesConfig = {

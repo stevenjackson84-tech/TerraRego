@@ -44,6 +44,7 @@ import DealContactLinker from "@/components/deals/DealContactLinker";
 import ContactCard from "@/components/contacts/ContactCard";
 import EmailComposer from "@/components/email/EmailComposer";
 import EmailHistoryPanel from "@/components/email/EmailHistoryPanel";
+import DealAIInsights from "@/components/deals/DealAIInsights";
 
 const stageStyles = {
   prospecting: "bg-slate-100 text-slate-700",
@@ -374,6 +375,16 @@ export default function DealDetails() {
 
           <TabsContent value="overview">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="lg:col-span-2">
+                <DealAIInsights 
+                  deal={deal} 
+                  tasks={tasks} 
+                  entitlements={entitlements} 
+                  proforma={proforma}
+                  documents={[]}
+                  activities={activities}
+                />
+              </div>
               <div className="lg:col-span-2">
                 <DealScoreCard deal={deal} tasks={tasks} proforma={proforma} />
               </div>
