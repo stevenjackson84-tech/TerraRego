@@ -223,7 +223,7 @@ export default function Projects() {
               <Button
                 size="icon"
                 variant="ghost"
-                className="absolute top-2 right-2 text-red-600 hover:text-red-700 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-opacity"
+                className="absolute top-2 right-2 text-red-600 hover:text-red-700 hover:bg-red-50"
                 onClick={() => setDeleteConfirm(project.id)}
               >
                 <Trash2 className="h-4 w-4" />
