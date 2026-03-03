@@ -20,8 +20,8 @@ export default function MarketAnalysisTab({ dealId, proforma, deal }) {
   const [showForm, setShowForm] = useState(false);
   const [editingSale, setEditingSale] = useState(null);
   const [csvStatus, setCsvStatus] = useState(null);
-  const [autoFetching, setAutoFetching] = useState(false); // { state: 'loading'|'success'|'error', message: string }
-  const fileInputRef = useRef(null);
+  const [autoFetching, setAutoFetching] = useState(false);
+  const [importDialogOpen, setImportDialogOpen] = useState(false);
   const [formData, setFormData] = useState({
     competitor_name: "",
     subdivision_name: "",
