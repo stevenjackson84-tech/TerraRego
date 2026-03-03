@@ -267,6 +267,9 @@ export default function GISMap() {
   const [showSITLA, setShowSITLA] = useState(false);
   const [sitlaData, setSitlaData] = useState(null);
   const [sitlaLoading, setSitlaLoading] = useState(false);
+  const [showRedfin, setShowRedfin] = useState(false);
+  const [redfinData, setRedfinData] = useState(null);
+  const [redfinLoading, setRedfinLoading] = useState(false);
   const [filterPanelOpen, setFilterPanelOpen] = useState(false);
   const [filters, setFilters] = useState({
     dealStage: '',
@@ -507,6 +510,26 @@ export default function GISMap() {
         setSitlaLoading(false);
       });
   }, [showSITLA, sitlaData]);
+
+  // Load Redfin sales data when toggled on
+  useEffect(() => {
+    if (!showRedfin || redfinData || !map) return;
+    setRedfinLoading(true);
+    const center = map.getCenter();
+    base44.functions.invoke('getRedfin', {
+      latitude: center.lat,
+      longitude: center.lng,
+      radius: 5,
+    })
+      .then(res => {
+        setRedfinData(res.data);
+        setRedfinLoading(false);
+      })
+      .catch(err => {
+        console.warn("Redfin fetch failed:", err);
+        setRedfinLoading(false);
+      });
+  }, [showRedfin, map, redfinData]);
 
   // Fetch Zillow for sale properties for current map bounds
   const fetchZillowComps = useCallback(async (bounds) => {
@@ -1069,6 +1092,35 @@ Generate a realistic land parcel analysis. Include:
                 </div>`;
                 layer.bindPopup(popup);
                 layer.bindTooltip(`${price}`, { sticky: true });
+              }}
+            />
+          )}
+
+          {/* Redfin Sales Data */}
+          {showRedfin && redfinData && redfinData.features && redfinData.features.length > 0 && (
+            <GeoJSON
+              data={redfinData}
+              pointToLayer={(feature, latlng) => {
+                const price = feature.properties.price || 0;
+                const color = price > 500000 ? '#dc2626' : price > 300000 ? '#f97316' : price > 150000 ? '#eab308' : '#22c55e';
+                return L.circleMarker(latlng, {
+                  radius: 6,
+                  fillColor: color,
+                  color: '#fff',
+                  weight: 2,
+                  opacity: 1,
+                  fillOpacity: 0.8,
+                }).bindPopup(`
+                  <div style="font-size: 12px;">
+                    <strong>${feature.properties.address || 'Unknown'}</strong><br/>
+                    <strong>Price:</strong> $${feature.properties.price?.toLocaleString() || 'N/A'}<br/>
+                    <strong>Beds/Baths:</strong> ${feature.properties.beds || '?'}/${feature.properties.baths || '?'}<br/>
+                    <strong>Sq Ft:</strong> ${feature.properties.sqft?.toLocaleString() || 'N/A'}<br/>
+                    <strong>Price/Sq Ft:</strong> $${feature.properties.pricePerSqft || 'N/A'}<br/>
+                    <strong>Sale Date:</strong> ${feature.properties.saleDate ? new Date(feature.properties.saleDate).toLocaleDateString() : 'N/A'}<br/>
+                    <a href="${feature.properties.url}" target="_blank" rel="noopener noreferrer" style="color: #0066cc;">View on Redfin →</a>
+                  </div>
+                `, { maxWidth: 250 });
               }}
             />
           )}
