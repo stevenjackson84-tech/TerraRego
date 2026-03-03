@@ -298,6 +298,12 @@ export default function ProjectDetails() {
                           </div>
                         </div>
                         <div className="flex gap-1">
+                          <Button variant="ghost" size="sm" className="text-slate-500 hover:text-slate-900" onClick={() => {
+                            setTaskPrefill({ title: `${phase.name} — `, description: `Task related to phase: ${phase.name}` });
+                            setShowTaskCreate(true);
+                          }}>
+                            <ClipboardPlus className="h-4 w-4" />
+                          </Button>
                           <Button variant="ghost" size="icon" onClick={() => {
                             setEditingPhase(phase);
                             setShowPhaseForm(true);
