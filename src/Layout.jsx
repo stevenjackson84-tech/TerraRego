@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { base44 } from "@/api/base44Client";
+import NotificationCenter from "@/components/shared/NotificationCenter";
 import { 
   LayoutDashboard, 
   Building2, 
