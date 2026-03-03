@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { MapContainer, TileLayer, WMSTileLayer, Marker, Popup, useMapEvents, GeoJSON, useMap, Tooltip, ImageOverlay, FeatureGroup } from "react-leaflet";
-import { EditControl } from "react-leaflet-draw";
+import { MapContainer, TileLayer, WMSTileLayer, Marker, Popup, useMapEvents, GeoJSON, useMap, Tooltip, ImageOverlay } from "react-leaflet";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -262,12 +261,10 @@ export default function GISMap() {
     const stored = localStorage.getItem("gis_kmz_group_visibility");
     return stored ? JSON.parse(stored) : {};
   });
-  const [drawnShapes, setDrawnShapes] = useState([]);
   const [radiusSearchActive, setRadiusSearchActive] = useState(false);
   const [radiusMeters, setRadiusMeters] = useState(1000);
   const [selectedArea, setSelectedArea] = useState(null);
   const [exporting, setExporting] = useState(false);
-  const featureGroupRef = useRef(null);
   const [showZillow, setShowZillow] = useState(false);
   const [zillowData, setZillowData] = useState(null);
   const [zillowLoading, setZillowLoading] = useState(false);
@@ -692,24 +689,6 @@ export default function GISMap() {
       label: "Topo"
     }
   };
-
-  const handleDrawComplete = useCallback((e) => {
-    const layer = e.layer;
-    const geom = layer.toGeoJSON().geometry;
-    setDrawnShapes(prev => [...prev, { id: Date.now(), geometry: geom, layer }]);
-    
-    // Get properties within drawn shape
-    const propsInShape = dealLocations.filter(({ coords }) => {
-      const point = turf.point([coords.lng, coords.lat]);
-      const polygon = turf.polygon(
-        geom.type === 'Polygon' ? geom.coordinates :
-        geom.type === 'Circle' ? circleToPolygon(geom.coordinates[0], geom.radius) : []
-      );
-      return turf.booleanPointInPolygon(point, polygon);
-    });
-    
-    setSelectedArea(propsInShape);
-  }, [dealLocations]);
 
   const handleRadiusSearch = (latlng) => {
     if (!radiusSearchActive) return;
@@ -1145,20 +1124,6 @@ Generate a realistic land parcel analysis. Include:
             url={tileLayers[tileLayer].url}
             attribution={tileLayers[tileLayer].attribution}
           />
-          <FeatureGroup ref={featureGroupRef}>
-            <EditControl
-              position="topright"
-              onCreated={handleDrawComplete}
-              draw={{
-                rectangle: true,
-                polygon: true,
-                circle: true,
-                polyline: false,
-                marker: false,
-                circlemarker: false,
-              }}
-            />
-          </FeatureGroup>
           <ClickHandler onMapClick={handleMapClick} />
           <ParcelBoundsLoader showParcels={showParcels} onBoundsChange={fetchParcelsForBounds} />
           <SlopeBoundsLoader showSteepSlopes={showSteepSlopes} onBoundsChange={fetchSlopeData} />
