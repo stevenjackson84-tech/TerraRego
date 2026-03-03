@@ -266,6 +266,9 @@ export default function MarketAnalysisTab({ dealId, proforma, deal }) {
       {/* Market Trends Analysis */}
       <MarketTrendsAnalysis competitorSales={competitorSales} deal={deal} />
 
+      {/* Market Predictions */}
+      <MarketPredictions competitorSales={competitorSales} deal={deal} />
+
       {/* Price Comparison Chart */}
       {chartData.length > 0 && (
         <Card className="border-0 shadow-sm">
