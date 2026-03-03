@@ -474,6 +474,10 @@ export default function ProjectDetails() {
             <DocumentList entityType="project" entityId={projectId} />
           </TabsContent>
 
+          <TabsContent value="zoning">
+            <ZoningCodes project={project} deal={deals.find(d => d.id === project.deal_id)} />
+          </TabsContent>
+
           <TabsContent value="team">
             <Card className="border-0 shadow-sm">
               <CardHeader>
