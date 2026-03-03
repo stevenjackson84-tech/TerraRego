@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { MapContainer, TileLayer, WMSTileLayer, Marker, Popup, useMapEvents, GeoJSON, useMap, Tooltip, ImageOverlay } from "react-leaflet";
+import { MapContainer, TileLayer, WMSTileLayer, Marker, Popup, useMapEvents, GeoJSON, useMap, Tooltip, ImageOverlay, FeatureGroup } from "react-leaflet";
+import { EditControl } from "react-leaflet-draw";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Search, MapPin, Layers, X, Info, Building2, FileText, Upload, Trash2 } from "lucide-react";
+import { Search, MapPin, Layers, X, Info, Building2, FileText, Upload, Trash2, Download, Circle } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { base44 } from "@/api/base44Client";
@@ -261,6 +262,12 @@ export default function GISMap() {
     const stored = localStorage.getItem("gis_kmz_group_visibility");
     return stored ? JSON.parse(stored) : {};
   });
+  const [drawnShapes, setDrawnShapes] = useState([]);
+  const [radiusSearchActive, setRadiusSearchActive] = useState(false);
+  const [radiusMeters, setRadiusMeters] = useState(1000);
+  const [selectedArea, setSelectedArea] = useState(null);
+  const [exporting, setExporting] = useState(false);
+  const featureGroupRef = useRef(null);
   const [showZillow, setShowZillow] = useState(false);
   const [zillowData, setZillowData] = useState(null);
   const [zillowLoading, setZillowLoading] = useState(false);
@@ -686,7 +693,88 @@ export default function GISMap() {
     }
   };
 
+  const handleDrawComplete = useCallback((e) => {
+    const layer = e.layer;
+    const geom = layer.toGeoJSON().geometry;
+    setDrawnShapes(prev => [...prev, { id: Date.now(), geometry: geom, layer }]);
+    
+    // Get properties within drawn shape
+    const propsInShape = dealLocations.filter(({ coords }) => {
+      const point = turf.point([coords.lng, coords.lat]);
+      const polygon = turf.polygon(
+        geom.type === 'Polygon' ? geom.coordinates :
+        geom.type === 'Circle' ? circleToPolygon(geom.coordinates[0], geom.radius) : []
+      );
+      return turf.booleanPointInPolygon(point, polygon);
+    });
+    
+    setSelectedArea(propsInShape);
+  }, [dealLocations]);
+
+  const handleRadiusSearch = (latlng) => {
+    if (!radiusSearchActive) return;
+    
+    const circleProps = dealLocations.filter(({ coords }) => {
+      const distance = Math.sqrt(
+        Math.pow(coords.lat - latlng.lat, 2) +
+        Math.pow(coords.lng - latlng.lng, 2)
+      ) * 111000; // approx meters per degree
+      return distance <= radiusMeters;
+    });
+    
+    setSelectedArea(circleProps);
+  };
+
+  const exportToCSV = async () => {
+    if (!selectedArea || selectedArea.length === 0) {
+      alert('No properties selected to export');
+      return;
+    }
+
+    setExporting(true);
+    try {
+      const csvData = selectedArea.map(({ deal }) => ({
+        Name: deal.name,
+        Address: deal.address,
+        City: deal.city,
+        State: deal.state,
+        Acreage: deal.acreage,
+        Zoning_Current: deal.zoning_current,
+        Zoning_Target: deal.zoning_target,
+        Price: deal.asking_price || deal.purchase_price || deal.estimated_value,
+        Stage: deal.stage,
+        Priority: deal.priority,
+        Latitude: deal.latitude,
+        Longitude: deal.longitude,
+      }));
+
+      const response = await base44.functions.invoke('exportMapData', {
+        properties: csvData,
+        filename: `properties-export-${new Date().toISOString().split('T')[0]}.csv`,
+      });
+
+      const blob = new Blob([response.data], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', `properties-export-${new Date().toISOString().split('T')[0]}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error('Export failed:', error);
+      alert('Failed to export data');
+    } finally {
+      setExporting(false);
+    }
+  };
+
   const handleMapClick = async (latlng) => {
+    if (radiusSearchActive) {
+      handleRadiusSearch(latlng);
+      return;
+    }
+
     setClickedLocation(latlng);
     setParcelInfo(null);
     setIsAnalyzing(true);
@@ -862,6 +950,45 @@ Generate a realistic land parcel analysis. Include:
           <div className="w-px h-5 bg-slate-200 mx-1" />
           <Button
             size="sm"
+            variant={radiusSearchActive ? "default" : "outline"}
+            onClick={() => {
+              setRadiusSearchActive(!radiusSearchActive);
+              setSelectedArea(null);
+            }}
+            className="text-xs flex items-center gap-1"
+          >
+            <Circle className="h-3 w-3" />
+            Radius Search
+          </Button>
+          {radiusSearchActive && (
+            <div className="flex items-center gap-1 bg-white px-2 py-1 rounded border border-slate-200">
+              <span className="text-xs text-slate-600">Radius:</span>
+              <Input
+                type="number"
+                min="100"
+                max="5000"
+                step="100"
+                value={radiusMeters}
+                onChange={(e) => setRadiusMeters(parseInt(e.target.value))}
+                className="h-7 w-16 text-xs"
+              />
+              <span className="text-xs text-slate-600">m</span>
+            </div>
+          )}
+          {selectedArea && (
+            <Button
+              size="sm"
+              onClick={exportToCSV}
+              disabled={exporting}
+              className="text-xs flex items-center gap-1 bg-green-600 hover:bg-green-700"
+            >
+              <Download className="h-3 w-3" />
+              {exporting ? "Exporting..." : `Export (${selectedArea.length})`}
+            </Button>
+          )}
+          <div className="w-px h-5 bg-slate-200 mx-1" />
+          <Button
+            size="sm"
             variant={showParcels ? "default" : "outline"}
             onClick={() => { setShowParcels(!showParcels); setParcelData(null); }}
             className="text-xs flex items-center gap-1"
@@ -1018,6 +1145,20 @@ Generate a realistic land parcel analysis. Include:
             url={tileLayers[tileLayer].url}
             attribution={tileLayers[tileLayer].attribution}
           />
+          <FeatureGroup ref={featureGroupRef}>
+            <EditControl
+              position="topright"
+              onCreated={handleDrawComplete}
+              draw={{
+                rectangle: true,
+                polygon: true,
+                circle: true,
+                polyline: false,
+                marker: false,
+                circlemarker: false,
+              }}
+            />
+          </FeatureGroup>
           <ClickHandler onMapClick={handleMapClick} />
           <ParcelBoundsLoader showParcels={showParcels} onBoundsChange={fetchParcelsForBounds} />
           <SlopeBoundsLoader showSteepSlopes={showSteepSlopes} onBoundsChange={fetchSlopeData} />
@@ -1537,11 +1678,27 @@ Generate a realistic land parcel analysis. Include:
           </div>
         )}
 
+        {/* Selection Info */}
+        {selectedArea && (
+          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 bg-white border border-slate-200 rounded-lg px-4 py-2 text-sm shadow">
+            <p className="text-slate-900 font-medium">
+              {selectedArea.length} {selectedArea.length === 1 ? 'property' : 'properties'} selected
+            </p>
+            <p className="text-xs text-slate-500">Click export to download as CSV</p>
+          </div>
+        )}
+
         {/* Hint overlay */}
-        {!clickedLocation && !isAnalyzing && dealLocations.length === 0 && (
+        {!clickedLocation && !isAnalyzing && dealLocations.length === 0 && !radiusSearchActive && (
           <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 bg-white/90 backdrop-blur-sm border border-slate-200 rounded-lg px-4 py-2 text-sm text-slate-600 flex items-center gap-2 shadow">
             <MapPin className="h-4 w-4 text-slate-400" />
             Click anywhere on the map to analyze a parcel
+          </div>
+        )}
+
+        {radiusSearchActive && (
+          <div className="absolute top-24 left-1/2 -translate-x-1/2 z-10 bg-white border border-slate-200 rounded-lg px-4 py-2 text-sm shadow">
+            <p className="text-slate-900 font-medium">Click on map to search radius</p>
           </div>
         )}
 

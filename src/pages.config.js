@@ -57,6 +57,7 @@ import DealDetails from './pages/DealDetails';
 import Deals from './pages/Deals';
 import Development from './pages/Development';
 import Entitlements from './pages/Entitlements';
+import Favorites from './pages/Favorites';
 import FinancialDashboard from './pages/FinancialDashboard';
 import FloorPlansLibrary from './pages/FloorPlansLibrary';
 import GISMap from './pages/GISMap';
@@ -64,10 +65,9 @@ import LeanSixSigma from './pages/LeanSixSigma';
 import PlanCheck from './pages/PlanCheck';
 import ProjectDetails from './pages/ProjectDetails';
 import Projects from './pages/Projects';
+import PropertyDetails from './pages/PropertyDetails';
 import Reports from './pages/Reports';
 import Tasks from './pages/Tasks';
-import PropertyDetails from './pages/PropertyDetails';
-import Favorites from './pages/Favorites';
 import __Layout from './Layout.jsx';
 
 
@@ -82,6 +82,7 @@ export const PAGES = {
     "Deals": Deals,
     "Development": Development,
     "Entitlements": Entitlements,
+    "Favorites": Favorites,
     "FinancialDashboard": FinancialDashboard,
     "FloorPlansLibrary": FloorPlansLibrary,
     "GISMap": GISMap,
@@ -89,10 +90,9 @@ export const PAGES = {
     "PlanCheck": PlanCheck,
     "ProjectDetails": ProjectDetails,
     "Projects": Projects,
+    "PropertyDetails": PropertyDetails,
     "Reports": Reports,
     "Tasks": Tasks,
-    "PropertyDetails": PropertyDetails,
-    "Favorites": Favorites,
 }
 
 export const pagesConfig = {
