@@ -881,6 +881,18 @@ Generate a realistic land parcel analysis. Include:
           >
             🏛️ {sitlaLoading ? "Loading SITLA..." : "SITLA Lands"}
           </Button>
+          <Button
+            size="sm"
+            variant={showRedfin ? "default" : "outline"}
+            onClick={() => {
+              setShowRedfin(!showRedfin);
+              setRedfinData(null);
+            }}
+            className="text-xs flex items-center gap-1"
+            disabled={redfinLoading}
+          >
+            🏠 {redfinLoading ? "Loading Redfin..." : "Redfin Sales"}
+          </Button>
         </div>
       </div>
 
