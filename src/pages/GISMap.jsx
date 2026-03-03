@@ -270,6 +270,15 @@ export default function GISMap() {
   const [showRedfin, setShowRedfin] = useState(false);
   const [redfinData, setRedfinData] = useState(null);
   const [redfinLoading, setRedfinLoading] = useState(false);
+  const [showZoning, setShowZoning] = useState(false);
+  const [zoningData, setZoningData] = useState(null);
+  const [zoningLoading, setZoningLoading] = useState(false);
+  const [showSchoolDistricts, setShowSchoolDistricts] = useState(false);
+  const [schoolDistrictData, setSchoolDistrictData] = useState(null);
+  const [schoolDistrictLoading, setSchoolDistrictLoading] = useState(false);
+  const [showUtilities, setShowUtilities] = useState(false);
+  const [utilitiesData, setUtilitiesData] = useState(null);
+  const [utilitiesLoading, setUtilitiesLoading] = useState(false);
   const [filterPanelOpen, setFilterPanelOpen] = useState(false);
   const [filters, setFilters] = useState({
     dealStage: '',
@@ -530,6 +539,63 @@ export default function GISMap() {
         setRedfinLoading(false);
       });
   }, [showRedfin, map, redfinData]);
+
+  // Load zoning data when toggled on
+  useEffect(() => {
+    if (!showZoning || zoningData) return;
+    setZoningLoading(true);
+    const url = "https://services1.arcgis.com/99lidPhWCzftIe9K/arcgis/rest/services/SGID_Planning_Zones/FeatureServer/0/query?where=1%3D1&outFields=*&outSR=4326&f=geojson&resultRecordCount=5000";
+    fetch(url)
+      .then(r => r.json())
+      .then(data => {
+        if (data && data.features) {
+          setZoningData(data);
+        }
+        setZoningLoading(false);
+      })
+      .catch(err => {
+        console.warn("Zoning fetch failed:", err);
+        setZoningLoading(false);
+      });
+  }, [showZoning, zoningData]);
+
+  // Load school district data when toggled on
+  useEffect(() => {
+    if (!showSchoolDistricts || schoolDistrictData) return;
+    setSchoolDistrictLoading(true);
+    const url = "https://services1.arcgis.com/99lidPhWCzftIe9K/arcgis/rest/services/SGID_Edu_Schools/FeatureServer/0/query?where=1%3D1&outFields=*&outSR=4326&f=geojson&resultRecordCount=5000";
+    fetch(url)
+      .then(r => r.json())
+      .then(data => {
+        if (data && data.features) {
+          setSchoolDistrictData(data);
+        }
+        setSchoolDistrictLoading(false);
+      })
+      .catch(err => {
+        console.warn("School district fetch failed:", err);
+        setSchoolDistrictLoading(false);
+      });
+  }, [showSchoolDistricts, schoolDistrictData]);
+
+  // Load utilities data when toggled on
+  useEffect(() => {
+    if (!showUtilities || utilitiesData) return;
+    setUtilitiesLoading(true);
+    const url = "https://services1.arcgis.com/99lidPhWCzftIe9K/arcgis/rest/services/SGID_Utilities/FeatureServer/0/query?where=1%3D1&outFields=*&outSR=4326&f=geojson&resultRecordCount=5000";
+    fetch(url)
+      .then(r => r.json())
+      .then(data => {
+        if (data && data.features) {
+          setUtilitiesData(data);
+        }
+        setUtilitiesLoading(false);
+      })
+      .catch(err => {
+        console.warn("Utilities fetch failed:", err);
+        setUtilitiesLoading(false);
+      });
+  }, [showUtilities, utilitiesData]);
 
   // Fetch Zillow for sale properties for current map bounds
   const fetchZillowComps = useCallback(async (bounds) => {
@@ -893,6 +959,42 @@ Generate a realistic land parcel analysis. Include:
           >
             🏠 {redfinLoading ? "Loading Redfin..." : "Redfin Sales"}
           </Button>
+          <Button
+            size="sm"
+            variant={showZoning ? "default" : "outline"}
+            onClick={() => {
+              setShowZoning(!showZoning);
+              setZoningData(null);
+            }}
+            className="text-xs flex items-center gap-1"
+            disabled={zoningLoading}
+          >
+            📋 {zoningLoading ? "Loading..." : "Zoning"}
+          </Button>
+          <Button
+            size="sm"
+            variant={showSchoolDistricts ? "default" : "outline"}
+            onClick={() => {
+              setShowSchoolDistricts(!showSchoolDistricts);
+              setSchoolDistrictData(null);
+            }}
+            className="text-xs flex items-center gap-1"
+            disabled={schoolDistrictLoading}
+          >
+            🏫 {schoolDistrictLoading ? "Loading..." : "Schools"}
+          </Button>
+          <Button
+            size="sm"
+            variant={showUtilities ? "default" : "outline"}
+            onClick={() => {
+              setShowUtilities(!showUtilities);
+              setUtilitiesData(null);
+            }}
+            className="text-xs flex items-center gap-1"
+            disabled={utilitiesLoading}
+          >
+            ⚙️ {utilitiesLoading ? "Loading..." : "Utilities"}
+          </Button>
         </div>
       </div>
 
@@ -1161,6 +1263,112 @@ Generate a realistic land parcel analysis. Include:
                 ].filter(Boolean).join("<br/>");
                 layer.bindPopup(`<div style="font-size:11px;line-height:1.5">${lines}</div>`);
                 if (name) layer.bindTooltip(name, { sticky: true });
+              }}
+            />
+          )}
+
+          {/* Zoning Layers */}
+          {showZoning && zoningData && zoningData.features && zoningData.features.length > 0 && (
+            <GeoJSON
+              key="zoning-layer"
+              data={zoningData}
+              style={(feature) => {
+                const zoneType = feature.properties.ZONE_TYPE || feature.properties.zone_type || "";
+                const colorMap = {
+                  "RESIDENTIAL": "#a78bfa",
+                  "COMMERCIAL": "#fbbf24",
+                  "INDUSTRIAL": "#dc2626",
+                  "AGRICULTURE": "#86efac",
+                  "MIXED_USE": "#60a5fa",
+                  "OPEN_SPACE": "#10b981"
+                };
+                return {
+                  color: "#1f2937",
+                  weight: 1.5,
+                  opacity: 0.9,
+                  fillColor: colorMap[zoneType] || "#9ca3af",
+                  fillOpacity: 0.3,
+                };
+              }}
+              onEachFeature={(feature, layer) => {
+                const props = feature.properties;
+                const name = props.ZONE_NAME || props.zone_name || props.ZONE_TYPE || "Zone";
+                layer.bindTooltip(name, { sticky: true });
+                layer.bindPopup(`<div style="font-size:11px;line-height:1.5"><b>${name}</b><br/>${props.ZONE_TYPE || ""}</div>`);
+              }}
+            />
+          )}
+
+          {/* School Districts */}
+          {showSchoolDistricts && schoolDistrictData && schoolDistrictData.features && schoolDistrictData.features.length > 0 && (
+            <GeoJSON
+              key="school-districts-layer"
+              data={schoolDistrictData}
+              pointToLayer={(feature, latlng) => {
+                return L.circleMarker(latlng, {
+                  radius: 5,
+                  fillColor: "#f97316",
+                  color: "#fff",
+                  weight: 2,
+                  opacity: 1,
+                  fillOpacity: 0.8,
+                });
+              }}
+              onEachFeature={(feature, layer) => {
+                const props = feature.properties;
+                const name = props.SCHOOL_NAME || props.name || "School";
+                const district = props.DISTRICT_NAME || props.district || "";
+                const popup = `<div style="font-size:11px;line-height:1.5"><b>${name}</b><br/>${district ? `District: ${district}` : ""}</div>`;
+                layer.bindPopup(popup);
+                layer.bindTooltip(name, { sticky: true });
+              }}
+            />
+          )}
+
+          {/* Utilities Infrastructure */}
+          {showUtilities && utilitiesData && utilitiesData.features && utilitiesData.features.length > 0 && (
+            <GeoJSON
+              key="utilities-layer"
+              data={utilitiesData}
+              style={(feature) => {
+                const utility = feature.properties.UTILITY_TYPE || feature.properties.type || "";
+                const colorMap = {
+                  "WATER": "#0284c7",
+                  "SEWER": "#7c3aed",
+                  "GAS": "#fb923c",
+                  "ELECTRIC": "#fbbf24",
+                  "TELECOM": "#3b82f6"
+                };
+                return {
+                  color: colorMap[utility] || "#6b7280",
+                  weight: 2,
+                  opacity: 0.8,
+                };
+              }}
+              pointToLayer={(feature, latlng) => {
+                const utility = feature.properties.UTILITY_TYPE || feature.properties.type || "";
+                const colorMap = {
+                  "WATER": "#0284c7",
+                  "SEWER": "#7c3aed",
+                  "GAS": "#fb923c",
+                  "ELECTRIC": "#fbbf24",
+                  "TELECOM": "#3b82f6"
+                };
+                return L.circleMarker(latlng, {
+                  radius: 4,
+                  fillColor: colorMap[utility] || "#6b7280",
+                  color: "#fff",
+                  weight: 1.5,
+                  opacity: 1,
+                  fillOpacity: 0.8,
+                });
+              }}
+              onEachFeature={(feature, layer) => {
+                const props = feature.properties;
+                const name = props.UTILITY_NAME || props.name || "Utility";
+                const type = props.UTILITY_TYPE || props.type || "";
+                const popup = `<div style="font-size:11px;line-height:1.5"><b>${name}</b><br/>${type}</div>`;
+                layer.bindPopup(popup);
               }}
             />
           )}
