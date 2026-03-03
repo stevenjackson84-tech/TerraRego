@@ -483,6 +483,26 @@ export default function MarketAnalysisTab({ dealId, proforma, deal }) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Data Import Dialog */}
+      <DataImportDialog
+        open={importDialogOpen}
+        onOpenChange={setImportDialogOpen}
+        onImport={handleImportData}
+        title="Import Competitor Sales"
+        fields={[
+          { id: 'competitor_name', label: 'Competitor Name', required: true, aliases: ['builder', 'company', 'seller'] },
+          { id: 'subdivision_name', label: 'Subdivision Name', aliases: ['community', 'development', 'project'] },
+          { id: 'product_type', label: 'Product Type', required: true, aliases: ['type', 'product', 'unit_type'] },
+          { id: 'sale_price', label: 'Sale Price', required: true, type: 'number', aliases: ['price', 'close_price', 'amount'] },
+          { id: 'square_footage', label: 'Square Footage', type: 'number', aliases: ['sqft', 'sq_ft', 'size'] },
+          { id: 'bedrooms', label: 'Bedrooms', type: 'number', aliases: ['beds', 'br'] },
+          { id: 'bathrooms', label: 'Bathrooms', type: 'number', aliases: ['baths', 'ba'] },
+          { id: 'sale_date', label: 'Sale Date', type: 'date', aliases: ['date', 'close_date', 'sold_date'] },
+          { id: 'location', label: 'Location', aliases: ['address', 'city', 'area'] },
+          { id: 'notes', label: 'Notes', aliases: ['remarks', 'comments'] }
+        ]}
+      />
     </div>
   );
 }
