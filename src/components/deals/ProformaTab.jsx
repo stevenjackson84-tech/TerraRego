@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Edit, DollarSign, TrendingUp, Calculator, Plus, Trash2, RefreshCw, Sparkles, ChevronDown, ChevronUp } from "lucide-react";
 import AIMarketSuggestion from "./AIMarketSuggestion";
 import ProformaAIAnalysis from "./ProformaAIAnalysis";
+import ProformaAIValidator from "./ProformaAIValidator";
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
