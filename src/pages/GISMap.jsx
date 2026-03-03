@@ -17,6 +17,9 @@ import JSZip from "jszip";
 import { kml } from "@tmcw/togeojson";
 import SendToClickUp from "@/components/clickup/SendToClickUp";
 import GISFilterPanel from "@/components/gis/GISFilterPanel";
+import HeatmapLayer from "@/components/gis/HeatmapLayer";
+import ClusterMarkers from "@/components/gis/ClusterMarkers";
+import VisualizationPanel from "@/components/gis/VisualizationPanel";
 
 // Fix default marker icons
 delete L.Icon.Default.prototype._getIconUrl;
@@ -296,6 +299,10 @@ export default function GISMap() {
       sitla: true,
     },
   });
+  const [showClusters, setShowClusters] = useState(true);
+  const [heatmapMode, setHeatmapMode] = useState('off');
+  const [heatmapOpacity, setHeatmapOpacity] = useState(0.6);
+  const [visualizationPanelOpen, setVisualizationPanelOpen] = useState(false);
 
   // Persist KMZ layers to localStorage
   useEffect(() => {
@@ -986,6 +993,14 @@ Generate a realistic land parcel analysis. Include:
           </Button>
           <Button
             size="sm"
+            variant={showClusters ? "default" : "outline"}
+            onClick={() => setShowClusters(!showClusters)}
+            className="text-xs flex items-center gap-1"
+          >
+            🎯 Clusters
+          </Button>
+          <Button
+            size="sm"
             variant={showSensitiveLands ? "default" : "outline"}
             onClick={() => setShowSensitiveLands(!showSensitiveLands)}
             className="text-xs flex items-center gap-1"
@@ -1235,8 +1250,8 @@ Generate a realistic land parcel analysis. Include:
             />
           )}
 
-          {/* Deal pins */}
-          {showDeals && filteredDealLocations.map(({ deal, coords }) => (
+          {/* Cluster Markers - only show if not using clusters */}
+          {showDeals && !showClusters && filteredDealLocations.map(({ deal, coords }) => (
             <Marker
               key={deal.id}
               position={[coords.lat, coords.lng]}
@@ -1271,6 +1286,25 @@ Generate a realistic land parcel analysis. Include:
               </Popup>
             </Marker>
           ))}
+
+          {/* Clustered Markers */}
+          {showDeals && showClusters && (
+            <ClusterMarkers
+              deals={filteredDealLocations.map(d => d.deal)}
+              stageColors={stageColors}
+              stageLabels={stageLabels}
+              showClusters={showClusters}
+            />
+          )}
+
+          {/* Heatmap Layer */}
+          {showDeals && heatmapMode !== 'off' && (
+            <HeatmapLayer
+              deals={filteredDealLocations.map(d => d.deal)}
+              mode={heatmapMode}
+              opacity={heatmapOpacity}
+            />
+          )}
 
           {/* Plan PDF markers - pinned at deal coordinates */}
           {showPlanDocs && planDocs.map((doc) => {
@@ -1541,6 +1575,18 @@ Generate a realistic land parcel analysis. Include:
             </Marker>
           )}
         </MapContainer>
+
+        {/* Visualization Panel */}
+        <VisualizationPanel
+          showClusters={showClusters}
+          onToggleClusters={setShowClusters}
+          heatmapMode={heatmapMode}
+          onHeatmapModeChange={setHeatmapMode}
+          heatmapOpacity={heatmapOpacity}
+          onHeatmapOpacityChange={setHeatmapOpacity}
+          isOpen={visualizationPanelOpen}
+          onToggle={() => setVisualizationPanelOpen(!visualizationPanelOpen)}
+        />
 
         {/* KMZ Layer List */}
         {kmzLayers.length > 0 && (
