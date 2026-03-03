@@ -46,6 +46,15 @@ const navigation = [
 
 export default function Layout({ children, currentPageName }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [userEmail, setUserEmail] = useState(null);
+
+  useEffect(() => {
+    const getUser = async () => {
+      const user = await base44.auth.me();
+      if (user) setUserEmail(user.email);
+    };
+    getUser();
+  }, []);
 
   return (
     <div className="min-h-screen bg-slate-50">
