@@ -58,9 +58,10 @@ For each sale provide realistic data that reflects the actual market in ${city |
                 bathrooms: { type: "number" },
                 sale_date: { type: "string", description: "YYYY-MM-DD format, within the last 12 months" },
                 location: { type: "string", description: "General area/address" },
-                notes: { type: "string" }
-              },
-              required: ["competitor_name", "product_type", "sale_price"]
+                notes: { type: "string" },
+                source: { type: "string", description: "Source reference, e.g. MLS, Zillow, Redfin, builder website URL or name" }
+                },
+                required: ["competitor_name", "product_type", "sale_price"]
             }
           }
         }
