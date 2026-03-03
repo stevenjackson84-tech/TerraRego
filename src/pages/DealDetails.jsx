@@ -287,7 +287,8 @@ export default function DealDetails() {
               </div>
             )}
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap">
+            <CalendarSyncButton dealId={dealId} />
             <Button 
               onClick={() => convertToProjectMutation.mutate()} 
               disabled={convertToProjectMutation.isPending}
