@@ -1,12 +1,13 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { X } from "lucide-react";
+import { X, Upload, ImageIcon, Loader2 } from "lucide-react";
 import LatLngPasteInput from "@/components/shared/LatLngPasteInput";
+import { base44 } from "@/api/base44Client";
 
 const defaultDeal = {
   name: "",
