@@ -468,7 +468,7 @@ export default function DealDetails() {
           </TabsContent>
 
           <TabsContent value="duediligence">
-            <DueDiligenceTab dealId={dealId} />
+            <DueDiligenceTab dealId={dealId} deal={deal} />
           </TabsContent>
 
           <TabsContent value="entitlements">
