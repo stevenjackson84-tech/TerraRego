@@ -53,6 +53,11 @@ export default function ContactCard({ contact, onEdit, onDelete }) {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuItem onClick={() => onEdit(contact)}>Edit</DropdownMenuItem>
+                {contact.email && (
+                  <DropdownMenuItem onClick={() => setShowEmail(true)}>
+                    <Mail className="h-4 w-4 mr-2" />Send Email
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuItem onClick={() => onDelete(contact)} className="text-red-600">Delete</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
