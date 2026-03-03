@@ -211,9 +211,9 @@ export default function MarketAnalysisTab({ dealId, proforma }) {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-lg font-semibold text-slate-900">Market Analysis</h2>
-        <div className="flex gap-2 items-center">
+      <div className="flex flex-wrap justify-between items-center gap-3">
+        <h2 className="text-lg font-semibold text-slate-900">Competitor Sales</h2>
+        <div className="flex flex-wrap gap-2 items-center">
           {csvStatus && (
             <div className={`flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-lg ${csvStatus.state === "loading" ? "bg-blue-50 text-blue-700" : csvStatus.state === "success" ? "bg-emerald-50 text-emerald-700" : "bg-red-50 text-red-700"}`}>
               {csvStatus.state === "loading" && <Loader2 className="h-4 w-4 animate-spin" />}
