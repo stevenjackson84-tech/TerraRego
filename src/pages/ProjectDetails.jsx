@@ -246,6 +246,11 @@ export default function ProjectDetails() {
           </Card>
         </div>
 
+        {/* AI Suggestions */}
+        <div className="mb-8">
+          <AISuggestionsPanel project={project} phases={phases} milestones={milestones} />
+        </div>
+
         {/* Tabs */}
         <Tabs defaultValue="timeline" className="space-y-6">
           <TabsList className="bg-white border">
