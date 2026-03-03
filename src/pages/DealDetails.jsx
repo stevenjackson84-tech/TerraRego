@@ -45,6 +45,7 @@ import ContactCard from "@/components/contacts/ContactCard";
 import EmailComposer from "@/components/email/EmailComposer";
 import EmailHistoryPanel from "@/components/email/EmailHistoryPanel";
 import DealAIInsights from "@/components/deals/DealAIInsights";
+import DealCommunicationAssistant from "@/components/deals/DealCommunicationAssistant";
 
 const stageStyles = {
   prospecting: "bg-slate-100 text-slate-700",
@@ -632,6 +633,11 @@ export default function DealDetails() {
                   Upload Document
                 </Button>
               </div>
+              <DealCommunicationAssistant 
+                deal={deal}
+                emailHistory={[]}
+                activities={activities}
+              />
               <EmailHistoryPanel dealId={dealId} />
               <DocumentFieldLinker
                 dealId={dealId}
