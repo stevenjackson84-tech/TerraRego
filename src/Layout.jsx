@@ -76,8 +76,8 @@ export default function Layout({ children, currentPageName }) {
       )}>
         <div className="flex items-center justify-between h-14 px-4 border-b border-slate-200">
           <Link to={createPageUrl("Dashboard")} className="flex items-center gap-2">
-            <img src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/698a2099619afaafce3010e1/5f5761863_c3a3fee7-5d59-4dc1-94cc-4c194769f87f.png" alt="Parcelr" className="w-10 h-10 object-contain" />
-            <span className="text-lg font-semibold text-slate-900">Parcelr</span>
+            <img src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/698a2099619afaafce3010e1/5f5761863_c3a3fee7-5d59-4dc1-94cc-4c194769f87f.png" alt="Parcelr" className="w-8 h-8 object-contain" />
+            <span className="text-sm font-semibold text-slate-900">Parcelr</span>
           </Link>
           <Button 
             variant="ghost" 
