@@ -18,7 +18,8 @@ import {
   Folder,
   Sigma,
   Map,
-  Pencil
+  Pencil,
+  DollarSign
 } from "lucide-react";
 
 
