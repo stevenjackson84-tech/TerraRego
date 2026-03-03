@@ -564,7 +564,16 @@ export default function DealDetails() {
           </TabsContent>
 
           <TabsContent value="documents">
-            <DocumentList entityType="deal" entityId={dealId} />
+            <div className="space-y-6">
+              <DocumentFieldLinker
+                dealId={dealId}
+                deal={deal}
+                proforma={proforma}
+                onDealUpdate={(data) => updateDealMutation.mutate(data)}
+                onProformaUpdate={(data) => proformaMutation.mutate(data)}
+              />
+              <DocumentList entityType="deal" entityId={dealId} />
+            </div>
           </TabsContent>
 
           <TabsContent value="activity">
