@@ -451,6 +451,35 @@ export default function ProformaTab({ proforma, onSave, isLoading, deal }) {
   };
   const unleveredIRR = calcIRR();
 
+  // Peak Capital
+  const peakCapital = (() => {
+    if (!formData.development_start_date) return { amount: 0, date: null };
+    const devStart = new Date(formData.development_start_date);
+    const cfs = new Map();
+    let totalTD = (formData.purchase_takedowns || []).reduce((s, td) => s + n(td.amount), 0);
+    (formData.purchase_takedowns || []).forEach(td => {
+      if (!td.date || !td.amount) return;
+      const m = (new Date(td.date).getFullYear() - devStart.getFullYear()) * 12 + (new Date(td.date).getMonth() - devStart.getMonth());
+      cfs.set(m, (cfs.get(m) || 0) - n(td.amount));
+    });
+    const upfront = (totalTD > 0 ? 0 : purchasePrice) + softCosts + totalVerticalCosts + contingency;
+    cfs.set(0, (cfs.get(0) || 0) - upfront);
+    (formData.construction_draws || []).forEach(dr => {
+      if (!dr.date || !dr.amount) return;
+      const m = (new Date(dr.date).getFullYear() - devStart.getFullYear()) * 12 + (new Date(dr.date).getMonth() - devStart.getMonth());
+      cfs.set(m, (cfs.get(m) || 0) - n(dr.amount));
+    });
+    const maxM = Math.max(...cfs.keys(), 0);
+    let cum = 0, peak = 0, peakM = 0;
+    for (let i = 0; i <= maxM; i++) {
+      cum += (cfs.get(i) || 0);
+      if (cum < peak) { peak = cum; peakM = i; }
+    }
+    const d = new Date(devStart);
+    d.setMonth(d.getMonth() + peakM);
+    return { amount: Math.abs(peak), date: peak < 0 ? d.toISOString().split("T")[0] : null };
+  })();
+
   // ─────────────────────────────────────────────
   // EDIT FORM
   // ─────────────────────────────────────────────
