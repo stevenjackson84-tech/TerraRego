@@ -182,8 +182,9 @@ const defaultChecklist = [
   }
 ];
 
-export default function DueDiligenceTab({ dealId }) {
+export default function DueDiligenceTab({ dealId, deal }) {
   const [expandedCategories, setExpandedCategories] = useState({});
+  const [generatingAI, setGeneratingAI] = useState(false);
   const queryClient = useQueryClient();
 
   const { data: items = [], isLoading } = useQuery({
