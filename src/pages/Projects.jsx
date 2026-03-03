@@ -31,6 +31,7 @@ export default function Projects() {
   const [showForm, setShowForm] = useState(false);
   const [editingProject, setEditingProject] = useState(null);
   const [filterStatus, setFilterStatus] = useState("all");
+  const [deleteConfirm, setDeleteConfirm] = useState(null);
 
   const queryClient = useQueryClient();
 
