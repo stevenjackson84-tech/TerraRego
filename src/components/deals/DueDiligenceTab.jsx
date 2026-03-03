@@ -341,6 +341,9 @@ Based on these specifics, suggest 5-10 additional due diligence items that are m
         <DDDeadlineReminders dealId={dealId} deal={deal} />
       </div>
 
+      {/* Soils Report Analysis */}
+      <SoilsReportAnalysis dealId={dealId} />
+
       {/* Progress Summary */}
       <Card className="border-0 shadow-sm">
         <CardHeader>
