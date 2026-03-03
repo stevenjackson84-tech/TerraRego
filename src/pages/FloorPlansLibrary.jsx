@@ -119,6 +119,23 @@ export default function FloorPlansLibrary() {
             className="pl-10"
           />
         </div>
+        <Select value={sortBy} onValueChange={setSortBy}>
+          <SelectTrigger className="w-48">
+            <ArrowUpDown className="h-4 w-4 mr-2 text-slate-400" />
+            <SelectValue placeholder="Sort by..." />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="name">Name (A–Z)</SelectItem>
+            <SelectItem value="sqft_asc">Sq Ft (Low–High)</SelectItem>
+            <SelectItem value="sqft_desc">Sq Ft (High–Low)</SelectItem>
+            <SelectItem value="beds_asc">Beds (Low–High)</SelectItem>
+            <SelectItem value="beds_desc">Beds (High–Low)</SelectItem>
+            <SelectItem value="baths_asc">Baths (Low–High)</SelectItem>
+            <SelectItem value="baths_desc">Baths (High–Low)</SelectItem>
+            <SelectItem value="garage_asc">Garage (Low–High)</SelectItem>
+            <SelectItem value="garage_desc">Garage (High–Low)</SelectItem>
+          </SelectContent>
+        </Select>
         <Button
           onClick={() => {
             resetForm();
