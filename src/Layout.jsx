@@ -89,7 +89,7 @@ export default function Layout({ children, currentPageName }) {
           </Button>
         </div>
 
-        <nav className="p-4 space-y-1">
+        <nav className="p-2 space-y-0.5 overflow-y-auto flex-1">
           {navigation.map((item) => {
             const isActive = currentPageName === item.page;
             return (
@@ -98,15 +98,15 @@ export default function Layout({ children, currentPageName }) {
                 to={createPageUrl(item.page)}
                 onClick={() => setSidebarOpen(false)}
                 className={cn(
-                  "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150",
+                  "flex items-center gap-2 px-2.5 py-1.5 rounded text-xs font-medium transition-all duration-150",
                   isActive 
                     ? "bg-slate-900 text-white" 
                     : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
                 )}
               >
-                <item.icon className="h-5 w-5" />
-                {item.name}
-                {isActive && <ChevronRight className="h-4 w-4 ml-auto" />}
+                <item.icon className="h-4 w-4 flex-shrink-0" />
+                <span className="truncate">{item.name}</span>
+                {isActive && <ChevronRight className="h-3 w-3 ml-auto flex-shrink-0" />}
               </Link>
             );
           })}
