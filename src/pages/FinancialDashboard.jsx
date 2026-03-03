@@ -12,7 +12,7 @@ import {
 import { DollarSign, TrendingUp, TrendingDown, AlertTriangle, Sparkles, Loader2, BarChart2, Building2, Target, Award } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { base44 as b44 } from "@/api/base44Client";
-import PortfolioAIInsights from "@/components/financial/PortfolioAIInsights";
+import PortfolioAIInsights from "@/components/financial/PortfolioAIInsights.jsx";
 
 const fmt = (v) => new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(v || 0);
 const fmtM = (v) => v >= 1e6 ? `$${(v / 1e6).toFixed(1)}M` : v >= 1000 ? `$${(v / 1000).toFixed(0)}K` : fmt(v);
