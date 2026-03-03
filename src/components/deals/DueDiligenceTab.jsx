@@ -7,9 +7,11 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { FileCheck, AlertCircle, CheckCircle2, Plus } from "lucide-react";
+import { FileCheck, AlertCircle, CheckCircle2, Plus, Sparkles, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import DDDocumentPanel from "./DDDocumentPanel";
+import DDDeadlineReminders from "./DDDeadlineReminders";
 
 const defaultChecklist = [
   {
