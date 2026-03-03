@@ -168,57 +168,67 @@ export default function Projects() {
         {/* Projects Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {filteredProjects.map(project => (
-            <Link key={project.id} to={createPageUrl("ProjectDetails") + "?id=" + project.id}>
-              <Card className="border-0 shadow-sm hover:shadow-lg transition-all cursor-pointer">
-                <CardHeader className="border-b border-slate-100">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <CardTitle className="text-lg mb-2">{project.name}</CardTitle>
-                      <Badge className={cn(statusConfig[project.status]?.color)}>
-                        {statusConfig[project.status]?.label}
-                      </Badge>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent className="p-6">
-                  {project.description && (
-                    <p className="text-sm text-slate-600 mb-4 line-clamp-2">{project.description}</p>
-                  )}
-                  
-                  <div className="grid grid-cols-2 gap-4 text-sm">
-                    <div>
-                      <p className="text-slate-500">Budget</p>
-                      <p className="font-semibold text-slate-900">
-                        {project.budget ? formatCurrency(project.budget) : '—'}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-slate-500">Spent</p>
-                      <p className="font-semibold text-slate-900">
-                        {project.actual_cost ? formatCurrency(project.actual_cost) : '$0'}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-slate-500">Progress</p>
-                      <p className="font-semibold text-slate-900">{project.completion_percentage || 0}%</p>
-                    </div>
-                    <div>
-                      <p className="text-slate-500">Manager</p>
-                      <p className="font-semibold text-slate-900">{project.project_manager || '—'}</p>
-                    </div>
-                  </div>
-
-                  {project.team_members && project.team_members.length > 0 && (
-                    <div className="mt-4 pt-4 border-t border-slate-100">
-                      <div className="flex items-center gap-2 text-xs text-slate-500">
-                        <Users className="h-3 w-3" />
-                        <span>{project.team_members.length} team member{project.team_members.length !== 1 ? 's' : ''}</span>
+            <div key={project.id} className="relative group">
+              <Link to={createPageUrl("ProjectDetails") + "?id=" + project.id}>
+                <Card className="border-0 shadow-sm hover:shadow-lg transition-all cursor-pointer">
+                  <CardHeader className="border-b border-slate-100">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <CardTitle className="text-lg mb-2">{project.name}</CardTitle>
+                        <Badge className={cn(statusConfig[project.status]?.color)}>
+                          {statusConfig[project.status]?.label}
+                        </Badge>
                       </div>
                     </div>
-                  )}
-                </CardContent>
-              </Card>
-            </Link>
+                  </CardHeader>
+                  <CardContent className="p-6">
+                    {project.description && (
+                      <p className="text-sm text-slate-600 mb-4 line-clamp-2">{project.description}</p>
+                    )}
+                    
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                      <div>
+                        <p className="text-slate-500">Budget</p>
+                        <p className="font-semibold text-slate-900">
+                          {project.budget ? formatCurrency(project.budget) : '—'}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-slate-500">Spent</p>
+                        <p className="font-semibold text-slate-900">
+                          {project.actual_cost ? formatCurrency(project.actual_cost) : '$0'}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-slate-500">Progress</p>
+                        <p className="font-semibold text-slate-900">{project.completion_percentage || 0}%</p>
+                      </div>
+                      <div>
+                        <p className="text-slate-500">Manager</p>
+                        <p className="font-semibold text-slate-900">{project.project_manager || '—'}</p>
+                      </div>
+                    </div>
+
+                    {project.team_members && project.team_members.length > 0 && (
+                      <div className="mt-4 pt-4 border-t border-slate-100">
+                        <div className="flex items-center gap-2 text-xs text-slate-500">
+                          <Users className="h-3 w-3" />
+                          <span>{project.team_members.length} team member{project.team_members.length !== 1 ? 's' : ''}</span>
+                        </div>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </Link>
+              <Button
+                size="icon"
+                variant="ghost"
+                className="absolute top-2 right-2 text-red-600 hover:text-red-700 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-opacity"
+                onClick={() => setDeleteConfirm(project.id)}
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
           ))}
         </div>
 
