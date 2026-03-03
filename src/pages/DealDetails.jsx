@@ -463,6 +463,7 @@ export default function DealDetails() {
               <MarketAnalysisTab 
                 dealId={dealId}
                 proforma={proforma}
+                deal={deal}
               />
               <ZondaMarketAnalysis deal={deal} />
             </div>
