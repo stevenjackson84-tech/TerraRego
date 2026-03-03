@@ -120,69 +120,38 @@ export default function MarketAnalysisTab({ dealId, proforma, deal }) {
     saleMutation.mutate(data);
   };
 
-  const handleCsvUpload = async (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    e.target.value = "";
-    setCsvStatus({ state: "loading", message: "Parsing CSV with AI…" });
+  const handleImportData = async (records) => {
+    setCsvStatus({ state: "loading", message: "Importing records…" });
+    
+    try {
+      let imported = 0;
+      for (const rec of records) {
+        // Skip if no sale price
+        if (!rec.sale_price) continue;
 
-    const { file_url } = await base44.integrations.Core.UploadFile({ file });
-
-    const result = await base44.integrations.Core.ExtractDataFromUploadedFile({
-      file_url,
-      json_schema: {
-        type: "object",
-        properties: {
-          records: {
-            type: "array",
-            items: {
-              type: "object",
-              properties: {
-                competitor_name: { type: "string", description: "Builder or seller name" },
-                subdivision_name: { type: "string", description: "Community or subdivision name" },
-                product_type: { type: "string", description: "Product type e.g. Single Family, Townhome" },
-                sale_price: { type: "number", description: "Sale/close price in dollars" },
-                square_footage: { type: "number", description: "Square footage" },
-                bedrooms: { type: "number" },
-                bathrooms: { type: "number" },
-                sale_date: { type: "string", description: "Sale date in YYYY-MM-DD format" },
-                location: { type: "string", description: "Address or area" },
-                notes: { type: "string" }
-              }
-            }
-          }
-        }
+        await base44.entities.CompetitorSale.create({
+          deal_id: dealId,
+          competitor_name: rec.competitor_name || "Unknown",
+          subdivision_name: rec.subdivision_name || "",
+          product_type: rec.product_type || "Unknown",
+          sale_price: parseFloat(rec.sale_price),
+          square_footage: rec.square_footage ? parseFloat(rec.square_footage) : null,
+          bedrooms: rec.bedrooms ? parseFloat(rec.bedrooms) : null,
+          bathrooms: rec.bathrooms ? parseFloat(rec.bathrooms) : null,
+          sale_date: rec.sale_date || null,
+          location: rec.location || "",
+          source: rec.source || "CSV Import",
+          notes: rec.notes || ""
+        });
+        imported++;
       }
-    });
 
-    if (result.status !== "success" || !result.output?.records?.length) {
-      setCsvStatus({ state: "error", message: result.details || "Could not parse any records from the file." });
-      return;
+      queryClient.invalidateQueries({ queryKey: ["competitorSales", dealId] });
+      setCsvStatus({ state: "success", message: `Imported ${imported} records successfully.` });
+      setTimeout(() => setCsvStatus(null), 4000);
+    } catch (e) {
+      setCsvStatus({ state: "error", message: e.message || "Import failed" });
     }
-
-    const records = result.output.records;
-    let imported = 0;
-    for (const rec of records) {
-      if (!rec.sale_price) continue;
-      await base44.entities.CompetitorSale.create({
-        deal_id: dealId,
-        competitor_name: rec.competitor_name || "Unknown",
-        subdivision_name: rec.subdivision_name || "",
-        product_type: rec.product_type || "Unknown",
-        sale_price: parseFloat(rec.sale_price),
-        square_footage: rec.square_footage ? parseFloat(rec.square_footage) : null,
-        bedrooms: rec.bedrooms ? parseFloat(rec.bedrooms) : null,
-        bathrooms: rec.bathrooms ? parseFloat(rec.bathrooms) : null,
-        sale_date: rec.sale_date || null,
-        location: rec.location || "",
-        notes: rec.notes || ""
-      });
-      imported++;
-    }
-
-    queryClient.invalidateQueries({ queryKey: ["competitorSales", dealId] });
-    setCsvStatus({ state: "success", message: `Imported ${imported} records successfully.` });
-    setTimeout(() => setCsvStatus(null), 4000);
   };
 
   const formatCurrency = (value) => {
