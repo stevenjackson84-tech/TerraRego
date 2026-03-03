@@ -101,6 +101,9 @@ export default function ContactCard({ contact, onEdit, onDelete }) {
           </div>
         </div>
       </div>
+      {showEmail && (
+        <EmailCompose contact={contact} open={showEmail} onClose={() => setShowEmail(false)} />
+      )}
     </Card>
   );
 }
