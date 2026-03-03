@@ -928,6 +928,13 @@ export default function ProformaTab({ proforma, onSave, isLoading, deal }) {
         ))}
       </div>
 
+      {/* AI Analysis */}
+      <ProformaAIAnalysis
+        proforma={proforma}
+        deal={deal}
+        metrics={{ grossRevenue, totalCosts, profit, grossMarginPct, unleveredIRR, numUnits, totalAbsorption }}
+      />
+
       {/* Cost & Revenue breakdown */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card className="border-0 shadow-sm">
