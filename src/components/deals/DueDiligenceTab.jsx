@@ -334,14 +334,26 @@ Based on these specifics, suggest 5-10 additional due diligence items that are m
 
   return (
     <div className="space-y-6">
+      {/* AI + Documents + Deadlines row */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <DDDocumentPanel dealId={dealId} />
+        <DDDeadlineReminders dealId={dealId} deal={deal} />
+      </div>
+
       {/* Progress Summary */}
       <Card className="border-0 shadow-sm">
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle className="text-lg">Due Diligence Progress</CardTitle>
-            <Badge variant="outline" className="text-sm">
-              {completedItems.length} / {applicableItems.length} completed
-            </Badge>
+            <div className="flex items-center gap-2">
+              <Button size="sm" variant="outline" onClick={generateAIChecklist} disabled={generatingAI} className="h-8 text-xs border-purple-200 text-purple-700 hover:bg-purple-50">
+                {generatingAI ? <Loader2 className="h-3 w-3 mr-1 animate-spin" /> : <Sparkles className="h-3 w-3 mr-1" />}
+                AI Recommendations
+              </Button>
+              <Badge variant="outline" className="text-sm">
+                {completedItems.length} / {applicableItems.length} completed
+              </Badge>
+            </div>
           </div>
         </CardHeader>
         <CardContent>
