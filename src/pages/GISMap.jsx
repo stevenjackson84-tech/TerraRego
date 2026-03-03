@@ -473,13 +473,23 @@ export default function GISMap() {
   useEffect(() => {
     if (!showSITLA || sitlaData) return;
     setSitlaLoading(true);
-    // Fetch SITLA (State of Utah School and Institutional Trust Lands Administration) land ownership
-    const url = "https://gis.trustlands.org/arcgis/rest/services/Public/SITLA_Ownership/MapServer/0/query?where=1%3D1&outFields=*&outSR=4326&f=geojson&resultRecordCount=5000";
+    // Fetch SITLA lands from Utah SGID FeatureServer
+    const url = "https://services1.arcgis.com/99lidPhWCzftIe9K/arcgis/rest/services/SGID_Public_Lands/FeatureServer/0/query?where=ADMIN_NAME%20LIKE%20'%SITLA%'&outFields=*&outSR=4326&f=geojson&resultRecordCount=5000";
     fetch(url)
       .then(r => r.json())
-      .then(data => { setSitlaData(data); setSitlaLoading(false); })
+      .then(data => { 
+        if (data && data.features) {
+          setSitlaData(data); 
+        } else {
+          // Fallback: Try alternative endpoint
+          return fetch("https://services1.arcgis.com/99lidPhWCzftIe9K/arcgis/rest/services/Public_Lands/FeatureServer/2/query?where=1%3D1&outFields=*&outSR=4326&f=geojson&resultRecordCount=5000")
+            .then(r => r.json())
+            .then(altData => { setSitlaData(altData); });
+        }
+        setSitlaLoading(false);
+      })
       .catch(err => {
-        console.warn("SITLA fetch failed, trying alternative source:", err);
+        console.warn("SITLA fetch failed:", err);
         setSitlaLoading(false);
       });
   }, [showSITLA, sitlaData]);
