@@ -1,9 +1,11 @@
+import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Phone, Mail, Building2, MapPin, MoreVertical } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
+import EmailCompose from "./EmailCompose";
 
 const typeStyles = {
   landowner: "bg-emerald-100 text-emerald-700",
