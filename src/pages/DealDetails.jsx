@@ -31,6 +31,7 @@ import ProformaTab from "@/components/deals/ProformaTab";
 import TimelineTab from "@/components/deals/TimelineTab";
 import MarketAnalysisTab from "@/components/deals/MarketAnalysisTab";
 import DocumentList from "@/components/documents/DocumentList";
+import DocumentFieldLinker from "@/components/documents/DocumentFieldLinker";
 import DueDiligenceTab from "@/components/deals/DueDiligenceTab";
 import BurnScheduleTab from "@/components/deals/BurnScheduleTab";
 import ZondaMarketAnalysis from "@/components/deals/ZondaMarketAnalysis";
