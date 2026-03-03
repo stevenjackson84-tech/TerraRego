@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
-import { ArrowLeft, Edit, Plus, Trash2, CheckCircle2, Clock, AlertCircle, TrendingUp, Calendar } from "lucide-react";
+import { ArrowLeft, Edit, Plus, Trash2, CheckCircle2, Clock, AlertCircle, TrendingUp, Calendar, ClipboardPlus, Sparkles } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import ProjectForm from "@/components/projects/ProjectForm.jsx";
@@ -19,6 +19,8 @@ import GanttChart from "@/components/projects/GanttChart.jsx";
 import DocumentList from "@/components/documents/DocumentList";
 import DevelopmentTab from "@/components/projects/DevelopmentTab";
 import ZoningCodes from "@/components/projects/ZoningCodes";
+import AISuggestionsPanel from "@/components/projects/AISuggestionsPanel";
+import QuickTaskCreate from "@/components/projects/QuickTaskCreate";
 
 const statusConfig = {
   planning: { color: "bg-slate-100 text-slate-700" },
