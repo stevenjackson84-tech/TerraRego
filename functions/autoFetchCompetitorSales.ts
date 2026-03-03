@@ -87,7 +87,8 @@ For each sale provide realistic data that reflects the actual market in ${city |
         bathrooms: sale.bathrooms ? parseFloat(sale.bathrooms) : null,
         sale_date: sale.sale_date || null,
         location: sale.location || `${city || ''} ${state || ''}`.trim(),
-        notes: (sale.notes || '') + ' [AI Auto-fetched]'
+        source: sale.source || 'AI Auto-fetch',
+        notes: sale.notes || ''
       });
       created.push(record);
     }
