@@ -28,7 +28,7 @@ import {
 
 const navigation = [
   { name: "Dashboard", icon: LayoutDashboard, page: "Dashboard" },
-  { name: "Deals", icon: Building2, page: "Deals" },
+  { name: "Acquisitions", icon: Building2, page: "Deals" },
   { name: "Projects", icon: Folder, page: "Projects" },
   { name: "Contacts", icon: Users, page: "Contacts" },
   { name: "Calendar", icon: Calendar, page: "Calendar" },
