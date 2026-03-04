@@ -106,7 +106,7 @@ export default function Deals() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Deals</h1>
+            <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Acquisitions</h1>
             <p className="text-slate-500 mt-1">Manage your land acquisition pipeline</p>
           </div>
           <Button onClick={() => setShowForm(true)} className="bg-slate-900 hover:bg-slate-800">
