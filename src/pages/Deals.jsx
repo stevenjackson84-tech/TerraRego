@@ -95,8 +95,7 @@ export default function Deals() {
       deal.name?.toLowerCase().includes(search.toLowerCase()) ||
       deal.address?.toLowerCase().includes(search.toLowerCase()) ||
       deal.city?.toLowerCase().includes(search.toLowerCase());
-    const matchesStage = filterStage === "all" || deal.stage === filterStage;
-    return matchesSearch && matchesStage;
+    return matchesSearch;
   });
 
   return (
