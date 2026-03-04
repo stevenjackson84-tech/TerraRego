@@ -22,7 +22,8 @@ import {
   Map,
   Pencil,
   DollarSign,
-  Calendar
+  Calendar,
+  Briefcase
 } from "lucide-react";
 
 
