@@ -251,6 +251,9 @@ export default function DealDetails() {
         project_manager: deal.assigned_to || "",
         team_members: []
       });
+      // Re-link all deal tasks to the new project
+      const dealTasks = await base44.entities.Task.filter({ deal_id: dealId });
+      await Promise.all(dealTasks.map(t => base44.entities.Task.update(t.id, { project_id: project.id })));
       return project;
     },
     onSuccess: (project) => {
