@@ -69,6 +69,7 @@ import Projects from './pages/Projects';
 import PropertyDetails from './pages/PropertyDetails';
 import Reports from './pages/Reports';
 import Tasks from './pages/Tasks';
+import Marketplace from './pages/Marketplace';
 import __Layout from './Layout.jsx';
 
 
@@ -95,6 +96,7 @@ export const PAGES = {
     "PropertyDetails": PropertyDetails,
     "Reports": Reports,
     "Tasks": Tasks,
+    "Marketplace": Marketplace,
 }
 
 export const pagesConfig = {
