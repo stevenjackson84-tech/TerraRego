@@ -133,7 +133,7 @@ export default function Deals() {
                 <TabsTrigger value="all">All</TabsTrigger>
                 <TabsTrigger value="prospecting">Prospecting</TabsTrigger>
                 <TabsTrigger value="controlled_approved">Controlled</TabsTrigger>
-                <TabsTrigger value="entitlements">Entitlements</TabsTrigger>
+                <TabsTrigger value="entitlements">Controlled/Approved</TabsTrigger>
               </TabsList>
             </Tabs>
 
