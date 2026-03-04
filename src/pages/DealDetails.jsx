@@ -251,9 +251,17 @@ export default function DealDetails() {
         project_manager: deal.assigned_to || "",
         team_members: []
       });
-      // Re-link all deal tasks to the new project
-      const dealTasks = await base44.entities.Task.filter({ deal_id: dealId });
-      await Promise.all(dealTasks.map(t => base44.entities.Task.update(t.id, { project_id: project.id })));
+      // Migrate tasks, documents, and activities to the new project
+      const [dealTasks, dealDocs, dealActivities] = await Promise.all([
+        base44.entities.Task.filter({ deal_id: dealId }),
+        base44.entities.Document.filter({ entity_type: "deal", entity_id: dealId }),
+        base44.entities.Activity.filter({ deal_id: dealId })
+      ]);
+      await Promise.all([
+        ...dealTasks.map(t => base44.entities.Task.update(t.id, { project_id: project.id })),
+        ...dealDocs.map(d => base44.entities.Document.update(d.id, { entity_type: "project", entity_id: project.id })),
+        ...dealActivities.map(a => base44.entities.Activity.update(a.id, { deal_id: null }))
+      ]);
       return project;
     },
     onSuccess: (project) => {
