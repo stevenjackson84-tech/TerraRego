@@ -5,8 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Plus, Briefcase, Building2, Folder, Users, ChevronRight, Mail, Trophy } from "lucide-react";
-import BidRequestForm from "@/components/marketplace/BidRequestForm";
-import BidRequestDetail from "@/components/marketplace/BidRequestDetail";
+import BidRequestForm from "@/components/marketplace/BidRequestForm.jsx";
+import BidRequestDetail from "@/components/marketplace/BidRequestDetail.jsx";
 
 const categoryLabels = {
   surveying: "Surveying",
