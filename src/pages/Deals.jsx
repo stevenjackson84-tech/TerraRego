@@ -128,15 +128,6 @@ export default function Deals() {
           </div>
           
           <div className="flex items-center gap-2">
-            <Tabs value={filterStage} onValueChange={setFilterStage}>
-              <TabsList className="bg-white border">
-                <TabsTrigger value="all">All</TabsTrigger>
-                <TabsTrigger value="prospecting">Prospecting</TabsTrigger>
-                <TabsTrigger value="controlled_approved">Controlled/Not Approved</TabsTrigger>
-                <TabsTrigger value="entitlements">Controlled/Approved</TabsTrigger>
-              </TabsList>
-            </Tabs>
-
             <div className="flex border rounded-lg bg-white p-1">
               <Button
                 variant="ghost"
