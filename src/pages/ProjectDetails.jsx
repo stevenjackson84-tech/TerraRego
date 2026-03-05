@@ -499,13 +499,21 @@ export default function ProjectDetails() {
           </TabsContent>
 
           <TabsContent value="documents">
-            <div className="flex justify-end mb-4">
-              <Button variant="outline" onClick={() => { setTaskPrefill({ title: "Review document: ", description: "" }); setShowTaskCreate(true); }}>
-                <ClipboardPlus className="h-4 w-4 mr-2" />
-                Create Task from Document
-              </Button>
+            <div className="space-y-4">
+              <div className="flex justify-end">
+                <Button variant="outline" onClick={() => { setTaskPrefill({ title: "Review document: ", description: "" }); setShowTaskCreate(true); }}>
+                  <ClipboardPlus className="h-4 w-4 mr-2" />
+                  Create Task from Document
+                </Button>
+              </div>
+              <PlatDocumentParser
+                project={project}
+                onApply={(updates) => {
+                  queryClient.invalidateQueries({ queryKey: ['project', projectId] });
+                }}
+              />
+              <DocumentList entityType="project" entityId={projectId} phases={phases} milestones={milestones} />
             </div>
-            <DocumentList entityType="project" entityId={projectId} phases={phases} milestones={milestones} />
           </TabsContent>
 
           <TabsContent value="zoning">
