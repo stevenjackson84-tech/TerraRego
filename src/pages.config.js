@@ -63,13 +63,14 @@ import FinancialDashboard from './pages/FinancialDashboard';
 import FloorPlansLibrary from './pages/FloorPlansLibrary';
 import GISMap from './pages/GISMap';
 import LeanSixSigma from './pages/LeanSixSigma';
+import Marketplace from './pages/Marketplace';
 import PlanCheck from './pages/PlanCheck';
 import ProjectDetails from './pages/ProjectDetails';
 import Projects from './pages/Projects';
 import PropertyDetails from './pages/PropertyDetails';
 import Reports from './pages/Reports';
 import Tasks from './pages/Tasks';
-import Marketplace from './pages/Marketplace';
+import Takeoff from './pages/Takeoff';
 import __Layout from './Layout.jsx';
 
 
@@ -90,13 +91,14 @@ export const PAGES = {
     "FloorPlansLibrary": FloorPlansLibrary,
     "GISMap": GISMap,
     "LeanSixSigma": LeanSixSigma,
+    "Marketplace": Marketplace,
     "PlanCheck": PlanCheck,
     "ProjectDetails": ProjectDetails,
     "Projects": Projects,
     "PropertyDetails": PropertyDetails,
     "Reports": Reports,
     "Tasks": Tasks,
-    "Marketplace": Marketplace,
+    "Takeoff": Takeoff,
 }
 
 export const pagesConfig = {
