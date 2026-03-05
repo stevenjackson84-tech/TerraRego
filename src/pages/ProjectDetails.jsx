@@ -21,6 +21,7 @@ import DevelopmentTab from "@/components/projects/DevelopmentTab";
 import ZoningCodes from "@/components/projects/ZoningCodes";
 import AISuggestionsPanel from "@/components/projects/AISuggestionsPanel";
 import QuickTaskCreate from "@/components/projects/QuickTaskCreate";
+import PlatDocumentParser from "@/components/projects/PlatDocumentParser.jsx";
 
 const statusConfig = {
   planning: { color: "bg-slate-100 text-slate-700" },
