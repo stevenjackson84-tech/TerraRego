@@ -6,10 +6,10 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Plus, Upload, Trash2, TrendingUp, Ruler, Home, Layers } from "lucide-react";
-import LineItemRow from "./LineItemRow";
-import LineItemForm from "./LineItemForm";
-import BidUploadPanel from "./BidUploadPanel";
-import TakeoffForm from "./TakeoffForm";
+import LineItemRow from "./LineItemRow.jsx";
+import LineItemForm from "./LineItemForm.jsx";
+import BidUploadPanel from "./BidUploadPanel.jsx";
+import TakeoffForm from "./TakeoffForm.jsx";
 
 const CATEGORY_LABELS = {
   grading: "Grading",
