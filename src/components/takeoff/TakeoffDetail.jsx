@@ -216,7 +216,7 @@ export default function TakeoffDetail({ takeoff, onClose, onUpdate }) {
           <TabsContent value="bids">
             <BidUploadPanel
               takeoff={takeoff}
-              bidUploads={bidUploads}
+              bidUploads={bidUploads ?? []}
               onUpdate={() => {
                 queryClient.invalidateQueries({ queryKey: ["bid-uploads", takeoff.id] });
                 queryClient.invalidateQueries({ queryKey: ["takeoff-items", takeoff.id] });
