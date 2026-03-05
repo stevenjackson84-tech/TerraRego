@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Upload, Trash2, FileText, Loader2, CheckCircle2 } from "lucide-react";
+import { Upload, Trash2, FileText, Loader2, CheckCircle2, Folder, FolderOpen, ExternalLink, Download } from "lucide-react";
 import { format } from "date-fns";
 
 const CATEGORY_MAP = {
