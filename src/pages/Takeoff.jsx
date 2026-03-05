@@ -4,7 +4,7 @@ import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Search, Ruler, Home, LayoutGrid } from "lucide-react";
+import { Plus, Search, Ruler, Home, LayoutGrid, Folder, FolderOpen, FileText, ExternalLink, Trash2 } from "lucide-react";
 import TakeoffForm from "@/components/takeoff/TakeoffForm.jsx";
 import TakeoffDetail from "@/components/takeoff/TakeoffDetail.jsx";
 
