@@ -185,56 +185,8 @@ For unit_of_measure use: per_lot, per_lf, per_sf, lump_sum, per_unit.`,
         </p>
       </div>
 
-      {/* Uploaded Bids List */}
-      {bidUploads.length === 0 ? (
-        <div className="text-center py-8 text-slate-400 text-sm">
-          No bids uploaded yet.
-        </div>
-      ) : (
-        <div className="space-y-2">
-          {bidUploads.map(bid => (
-            <div key={bid.id} className="bg-white border border-slate-200 rounded-lg p-4 flex items-start justify-between">
-              <div className="flex items-start gap-3">
-                <FileText className="h-5 w-5 text-slate-400 mt-0.5 flex-shrink-0" />
-                <div>
-                  <p className="font-medium text-slate-900 text-sm">{bid.contractor_name}</p>
-                  <p className="text-xs text-slate-500">{bid.file_name}</p>
-                  <div className="flex items-center gap-2 mt-1">
-                    {bid.bid_date && (
-                      <span className="text-xs text-slate-400">{bid.bid_date}</span>
-                    )}
-                    {bid.total_bid_amount && (
-                      <span className="text-xs font-medium text-slate-700">
-                        ${bid.total_bid_amount.toLocaleString()}
-                      </span>
-                    )}
-                    {bid.lot_count && (
-                      <span className="text-xs text-slate-500">{bid.lot_count} lots</span>
-                    )}
-                    <Badge className={`text-xs ${bid.status === "applied" ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"}`}>
-                      {bid.status === "applied" ? <><CheckCircle2 className="h-3 w-3 mr-1" />Applied</> : bid.status}
-                    </Badge>
-                  </div>
-                  {bid.extracted_line_items?.length > 0 && (
-                    <p className="text-xs text-blue-600 mt-1">{bid.extracted_line_items.length} line items extracted</p>
-                  )}
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <a href={bid.file_url} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-600 hover:underline">View PDF</a>
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  className="h-7 w-7 text-red-500 hover:text-red-700"
-                  onClick={() => deleteBidMutation.mutate(bid.id)}
-                >
-                  <Trash2 className="h-3.5 w-3.5" />
-                </Button>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+      {/* Bid PDF Folder */}
+      <BidFolder bidUploads={bidUploads} onDelete={(id) => deleteBidMutation.mutate(id)} />
     </div>
   );
 }
