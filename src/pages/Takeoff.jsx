@@ -5,8 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Plus, Search, Ruler, Home, LayoutGrid } from "lucide-react";
-import TakeoffForm from "@/components/takeoff/TakeoffForm";
-import TakeoffDetail from "@/components/takeoff/TakeoffDetail";
+import TakeoffForm from "@/components/takeoff/TakeoffForm.jsx";
+import TakeoffDetail from "@/components/takeoff/TakeoffDetail.jsx";
 
 const devTypeLabels = {
   single_family: "Single Family",
