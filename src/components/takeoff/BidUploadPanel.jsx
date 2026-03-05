@@ -24,6 +24,81 @@ const CATEGORY_MAP = {
   general: "general_conditions"
 };
 
+function BidFolder({ bidUploads, onDelete }) {
+  const [open, setOpen] = useState(true);
+
+  return (
+    <div className="border border-amber-200 rounded-xl overflow-hidden bg-amber-50/40">
+      {/* Folder Header */}
+      <button
+        className="w-full flex items-center gap-2.5 px-4 py-3 bg-amber-100/70 hover:bg-amber-100 transition-colors text-left"
+        onClick={() => setOpen(o => !o)}
+      >
+        {open
+          ? <FolderOpen className="h-5 w-5 text-amber-600 flex-shrink-0" />
+          : <Folder className="h-5 w-5 text-amber-600 flex-shrink-0" />
+        }
+        <span className="text-sm font-semibold text-amber-900">Bid PDFs</span>
+        <span className="ml-1 text-xs text-amber-600 font-normal">({bidUploads.length} file{bidUploads.length !== 1 ? "s" : ""})</span>
+        <span className="ml-auto text-xs text-amber-500">{open ? "▲" : "▼"}</span>
+      </button>
+
+      {open && (
+        <div className="divide-y divide-amber-100">
+          {bidUploads.length === 0 ? (
+            <div className="text-center py-8 text-slate-400 text-sm">
+              No bid PDFs uploaded yet.
+            </div>
+          ) : (
+            bidUploads.map(bid => (
+              <div key={bid.id} className="flex items-center gap-3 px-4 py-3 bg-white hover:bg-slate-50 transition-colors">
+                <FileText className="h-8 w-8 text-red-400 flex-shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-slate-900 truncate">{bid.file_name || `${bid.contractor_name}.pdf`}</p>
+                  <div className="flex flex-wrap items-center gap-2 mt-0.5">
+                    <span className="text-xs text-slate-500">{bid.contractor_name}</span>
+                    {bid.bid_date && <span className="text-xs text-slate-400">• {bid.bid_date}</span>}
+                    {bid.total_bid_amount && (
+                      <span className="text-xs font-medium text-slate-700">• ${bid.total_bid_amount.toLocaleString()}</span>
+                    )}
+                    {bid.lot_count && <span className="text-xs text-slate-400">• {bid.lot_count} lots</span>}
+                    <Badge className={`text-xs ${bid.status === "applied" ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"}`}>
+                      {bid.status === "applied" ? <><CheckCircle2 className="h-3 w-3 mr-1" />Applied</> : bid.status}
+                    </Badge>
+                    {bid.extracted_line_items?.length > 0 && (
+                      <span className="text-xs text-blue-600">{bid.extracted_line_items.length} items extracted</span>
+                    )}
+                  </div>
+                </div>
+                <div className="flex items-center gap-1 flex-shrink-0">
+                  <a
+                    href={bid.file_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    title="Open PDF"
+                    className="h-7 w-7 flex items-center justify-center rounded hover:bg-blue-50 text-blue-500"
+                  >
+                    <ExternalLink className="h-3.5 w-3.5" />
+                  </a>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className="h-7 w-7 text-red-400 hover:text-red-600"
+                    onClick={() => onDelete(bid.id)}
+                    title="Delete"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </Button>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function BidUploadPanel({ takeoff, bidUploads, onUpdate }) {
   const [uploading, setUploading] = useState(false);
   const [extracting, setExtracting] = useState(false);
