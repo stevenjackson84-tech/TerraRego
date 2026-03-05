@@ -23,7 +23,8 @@ import {
   Pencil,
   DollarSign,
   Calendar,
-  Briefcase
+  Briefcase,
+  Ruler
 } from "lucide-react";
 
 
