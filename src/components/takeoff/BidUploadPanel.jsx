@@ -99,7 +99,7 @@ function BidFolder({ bidUploads, onDelete }) {
   );
 }
 
-export default function BidUploadPanel({ takeoff, bidUploads, onUpdate }) {
+export default function BidUploadPanel({ takeoff, bidUploads = [], onUpdate }) {
   const [uploading, setUploading] = useState(false);
   const [extracting, setExtracting] = useState(false);
   const [contractor, setContractor] = useState("");
