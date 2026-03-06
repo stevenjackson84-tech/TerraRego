@@ -165,6 +165,7 @@ export default function TakeoffDetail({ takeoff, onClose, onUpdate }) {
           <TabsList className="mb-4">
             <TabsTrigger value="estimate">Cost Estimate ({lineItems.length})</TabsTrigger>
             <TabsTrigger value="bids">Bid Uploads ({bidUploads.length})</TabsTrigger>
+            <TabsTrigger value="compare">Compare Bids</TabsTrigger>
           </TabsList>
 
           <TabsContent value="estimate">
