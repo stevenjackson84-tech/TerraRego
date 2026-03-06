@@ -340,7 +340,19 @@ Return integers only.`,
     };
 
     const shapes = generatePlatShapes(platData);
-    onGenerate(shapes, genMode);
+    const devW = platData.width_ft - 2 * platData.street_width;
+    const devD = platData.depth_ft - 2 * platData.street_width;
+    const totalLots = platData.lot_rows * platData.lot_cols;
+    const meta = {
+      lot_count: totalLots,
+      width_ft: platData.width_ft,
+      depth_ft: platData.depth_ft,
+      avg_lot_sf: Math.round((devW * devD) / totalLots),
+      zoning_label: zoningKey,
+      address: form.address,
+      mode: genMode,
+    };
+    onGenerate(shapes, genMode, meta);
     setLoading(false);
     setOpen(false);
   };
