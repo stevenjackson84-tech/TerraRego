@@ -221,8 +221,8 @@ export default function ConceptPlatPanel({ onGenerate }) {
     setZoningLookupLoading(true);
     setZoningError(null);
     setZoningResult(null);
-    // Parse city/state from address
-    const parts = (form.address || "").split(",").map(s => s.trim());
+    const addr = form.address || addressInput;
+    const parts = addr.split(",").map(s => s.trim());
     const city = parts.length >= 3 ? parts[parts.length - 3] : parts[0] || "";
     const state = parts.length >= 2 ? parts[parts.length - 2] : "";
     try {
@@ -230,11 +230,16 @@ export default function ConceptPlatPanel({ onGenerate }) {
         zoning_code: zoningKey,
         city,
         state,
-        address: form.address,
+        address: addr,
       });
       const standards = res.data?.standards;
+      const detectedCode = standards?.detected_zoning_code || zoningKey;
       if (standards) {
-        setZoningResult({ standards, zoningKey });
+        setZoningResult({ standards, zoningKey: detectedCode, geocode: res.data?.geocode, zoneomics: res.data?.zoneomics_raw });
+        // Auto-update zoning code if API detected a different one
+        if (detectedCode !== zoningKey && !isProposed) {
+          set("current_zoning", detectedCode);
+        }
       } else {
         setZoningError("No standards found.");
       }
@@ -242,6 +247,12 @@ export default function ConceptPlatPanel({ onGenerate }) {
       setZoningError(e.message || "Lookup failed");
     }
     setZoningLookupLoading(false);
+  };
+
+  const lookupByAddress = async () => {
+    if (!addressInput.trim()) return;
+    set("address", addressInput);
+    await lookupZoning(form.current_zoning, false);
   };
 
   const applyZoningResult = () => {
