@@ -5,9 +5,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import {
-  DollarSign, TrendingUp, Loader2, RefreshCw, Home, Hammer,
-  AlertCircle, ChevronDown, ChevronUp, Info
+  TrendingUp, Loader2, RefreshCw, Home, Hammer,
+  AlertCircle, ChevronDown, ChevronUp
 } from "lucide-react";
+import SensitivityTable from "@/components/cad/SensitivityTable";
 
 function fmt(n, decimals = 0) {
   if (n == null || isNaN(n)) return "—";
