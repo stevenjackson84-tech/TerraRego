@@ -18,7 +18,9 @@ const AVAILABLE_WIDGETS = [
   { id: 'financialKPIs', label: 'Financial KPIs Overview', category: 'financial' },
   { id: 'financialCharts', label: 'Profit & Margin Charts', category: 'financial' },
   { id: 'performanceRankings', label: 'Deal Performance Rankings', category: 'financial' },
+  { id: 'bidVsBudget', label: 'Bid vs. Budget Tracker', category: 'construction' },
 ];
+
 
 export default function DashboardCustomizer({ open, onOpenChange, onSave, enabledWidgets = [] }) {
   const [selected, setSelected] = useState(new Set(enabledWidgets));
