@@ -25,7 +25,8 @@ import {
   Calendar,
   Briefcase,
   Ruler,
-  BookOpen
+  BookOpen,
+  ScanSearch
 } from "lucide-react";
 
 
@@ -49,6 +50,7 @@ const navigation = [
   { name: "Plan Check", icon: FileCheck, page: "PlanCheck" },
   { name: "CAD Drafter", icon: Pencil, page: "CADDrafter" },
   { name: "Bid Marketplace", icon: Briefcase, page: "Marketplace" },
+  { name: "Site Analysis", icon: ScanSearch, page: "SiteAnalysis" },
   { name: "Project Takeoff", icon: Ruler, page: "Takeoff" },
   { name: "Unit Cost Library", icon: BookOpen, page: "UnitCostLibrary" },
 ];
