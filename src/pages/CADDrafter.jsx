@@ -54,6 +54,8 @@ export default function CADDrafter() {
   const [filletRadius, setFilletRadius] = useState(10);
   const [filletFirst, setFilletFirst] = useState(null); // id of first line for fillet
   const [showPlatPanel, setShowPlatPanel] = useState(false);
+  const [rightPanelTab, setRightPanelTab] = useState("plat"); // "plat" | "financial"
+  const [platMeta, setPlatMeta] = useState(null);
   const svgRef = useRef(null);
 
   const pushHistory = useCallback((newShapes) => {
