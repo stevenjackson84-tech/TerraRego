@@ -688,6 +688,11 @@ export default function CADDrafter() {
               </button>
             </div>
             <div className="w-px h-5 bg-slate-200" />
+            <Button size="sm" variant="outline" onClick={() => setShowPlatPanel(p => !p)}
+              className={`text-xs gap-1 ${showPlatPanel ? "bg-indigo-600 text-white border-indigo-600" : ""}`}>
+              <PanelRight className="h-3 w-3" /> Concept Plat
+            </Button>
+            <div className="w-px h-5 bg-slate-200" />
             <Button size="sm" variant="outline" onClick={exportSVG} className="text-xs gap-1">
               <Download className="h-3 w-3" /> SVG
             </Button>
