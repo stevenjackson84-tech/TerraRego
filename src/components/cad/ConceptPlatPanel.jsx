@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Map, Loader2, ChevronDown, ChevronUp, Wand2, RefreshCw } from "lucide-react";
+import { Map, Loader2, ChevronDown, ChevronUp, Wand2, RefreshCw, MapPin, X } from "lucide-react";
+import ParcelMapPicker from "@/components/siteanalysis/ParcelMapPicker";
 
 const ZONING_PRESETS = {
   "R-1": { min_lot_sf: 7200, setback_front: 20, setback_rear: 20, setback_side: 5, max_height: 35, density: 6 },
