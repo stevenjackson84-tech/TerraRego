@@ -308,8 +308,38 @@ Return integers only.`,
         </div>
       </button>
 
+      {/* Map Picker Modal */}
+      {showMapPicker && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="bg-white rounded-xl shadow-2xl w-[700px] max-w-[95vw] h-[560px] flex flex-col">
+            <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200">
+              <div className="flex items-center gap-2">
+                <MapPin className="h-4 w-4 text-indigo-600" />
+                <span className="font-semibold text-sm text-slate-800">Select Parcel from Map</span>
+                <span className="text-xs text-slate-400">Draw a polygon to auto-populate dimensions</span>
+              </div>
+              <button onClick={() => setShowMapPicker(false)} className="p-1 rounded hover:bg-slate-100 text-slate-400">
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            <div className="flex-1 min-h-0">
+              <ParcelMapPicker onParcelSelected={handleParcelSelected} />
+            </div>
+          </div>
+        </div>
+      )}
+
       {open && (
         <div className="px-4 pb-4 space-y-3 border-t border-slate-100 pt-3">
+          {/* Import from Map */}
+          <Button size="sm" variant="outline" onClick={() => setShowMapPicker(true)}
+            className="w-full h-7 text-xs gap-1.5 border-indigo-200 text-indigo-700 hover:bg-indigo-50">
+            <MapPin className="h-3 w-3" /> Import Dimensions from Map
+          </Button>
+          {form.address && (
+            <p className="text-xs text-slate-500 truncate">📍 {form.address}</p>
+          )}
+
           {/* Parcel Dimensions */}
           <div>
             <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">Parcel Dimensions</p>
