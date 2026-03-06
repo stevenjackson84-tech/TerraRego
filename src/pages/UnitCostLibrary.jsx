@@ -4,7 +4,9 @@ import { base44 } from "@/api/base44Client";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Search, BookOpen, TrendingUp, ArrowUpDown } from "lucide-react";
+import CostTrendsTab from "@/components/takeoff/CostTrendsTab";
 
 const CATEGORY_LABELS = {
   grading: "Grading", paving: "Paving", curb_gutter: "Curb & Gutter",
