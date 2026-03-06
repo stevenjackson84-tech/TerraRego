@@ -22,7 +22,7 @@ import BidVsBudgetWidget from "@/components/dashboard/BidVsBudgetWidget";
 const DEFAULT_SECTION_ORDER = [
   'stats', 'kpiRow', 'taskNotifications', 'clickUp',
   'chartsRow', 'upcomingTasks',
-  'financialKPIs', 'financialCharts', 'performanceRankings'
+  'financialKPIs', 'financialCharts', 'performanceRankings', 'bidVsBudget'
 ];
 
 // Which enabled widget IDs belong to each section
@@ -36,6 +36,7 @@ const SECTION_WIDGETS = {
   financialKPIs: ['financialKPIs'],
   financialCharts: ['financialCharts'],
   performanceRankings: ['performanceRankings'],
+  bidVsBudget: ['bidVsBudget'],
 };
 
 const SECTION_LABELS = {
@@ -48,6 +49,7 @@ const SECTION_LABELS = {
   financialKPIs: 'Financial KPIs',
   financialCharts: 'Financial Charts',
   performanceRankings: 'Performance Rankings',
+  bidVsBudget: 'Bid vs. Budget',
 };
 
 export default function Dashboard() {
