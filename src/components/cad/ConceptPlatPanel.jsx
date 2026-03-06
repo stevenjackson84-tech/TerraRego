@@ -212,6 +212,24 @@ export default function ConceptPlatPanel({ onGenerate }) {
 
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }));
 
+  const handleParcelSelected = (parcel) => {
+    let dims = null;
+    if (parcel.geometry) {
+      dims = estimateDimsFromGeometry(parcel.geometry);
+    } else if (parcel.gross_site_area_sf) {
+      // fallback: assume square-ish parcel
+      const side = Math.round(Math.sqrt(parcel.gross_site_area_sf));
+      dims = { width_ft: side, depth_ft: side };
+    }
+    setForm(f => ({
+      ...f,
+      address: parcel.address || f.address,
+      ...(dims || {}),
+      ...(parcel.zoning_hint ? { current_zoning: parcel.zoning_hint } : {}),
+    }));
+    setShowMapPicker(false);
+  };
+
   const applyZoningPreset = (zoningKey, isProposed = false) => {
     const preset = ZONING_PRESETS[zoningKey];
     if (!preset) return;
