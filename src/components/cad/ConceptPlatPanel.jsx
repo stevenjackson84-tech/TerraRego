@@ -216,6 +216,51 @@ export default function ConceptPlatPanel({ onGenerate }) {
 
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }));
 
+  const lookupZoning = async (zoningKey, isProposed = false) => {
+    setZoningLookupLoading(true);
+    setZoningError(null);
+    setZoningResult(null);
+    // Parse city/state from address
+    const parts = (form.address || "").split(",").map(s => s.trim());
+    const city = parts.length >= 3 ? parts[parts.length - 3] : parts[0] || "";
+    const state = parts.length >= 2 ? parts[parts.length - 2] : "";
+    try {
+      const res = await b44.functions.invoke("lookupZoningCode", {
+        zoning_code: zoningKey,
+        city,
+        state,
+        address: form.address,
+      });
+      const standards = res.data?.standards;
+      if (standards) {
+        setZoningResult({ standards, zoningKey });
+      } else {
+        setZoningError("No standards found.");
+      }
+    } catch (e) {
+      setZoningError(e.message || "Lookup failed");
+    }
+    setZoningLookupLoading(false);
+  };
+
+  const applyZoningResult = () => {
+    if (!zoningResult) return;
+    const s = zoningResult.standards;
+    // Update the ZONING_PRESETS entry in memory (can't mutate const, so we store override in form)
+    setForm(f => ({
+      ...f,
+      _zoning_override: {
+        min_lot_sf: s.min_lot_sf || f._zoning_override?.min_lot_sf,
+        setback_front: s.setback_front,
+        setback_rear: s.setback_rear,
+        setback_side: s.setback_side,
+        max_height: s.max_height_ft,
+        density: s.max_density_du_per_acre,
+      }
+    }));
+    setZoningResult(null);
+  };
+
   const handleParcelSelected = (parcel) => {
     let dims = null;
     if (parcel.geometry) {
