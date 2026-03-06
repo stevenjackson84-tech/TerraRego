@@ -407,14 +407,34 @@ Return integers only.`,
 
       {open && (
         <div className="px-4 pb-4 space-y-3 border-t border-slate-100 pt-3">
-          {/* Import from Map */}
-          <Button size="sm" variant="outline" onClick={() => setShowMapPicker(true)}
-            className="w-full h-7 text-xs gap-1.5 border-indigo-200 text-indigo-700 hover:bg-indigo-50">
-            <MapPin className="h-3 w-3" /> Import Dimensions from Map
-          </Button>
-          {form.address && (
-            <p className="text-xs text-slate-500 truncate">📍 {form.address}</p>
-          )}
+          {/* Address Lookup */}
+          <div className="space-y-1.5">
+            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Parcel Address</p>
+            <div className="flex gap-1.5">
+              <Input
+                value={addressInput}
+                onChange={e => setAddressInput(e.target.value)}
+                onKeyDown={e => e.key === "Enter" && lookupByAddress()}
+                placeholder="123 Main St, Lehi, UT"
+                className="h-7 text-xs flex-1"
+              />
+              <Button size="sm" variant="outline" onClick={lookupByAddress}
+                disabled={zoningLookupLoading || !addressInput.trim()}
+                className="h-7 text-xs gap-1 border-indigo-300 text-indigo-700 hover:bg-indigo-50 flex-shrink-0">
+                {zoningLookupLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : <Database className="h-3 w-3" />}
+                Fetch Zoning
+              </Button>
+            </div>
+            <Button size="sm" variant="outline" onClick={() => setShowMapPicker(true)}
+              className="w-full h-7 text-xs gap-1.5 border-slate-200 text-slate-600 hover:bg-slate-50">
+              <MapPin className="h-3 w-3" /> Import Dimensions from Map
+            </Button>
+            {form.address && (
+              <p className="text-xs text-slate-400 truncate flex items-center gap-1">
+                <MapPin className="h-2.5 w-2.5 flex-shrink-0" /> {form.address}
+              </p>
+            )}
+          </div>
 
           {/* Parcel Dimensions */}
           <div>
