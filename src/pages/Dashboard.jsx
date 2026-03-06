@@ -17,6 +17,7 @@ import DashboardCustomizer from "@/components/dashboard/DashboardCustomizer";
 import FinancialKPIsWidget from "@/components/dashboard/FinancialKPIsWidget";
 import FinancialChartsWidget from "@/components/dashboard/FinancialChartsWidget";
 import PerformanceRankingsWidget from "@/components/dashboard/PerformanceRankingsWidget";
+import BidVsBudgetWidget from "@/components/dashboard/BidVsBudgetWidget";
 
 const DEFAULT_SECTION_ORDER = [
   'stats', 'kpiRow', 'taskNotifications', 'clickUp',
