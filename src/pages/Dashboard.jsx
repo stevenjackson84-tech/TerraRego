@@ -157,6 +157,8 @@ export default function Dashboard() {
         return <FinancialChartsWidget deals={deals} proformas={proformas} />;
       case 'performanceRankings':
         return <PerformanceRankingsWidget deals={deals} proformas={proformas} />;
+      case 'bidVsBudget':
+        return <BidVsBudgetWidget />;
       default:
         return null;
     }
