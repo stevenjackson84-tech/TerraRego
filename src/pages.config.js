@@ -72,6 +72,7 @@ import Reports from './pages/Reports';
 import Takeoff from './pages/Takeoff';
 import Tasks from './pages/Tasks';
 import UnitCostLibrary from './pages/UnitCostLibrary';
+import SiteAnalysis from './pages/SiteAnalysis';
 import __Layout from './Layout.jsx';
 
 
@@ -101,6 +102,7 @@ export const PAGES = {
     "Takeoff": Takeoff,
     "Tasks": Tasks,
     "UnitCostLibrary": UnitCostLibrary,
+    "SiteAnalysis": SiteAnalysis,
 }
 
 export const pagesConfig = {
