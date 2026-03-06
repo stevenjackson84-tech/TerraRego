@@ -286,6 +286,21 @@ export default function GISMap() {
   const [showUtilities, setShowUtilities] = useState(false);
   const [utilitiesData, setUtilitiesData] = useState(null);
   const [utilitiesLoading, setUtilitiesLoading] = useState(false);
+
+  // Lehi City Planning layers
+  const [showLehiZoning, setShowLehiZoning] = useState(false);
+  const [lehiZoningData, setLehiZoningData] = useState(null);
+  const [lehiZoningLoading, setLehiZoningLoading] = useState(false);
+  const [showLehiGeneralPlan, setShowLehiGeneralPlan] = useState(false);
+  const [lehiGeneralPlanData, setLehiGeneralPlanData] = useState(null);
+  const [lehiGeneralPlanLoading, setLehiGeneralPlanLoading] = useState(false);
+  const [showLehiSubdivisions, setShowLehiSubdivisions] = useState(false);
+  const [lehiSubdivisionsData, setLehiSubdivisionsData] = useState(null);
+  const [lehiSubdivisionsLoading, setLehiSubdivisionsLoading] = useState(false);
+  const [showLehiBoundary, setShowLehiBoundary] = useState(false);
+  const [lehiBoundaryData, setLehiBoundaryData] = useState(null);
+  const [lehiBoundaryLoading, setLehiBoundaryLoading] = useState(false);
+
   const [filterPanelOpen, setFilterPanelOpen] = useState(false);
   const [filters, setFilters] = useState({
     dealStage: '',
