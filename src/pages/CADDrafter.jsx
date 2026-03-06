@@ -463,6 +463,7 @@ export default function CADDrafter() {
         <rect key={s.id} x={s.x1} y={s.y1} width={s.x2 - s.x1} height={s.y2 - s.y1}
           stroke={selStroke} strokeWidth={sw}
           fill={s.fillColor === "transparent" ? "none" : s.fillColor}
+          strokeDasharray={s.dashed ? `${3 / zoom} ${3 / zoom}` : undefined}
           {...events} />
       );
     }
