@@ -23,8 +23,16 @@ const statusColors = {
 };
 
 export default function TakeoffPage() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const prefill = urlParams.get("prefill_name") ? {
+    name: urlParams.get("prefill_name") || "",
+    development_type: urlParams.get("prefill_dev_type") || "single_family",
+    lot_count: urlParams.get("prefill_lots") || "",
+    total_site_area_sf: urlParams.get("prefill_site_sf") || "",
+  } : null;
+
   const [search, setSearch] = useState("");
-  const [showForm, setShowForm] = useState(false);
+  const [showForm, setShowForm] = useState(!!prefill);
   const [selectedTakeoff, setSelectedTakeoff] = useState(null);
   const queryClient = useQueryClient();
 
@@ -119,6 +127,7 @@ export default function TakeoffPage() {
           onSave={(data) => createMutation.mutate(data)}
           onClose={() => setShowForm(false)}
           isLoading={createMutation.isPending}
+          takeoff={prefill}
         />
       )}
 
