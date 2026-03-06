@@ -168,40 +168,38 @@ export default function UnitCostLibraryPage() {
           </TabsContent>
 
           <TabsContent value="library">
-
-        {/* Content */}
-        {isLoading ? (
-          <div className="text-center py-20 text-slate-400">Loading cost library...</div>
-        ) : entries.length === 0 ? (
-          <div className="text-center py-24 text-slate-400 bg-white border border-dashed border-slate-200 rounded-xl">
-            <BookOpen className="h-10 w-10 mx-auto mb-3 text-slate-300" />
-            <p className="font-medium text-slate-600 mb-1">No cost data yet</p>
-            <p className="text-sm">Upload bid PDFs in the Project Takeoff module to start building your cost library.</p>
-          </div>
-        ) : filtered.length === 0 ? (
-          <div className="text-center py-12 text-slate-400">No results match your filters.</div>
-        ) : (
-          <div className="space-y-4">
-            {sortBy === "category"
-              ? Object.entries(grouped).map(([cat, items]) => (
-                  <div key={cat} className="bg-white border border-slate-200 rounded-xl overflow-hidden">
-                    <div className="px-4 py-3 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
-                      <Badge className={CATEGORY_COLORS[cat] || "bg-slate-100 text-slate-700"}>
-                        {CATEGORY_LABELS[cat] || cat}
-                      </Badge>
-                      <span className="text-xs text-slate-400">{items.length} item{items.length !== 1 ? "s" : ""}</span>
+            {isLoading ? (
+              <div className="text-center py-20 text-slate-400">Loading cost library...</div>
+            ) : entries.length === 0 ? (
+              <div className="text-center py-24 text-slate-400 bg-white border border-dashed border-slate-200 rounded-xl">
+                <BookOpen className="h-10 w-10 mx-auto mb-3 text-slate-300" />
+                <p className="font-medium text-slate-600 mb-1">No cost data yet</p>
+                <p className="text-sm">Upload bid PDFs in the Project Takeoff module to start building your cost library.</p>
+              </div>
+            ) : filtered.length === 0 ? (
+              <div className="text-center py-12 text-slate-400">No results match your filters.</div>
+            ) : (
+              <div className="space-y-4">
+                {sortBy === "category"
+                  ? Object.entries(grouped).map(([cat, items]) => (
+                      <div key={cat} className="bg-white border border-slate-200 rounded-xl overflow-hidden">
+                        <div className="px-4 py-3 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
+                          <Badge className={CATEGORY_COLORS[cat] || "bg-slate-100 text-slate-700"}>
+                            {CATEGORY_LABELS[cat] || cat}
+                          </Badge>
+                          <span className="text-xs text-slate-400">{items.length} item{items.length !== 1 ? "s" : ""}</span>
+                        </div>
+                        <CostTable items={items} />
+                      </div>
+                    ))
+                  : (
+                    <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
+                      <CostTable items={filtered} showCategory />
                     </div>
-                    <CostTable items={items} />
-                  </div>
-                ))
-              : (
-                <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
-                  <CostTable items={filtered} showCategory />
-                </div>
-              )
-            }
-          </div>
-        )}
+                  )
+                }
+              </div>
+            )}
           </TabsContent>
         </Tabs>
       </div>
