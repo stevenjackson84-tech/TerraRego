@@ -551,7 +551,7 @@ export default function CADDrafter() {
   }, [selectedIds, shapes, historyIdx]);
 
   return (
-    <div className="flex h-screen bg-slate-50">
+    <div className="flex h-screen bg-slate-50 overflow-hidden">
       {/* Left Toolbar */}
       <div className="w-14 bg-white border-r border-slate-200 flex flex-col items-center py-4 gap-2 z-10">
         {toolButtons.map(({ id, icon: Icon, label }) => (
