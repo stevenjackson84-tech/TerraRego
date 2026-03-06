@@ -24,7 +24,8 @@ import {
   DollarSign,
   Calendar,
   Briefcase,
-  Ruler
+  Ruler,
+  BookOpen
 } from "lucide-react";
 
 
