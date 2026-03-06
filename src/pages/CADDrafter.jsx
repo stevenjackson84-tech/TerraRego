@@ -52,6 +52,7 @@ export default function CADDrafter() {
   const [offsetDistance, setOffsetDistance] = useState(20);
   const [filletRadius, setFilletRadius] = useState(10);
   const [filletFirst, setFilletFirst] = useState(null); // id of first line for fillet
+  const [showPlatPanel, setShowPlatPanel] = useState(false);
   const svgRef = useRef(null);
 
   const pushHistory = useCallback((newShapes) => {
