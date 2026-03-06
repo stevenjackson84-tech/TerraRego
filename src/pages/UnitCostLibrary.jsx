@@ -202,6 +202,8 @@ export default function UnitCostLibraryPage() {
             }
           </div>
         )}
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
