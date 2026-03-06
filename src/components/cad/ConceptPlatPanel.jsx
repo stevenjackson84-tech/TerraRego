@@ -292,7 +292,10 @@ export default function ConceptPlatPanel({ onGenerate }) {
   const generate = async (genMode) => {
     setLoading(true);
     const zoningKey = genMode === "proposed" ? form.proposed_zoning : form.current_zoning;
-    const preset = ZONING_PRESETS[zoningKey] || ZONING_PRESETS["R-2"];
+    const preset = {
+      ...(ZONING_PRESETS[zoningKey] || ZONING_PRESETS["R-2"]),
+      ...(form._zoning_override || {}),
+    };
 
     // Use AI to calculate optimal lot layout
     const aiResult = await base44.integrations.Core.InvokeLLM({
