@@ -183,10 +183,23 @@ function generatePlatShapes(platData) {
   return shapes;
 }
 
+// Estimate width/depth from polygon geometry using bounding box in feet
+function estimateDimsFromGeometry(geometry) {
+  if (!geometry || geometry.length < 3) return null;
+  const lats = geometry.map(p => p[0]);
+  const lngs = geometry.map(p => p[1]);
+  const minLat = Math.min(...lats), maxLat = Math.max(...lats);
+  const minLng = Math.min(...lngs), maxLng = Math.max(...lngs);
+  const avgLat = (minLat + maxLat) / 2;
+  const heightFt = (maxLat - minLat) * 364000; // degrees lat → feet
+  const widthFt = (maxLng - minLng) * 364000 * Math.cos(avgLat * Math.PI / 180);
+  return { width_ft: Math.round(widthFt), depth_ft: Math.round(heightFt) };
+}
+
 export default function ConceptPlatPanel({ onGenerate }) {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [mode, setMode] = useState("current"); // "current" | "proposed"
+  const [showMapPicker, setShowMapPicker] = useState(false);
 
   const [form, setForm] = useState({
     address: "",
