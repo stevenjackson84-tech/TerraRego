@@ -205,6 +205,7 @@ export default function ConceptPlatPanel({ onGenerate }) {
   const [zoningResult, setZoningResult] = useState(null); // { standards, zoningKey }
   const [zoningError, setZoningError] = useState(null);
 
+  const [addressInput, setAddressInput] = useState("");
   const [form, setForm] = useState({
     address: "",
     width_ft: 300,
