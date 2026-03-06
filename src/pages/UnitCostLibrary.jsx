@@ -157,6 +157,18 @@ export default function UnitCostLibraryPage() {
           </Select>
         </div>
 
+        <Tabs defaultValue="library">
+          <TabsList className="mb-4">
+            <TabsTrigger value="library">Cost Library</TabsTrigger>
+            <TabsTrigger value="trends">Cost Trends</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="trends">
+            <CostTrendsTab />
+          </TabsContent>
+
+          <TabsContent value="library">
+
         {/* Content */}
         {isLoading ? (
           <div className="text-center py-20 text-slate-400">Loading cost library...</div>
