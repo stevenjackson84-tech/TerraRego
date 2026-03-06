@@ -52,8 +52,29 @@ export default function SiteAnalysisPage() {
   };
 
   const handleSave = () => {
+    // Re-run calculation to persist computed values
+    const grossSF = pendingData.gross_site_area_sf || (pendingData.gross_site_area_acres * 43560);
+    const grossAcres = pendingData.gross_site_area_acres || (grossSF / 43560);
+    const totalDeductionPct = (
+      (pendingData.street_dedication_pct || 0) +
+      (pendingData.open_space_pct || 0) +
+      (pendingData.utility_easement_pct || 0) +
+      (pendingData.slope_constraint_pct || 0) +
+      (pendingData.wetland_constraint_pct || 0)
+    );
+    const netSF = grossSF * (1 - totalDeductionPct / 100);
+    const netAcres = netSF / 43560;
+    const maxByDensity = pendingData.max_density_du_per_acre ? Math.floor(netAcres * pendingData.max_density_du_per_acre) : null;
+    const maxByLotSize = pendingData.min_lot_size_sf ? Math.floor(netSF / pendingData.min_lot_size_sf) : null;
+    const maxUnits = maxByDensity != null && maxByLotSize != null ? Math.min(maxByDensity, maxByLotSize) : (maxByDensity ?? maxByLotSize);
+    const probableUnits = maxUnits ? Math.floor(maxUnits * 0.85) : null;
+
     saveMutation.mutate({
       ...pendingData,
+      gross_site_area_sf: grossSF,
+      calculated_net_area_sf: netSF,
+      calculated_max_units: maxUnits,
+      calculated_probable_units: probableUnits,
       status: "complete",
     });
   };
