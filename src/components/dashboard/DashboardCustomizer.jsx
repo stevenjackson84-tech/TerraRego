@@ -52,7 +52,7 @@ export default function DashboardCustomizer({ open, onOpenChange, onSave, enable
     }
   };
 
-  const categories = ['overview', 'market', 'performance', 'deals', 'activity', 'tasks', 'financial', 'integration'];
+  const categories = ['overview', 'market', 'performance', 'deals', 'activity', 'tasks', 'financial', 'construction', 'integration'];
   const categoryLabels = {
     overview: 'Overview',
     market: 'Market Insights',
@@ -61,6 +61,7 @@ export default function DashboardCustomizer({ open, onOpenChange, onSave, enable
     activity: 'Activity',
     tasks: 'Tasks',
     financial: '💰 Financial Dashboard',
+    construction: '🏗️ Construction & Bids',
     integration: 'Integrations'
   };
 
