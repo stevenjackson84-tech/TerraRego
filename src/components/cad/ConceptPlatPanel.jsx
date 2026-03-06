@@ -429,6 +429,11 @@ Return integers only.`,
             <div className="flex items-center gap-2">
               <Input value={form.current_zoning} onChange={e => set("current_zoning", e.target.value)}
                 placeholder="e.g. R-2" className="h-7 text-xs flex-1" />
+              <Button size="sm" variant="outline" onClick={() => lookupZoning(form.current_zoning, false)}
+                disabled={zoningLookupLoading} className="h-7 text-xs gap-1 border-slate-300">
+                {zoningLookupLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : <Search className="h-3 w-3" />}
+                Lookup
+              </Button>
               <Button size="sm" onClick={() => generate("current")} disabled={loading}
                 className="h-7 text-xs bg-blue-600 hover:bg-blue-700 gap-1">
                 {loading ? <Loader2 className="h-3 w-3 animate-spin" /> : <Wand2 className="h-3 w-3" />}
@@ -436,6 +441,55 @@ Return integers only.`,
               </Button>
             </div>
           </div>
+
+          {/* Zoning Lookup Result */}
+          {zoningError && (
+            <div className="flex items-center gap-1.5 text-xs text-red-600 bg-red-50 px-2 py-1.5 rounded">
+              <AlertCircle className="h-3 w-3 flex-shrink-0" /> {zoningError}
+            </div>
+          )}
+          {zoningResult && (
+            <div className="border border-green-200 bg-green-50 rounded-lg p-2.5 space-y-1.5">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold text-green-800 flex items-center gap-1">
+                  <CheckCircle2 className="h-3 w-3" /> {zoningResult.zoningKey} Standards Found
+                </span>
+                <span className={`text-xs px-1.5 py-0.5 rounded-full ${
+                  zoningResult.standards.confidence === "high" ? "bg-green-200 text-green-800" :
+                  zoningResult.standards.confidence === "medium" ? "bg-yellow-100 text-yellow-800" :
+                  "bg-slate-100 text-slate-600"
+                }`}>{zoningResult.standards.confidence || "?"} confidence</span>
+              </div>
+              <div className="grid grid-cols-2 gap-x-3 gap-y-0.5 text-xs text-slate-700">
+                {zoningResult.standards.min_lot_sf && <span>Min Lot: {zoningResult.standards.min_lot_sf.toLocaleString()} SF</span>}
+                {zoningResult.standards.min_lot_width_ft && <span>Min Width: {zoningResult.standards.min_lot_width_ft}'</span>}
+                {zoningResult.standards.setback_front && <span>Front SB: {zoningResult.standards.setback_front}'</span>}
+                {zoningResult.standards.setback_rear && <span>Rear SB: {zoningResult.standards.setback_rear}'</span>}
+                {zoningResult.standards.setback_side && <span>Side SB: {zoningResult.standards.setback_side}'</span>}
+                {zoningResult.standards.max_height_ft && <span>Max Ht: {zoningResult.standards.max_height_ft}'</span>}
+                {zoningResult.standards.max_density_du_per_acre && <span>Density: {zoningResult.standards.max_density_du_per_acre} du/ac</span>}
+                {zoningResult.standards.max_lot_coverage_pct && <span>Coverage: {zoningResult.standards.max_lot_coverage_pct}%</span>}
+              </div>
+              {zoningResult.standards.permitted_uses && (
+                <p className="text-xs text-slate-500 italic">{zoningResult.standards.permitted_uses}</p>
+              )}
+              {zoningResult.standards.source && (
+                <p className="text-xs text-slate-400 truncate">Source: {zoningResult.standards.source}</p>
+              )}
+              <Button size="sm" onClick={applyZoningResult}
+                className="w-full h-6 text-xs bg-green-600 hover:bg-green-700 mt-1">
+                Apply These Standards to Plat
+              </Button>
+            </div>
+          )}
+          {form._zoning_override && (
+            <div className="flex items-center justify-between text-xs bg-blue-50 border border-blue-200 rounded px-2 py-1">
+              <span className="text-blue-700">✓ City zoning standards applied</span>
+              <button className="text-blue-400 hover:text-blue-600" onClick={() => setForm(f => { const {_zoning_override, ...rest} = f; return rest; })}>
+                <X className="h-3 w-3" />
+              </button>
+            </div>
+          )}
 
           {/* Proposed Zoning */}
           <div className="pt-2 border-t border-slate-100">
