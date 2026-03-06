@@ -6,8 +6,9 @@ import { Badge } from "@/components/ui/badge";
 import {
   MousePointer2, Minus, Square, Circle, Type, Move,
   Trash2, Download, RotateCcw, RotateCw, ZoomIn, ZoomOut,
-  Grid3x3, CopyPlus, Spline, Eraser
+  Grid3x3, CopyPlus, Spline, Eraser, PanelRight
 } from "lucide-react";
+import ConceptPlatPanel from "@/components/cad/ConceptPlatPanel";
 
 const TOOLS = {
   SELECT: "select",
