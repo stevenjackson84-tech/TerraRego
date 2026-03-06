@@ -1181,6 +1181,44 @@ Generate a realistic land parcel analysis. Include:
           >
             ⚙️ {utilitiesLoading ? "Loading..." : "Utilities"}
           </Button>
+          <div className="w-px h-5 bg-slate-200 mx-1" />
+          <span className="text-xs text-slate-400 font-medium whitespace-nowrap">Lehi City:</span>
+          <Button
+            size="sm"
+            variant={showLehiZoning ? "default" : "outline"}
+            onClick={() => { setShowLehiZoning(!showLehiZoning); setLehiZoningData(null); }}
+            className="text-xs flex items-center gap-1"
+            disabled={lehiZoningLoading}
+          >
+            🗺️ {lehiZoningLoading ? "Loading..." : "Lehi Zoning"}
+          </Button>
+          <Button
+            size="sm"
+            variant={showLehiGeneralPlan ? "default" : "outline"}
+            onClick={() => { setShowLehiGeneralPlan(!showLehiGeneralPlan); setLehiGeneralPlanData(null); }}
+            className="text-xs flex items-center gap-1"
+            disabled={lehiGeneralPlanLoading}
+          >
+            📋 {lehiGeneralPlanLoading ? "Loading..." : "General Plan"}
+          </Button>
+          <Button
+            size="sm"
+            variant={showLehiSubdivisions ? "default" : "outline"}
+            onClick={() => { setShowLehiSubdivisions(!showLehiSubdivisions); setLehiSubdivisionsData(null); }}
+            className="text-xs flex items-center gap-1"
+            disabled={lehiSubdivisionsLoading}
+          >
+            🏘️ {lehiSubdivisionsLoading ? "Loading..." : "Subdivisions"}
+          </Button>
+          <Button
+            size="sm"
+            variant={showLehiBoundary ? "default" : "outline"}
+            onClick={() => { setShowLehiBoundary(!showLehiBoundary); setLehiBoundaryData(null); }}
+            className="text-xs flex items-center gap-1"
+            disabled={lehiBoundaryLoading}
+          >
+            🔲 {lehiBoundaryLoading ? "Loading..." : "City Boundary"}
+          </Button>
         </div>
       </div>
 
