@@ -179,12 +179,15 @@ For unit_of_measure use: per_lot, per_lf, per_sf, lump_sum, per_unit.`,
       });
 
       // Apply extracted costs to update historical averages on line items
+      // AND update the global Unit Cost Library
       if (extracted.length > 0) {
         const existingItems = await base44.entities.TakeoffLineItem.filter({ takeoff_id: takeoff.id });
+        const libraryEntries = await base44.entities.UnitCostLibrary.list();
 
         for (const extractedItem of extracted) {
           if (!extractedItem.unit_cost || !extractedItem.category) continue;
 
+          // 1. Update per-project historical avg
           const match = existingItems.find(li => li.category === extractedItem.category);
           if (match) {
             const prevCount = match.bid_count || 0;
@@ -194,6 +197,41 @@ For unit_of_measure use: per_lot, per_lf, per_sf, lump_sum, per_unit.`,
             await base44.entities.TakeoffLineItem.update(match.id, {
               historical_avg_unit_cost: newAvg,
               bid_count: newCount
+            });
+          }
+
+          // 2. Update global Unit Cost Library
+          const libMatch = libraryEntries.find(le =>
+            le.category === extractedItem.category &&
+            le.unit_of_measure === extractedItem.unit_of_measure &&
+            (le.description || "").toLowerCase() === (extractedItem.description || "").toLowerCase()
+          );
+
+          if (libMatch) {
+            const prevCount = libMatch.bid_count || 0;
+            const prevAvg = libMatch.avg_unit_cost || extractedItem.unit_cost;
+            const newCount = prevCount + 1;
+            const newAvg = (prevAvg * prevCount + extractedItem.unit_cost) / newCount;
+            const devTypes = [...new Set([...(libMatch.development_types || []), takeoff.development_type].filter(Boolean))];
+            await base44.entities.UnitCostLibrary.update(libMatch.id, {
+              avg_unit_cost: newAvg,
+              min_unit_cost: Math.min(libMatch.min_unit_cost ?? extractedItem.unit_cost, extractedItem.unit_cost),
+              max_unit_cost: Math.max(libMatch.max_unit_cost ?? extractedItem.unit_cost, extractedItem.unit_cost),
+              bid_count: newCount,
+              development_types: devTypes,
+              last_bid_date: bidDate
+            });
+          } else {
+            await base44.entities.UnitCostLibrary.create({
+              category: extractedItem.category,
+              description: extractedItem.description,
+              unit_of_measure: extractedItem.unit_of_measure || "per_lot",
+              avg_unit_cost: extractedItem.unit_cost,
+              min_unit_cost: extractedItem.unit_cost,
+              max_unit_cost: extractedItem.unit_cost,
+              bid_count: 1,
+              development_types: [takeoff.development_type].filter(Boolean),
+              last_bid_date: bidDate
             });
           }
         }
