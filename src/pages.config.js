@@ -71,6 +71,7 @@ import PropertyDetails from './pages/PropertyDetails';
 import Reports from './pages/Reports';
 import Takeoff from './pages/Takeoff';
 import Tasks from './pages/Tasks';
+import UnitCostLibrary from './pages/UnitCostLibrary';
 import __Layout from './Layout.jsx';
 
 
@@ -99,6 +100,7 @@ export const PAGES = {
     "Reports": Reports,
     "Takeoff": Takeoff,
     "Tasks": Tasks,
+    "UnitCostLibrary": UnitCostLibrary,
 }
 
 export const pagesConfig = {
