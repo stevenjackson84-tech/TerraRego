@@ -493,35 +493,103 @@ Return integers only.`,
             </div>
           )}
           {zoningResult && (
-            <div className="border border-green-200 bg-green-50 rounded-lg p-2.5 space-y-1.5">
+            <div className="border border-green-200 bg-green-50 rounded-lg p-2.5 space-y-2">
+              {/* Header */}
               <div className="flex items-center justify-between">
                 <span className="text-xs font-semibold text-green-800 flex items-center gap-1">
-                  <CheckCircle2 className="h-3 w-3" /> {zoningResult.zoningKey} Standards Found
+                  <CheckCircle2 className="h-3 w-3" /> {zoningResult.zoningKey}
+                  {zoningResult.standards.zoning_description && (
+                    <span className="font-normal text-green-700"> — {zoningResult.standards.zoning_description}</span>
+                  )}
                 </span>
-                <span className={`text-xs px-1.5 py-0.5 rounded-full ${
+                <span className={`text-xs px-1.5 py-0.5 rounded-full font-medium ${
                   zoningResult.standards.confidence === "high" ? "bg-green-200 text-green-800" :
                   zoningResult.standards.confidence === "medium" ? "bg-yellow-100 text-yellow-800" :
                   "bg-slate-100 text-slate-600"
-                }`}>{zoningResult.standards.confidence || "?"} confidence</span>
+                }`}>{zoningResult.standards.confidence || "?"}</span>
               </div>
-              <div className="grid grid-cols-2 gap-x-3 gap-y-0.5 text-xs text-slate-700">
-                {zoningResult.standards.min_lot_sf && <span>Min Lot: {zoningResult.standards.min_lot_sf.toLocaleString()} SF</span>}
-                {zoningResult.standards.min_lot_width_ft && <span>Min Width: {zoningResult.standards.min_lot_width_ft}'</span>}
-                {zoningResult.standards.setback_front && <span>Front SB: {zoningResult.standards.setback_front}'</span>}
-                {zoningResult.standards.setback_rear && <span>Rear SB: {zoningResult.standards.setback_rear}'</span>}
-                {zoningResult.standards.setback_side && <span>Side SB: {zoningResult.standards.setback_side}'</span>}
-                {zoningResult.standards.max_height_ft && <span>Max Ht: {zoningResult.standards.max_height_ft}'</span>}
-                {zoningResult.standards.max_density_du_per_acre && <span>Density: {zoningResult.standards.max_density_du_per_acre} du/ac</span>}
-                {zoningResult.standards.max_lot_coverage_pct && <span>Coverage: {zoningResult.standards.max_lot_coverage_pct}%</span>}
+
+              {/* Geocode pin */}
+              {zoningResult.geocode && (
+                <p className="text-xs text-slate-500 flex items-center gap-1">
+                  <MapPin className="h-2.5 w-2.5" />
+                  {zoningResult.geocode.display?.split(",").slice(0, 3).join(",")}
+                  <span className="text-slate-300">({zoningResult.geocode.lat.toFixed(4)}, {zoningResult.geocode.lng.toFixed(4)})</span>
+                </p>
+              )}
+
+              {/* Data sources used */}
+              {zoningResult.standards.data_sources_used?.length > 0 && (
+                <div className="flex flex-wrap gap-1">
+                  {zoningResult.standards.data_sources_used.map(src => (
+                    <span key={src} className="text-xs px-1.5 py-0.5 bg-white border border-green-200 text-green-700 rounded">
+                      {src === "zoneomics" ? "🗺 Zoneomics API" :
+                       src === "geocoder" ? "📍 Geocoder" :
+                       src === "scraper" ? "🔍 Ordinance Scrape" :
+                       src === "osm" ? "🌍 OpenStreetMap" :
+                       src === "llm_knowledge" ? "🤖 AI Knowledge" : src}
+                    </span>
+                  ))}
+                </div>
+              )}
+
+              {/* Key standards grid */}
+              <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-xs bg-white rounded p-2 border border-green-100">
+                {zoningResult.standards.min_lot_sf && (
+                  <div><span className="text-slate-400">Min Lot</span> <span className="font-medium text-slate-800">{zoningResult.standards.min_lot_sf.toLocaleString()} SF</span></div>
+                )}
+                {zoningResult.standards.min_lot_width_ft && (
+                  <div><span className="text-slate-400">Min Width</span> <span className="font-medium text-slate-800">{zoningResult.standards.min_lot_width_ft}'</span></div>
+                )}
+                {zoningResult.standards.setback_front != null && (
+                  <div><span className="text-slate-400">Front SB</span> <span className="font-medium text-slate-800">{zoningResult.standards.setback_front}'</span></div>
+                )}
+                {zoningResult.standards.setback_rear != null && (
+                  <div><span className="text-slate-400">Rear SB</span> <span className="font-medium text-slate-800">{zoningResult.standards.setback_rear}'</span></div>
+                )}
+                {zoningResult.standards.setback_side != null && (
+                  <div><span className="text-slate-400">Side SB</span> <span className="font-medium text-slate-800">{zoningResult.standards.setback_side}'</span></div>
+                )}
+                {zoningResult.standards.max_height_ft && (
+                  <div><span className="text-slate-400">Max Height</span> <span className="font-medium text-slate-800">{zoningResult.standards.max_height_ft}'</span></div>
+                )}
+                {zoningResult.standards.max_density_du_per_acre && (
+                  <div><span className="text-slate-400">Density</span> <span className="font-medium text-slate-800">{zoningResult.standards.max_density_du_per_acre} du/ac</span></div>
+                )}
+                {zoningResult.standards.max_lot_coverage_pct && (
+                  <div><span className="text-slate-400">Coverage</span> <span className="font-medium text-slate-800">{zoningResult.standards.max_lot_coverage_pct}%</span></div>
+                )}
+                {zoningResult.standards.max_far && (
+                  <div><span className="text-slate-400">Max FAR</span> <span className="font-medium text-slate-800">{zoningResult.standards.max_far}</span></div>
+                )}
+                {zoningResult.standards.min_parking_spaces && (
+                  <div><span className="text-slate-400">Parking</span> <span className="font-medium text-slate-800">{zoningResult.standards.min_parking_spaces} spaces</span></div>
+                )}
               </div>
+
+              {/* Permitted uses */}
               {zoningResult.standards.permitted_uses && (
-                <p className="text-xs text-slate-500 italic">{zoningResult.standards.permitted_uses}</p>
+                <div className="text-xs text-slate-600 bg-white rounded p-1.5 border border-green-100">
+                  <span className="font-medium text-slate-500">Permitted: </span>{zoningResult.standards.permitted_uses}
+                </div>
               )}
+              {zoningResult.standards.special_requirements && (
+                <div className="text-xs text-amber-700 bg-amber-50 rounded p-1.5 border border-amber-200 flex gap-1">
+                  <Info className="h-3 w-3 flex-shrink-0 mt-0.5" />
+                  {zoningResult.standards.special_requirements}
+                </div>
+              )}
+
+              {/* Source */}
               {zoningResult.standards.source && (
-                <p className="text-xs text-slate-400 truncate">Source: {zoningResult.standards.source}</p>
+                <p className="text-xs text-slate-400 truncate flex items-center gap-1">
+                  <ExternalLink className="h-2.5 w-2.5 flex-shrink-0" />
+                  {zoningResult.standards.source}
+                </p>
               )}
+
               <Button size="sm" onClick={applyZoningResult}
-                className="w-full h-6 text-xs bg-green-600 hover:bg-green-700 mt-1">
+                className="w-full h-7 text-xs bg-green-600 hover:bg-green-700 mt-1">
                 Apply These Standards to Plat
               </Button>
             </div>
