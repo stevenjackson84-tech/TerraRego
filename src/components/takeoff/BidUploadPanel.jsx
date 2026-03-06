@@ -234,6 +234,22 @@ For unit_of_measure use: per_lot, per_lf, per_sf, lump_sum, per_unit.`,
               last_bid_date: bidDate
             });
           }
+
+          // 3. Write a raw BidDataPoint for time-series trend tracking
+          await base44.entities.BidDataPoint.create({
+            bid_upload_id: bidRecord.id,
+            takeoff_id: takeoff.id,
+            takeoff_name: takeoff.name,
+            contractor_name: contractor,
+            bid_date: bidDate,
+            category: extractedItem.category,
+            description: extractedItem.description,
+            unit_of_measure: extractedItem.unit_of_measure || "per_lot",
+            unit_cost: extractedItem.unit_cost,
+            quantity: extractedItem.quantity,
+            total_cost: extractedItem.total_cost,
+            development_type: takeoff.development_type
+          });
         }
       }
 
