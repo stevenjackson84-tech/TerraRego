@@ -357,6 +357,15 @@ export default function CADDrafter() {
     setTextInput(null);
   };
 
+  const handlePlatGenerate = (platShapes, mode) => {
+    // Clear canvas and load plat shapes, reset view
+    pushHistory(platShapes);
+    setSelectedIds([]);
+    setPan({ x: 40, y: 40 });
+    setZoom(0.8);
+    setShowPlatPanel(false);
+  };
+
   const exportSVG = () => {
     const svg = svgRef.current;
     const serializer = new XMLSerializer();
