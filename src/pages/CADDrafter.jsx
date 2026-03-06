@@ -753,6 +753,12 @@ export default function CADDrafter() {
           </div>
         </div>
       </div>
+      {/* Right panel – Concept Plat */}
+      {showPlatPanel && (
+        <div className="w-72 flex-shrink-0 border-l border-slate-200 bg-white overflow-y-auto">
+          <ConceptPlatPanel onGenerate={handlePlatGenerate} />
+        </div>
+      )}
     </div>
   );
 }
