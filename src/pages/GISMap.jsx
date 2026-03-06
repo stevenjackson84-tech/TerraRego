@@ -1633,6 +1633,14 @@ Generate a realistic land parcel analysis. Include:
             />
           )}
 
+          {/* Lehi City Planning layers */}
+          <LehiCityLayers
+            showLehiZoning={showLehiZoning} lehiZoningData={lehiZoningData}
+            showLehiGeneralPlan={showLehiGeneralPlan} lehiGeneralPlanData={lehiGeneralPlanData}
+            showLehiSubdivisions={showLehiSubdivisions} lehiSubdivisionsData={lehiSubdivisionsData}
+            showLehiBoundary={showLehiBoundary} lehiBoundaryData={lehiBoundaryData}
+          />
+
           {/* KMZ/KML layers */}
           {kmzLayers.map((layer) => (
             <>
