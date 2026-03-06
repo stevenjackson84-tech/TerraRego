@@ -225,6 +225,10 @@ export default function TakeoffDetail({ takeoff, onClose, onUpdate }) {
               }}
             />
           </TabsContent>
+
+          <TabsContent value="compare">
+            <BidComparisonView bidUploads={bidUploads} />
+          </TabsContent>
         </Tabs>
 
         {showLineItemForm && (
