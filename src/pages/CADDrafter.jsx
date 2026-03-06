@@ -755,10 +755,32 @@ export default function CADDrafter() {
           </div>
         </div>
       </div>
-      {/* Right panel – Concept Plat */}
+      {/* Right panel – Concept Plat + Financial Analysis */}
       {showPlatPanel && (
-        <div className="w-72 flex-shrink-0 border-l border-slate-200 bg-white overflow-y-auto">
-          <ConceptPlatPanel onGenerate={handlePlatGenerate} />
+        <div className="w-80 flex-shrink-0 border-l border-slate-200 bg-white flex flex-col">
+          {/* Tab bar */}
+          <div className="flex border-b border-slate-200 flex-shrink-0">
+            <button
+              onClick={() => setRightPanelTab("plat")}
+              className={`flex-1 text-xs py-2 font-medium transition-colors ${rightPanelTab === "plat" ? "border-b-2 border-indigo-600 text-indigo-700 bg-indigo-50" : "text-slate-500 hover:text-slate-700"}`}
+            >
+              Concept Plat
+            </button>
+            <button
+              onClick={() => setRightPanelTab("financial")}
+              className={`flex-1 text-xs py-2 font-medium transition-colors flex items-center justify-center gap-1 ${rightPanelTab === "financial" ? "border-b-2 border-emerald-600 text-emerald-700 bg-emerald-50" : "text-slate-500 hover:text-slate-700"}`}
+            >
+              Financial
+              {platMeta && <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />}
+            </button>
+          </div>
+          <div className="flex-1 overflow-y-auto">
+            {rightPanelTab === "plat" ? (
+              <ConceptPlatPanel onGenerate={handlePlatGenerate} />
+            ) : (
+              <PlatFinancialAnalysis platMeta={platMeta} />
+            )}
+          </div>
         </div>
       )}
     </div>
