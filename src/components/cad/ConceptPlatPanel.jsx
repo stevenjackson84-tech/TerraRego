@@ -201,6 +201,9 @@ export default function ConceptPlatPanel({ onGenerate }) {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showMapPicker, setShowMapPicker] = useState(false);
+  const [zoningLookupLoading, setZoningLookupLoading] = useState(false);
+  const [zoningResult, setZoningResult] = useState(null); // { standards, zoningKey }
+  const [zoningError, setZoningError] = useState(null);
 
   const [form, setForm] = useState({
     address: "",
