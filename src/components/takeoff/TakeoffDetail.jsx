@@ -9,6 +9,7 @@ import { Plus, Upload, Trash2, TrendingUp, Ruler, Home, Layers } from "lucide-re
 import LineItemRow from "./LineItemRow.jsx";
 import LineItemForm from "./LineItemForm.jsx";
 import BidUploadPanel from "./BidUploadPanel.jsx";
+import BidComparisonView from "./BidComparisonView.jsx";
 import TakeoffForm from "./TakeoffForm.jsx";
 
 const CATEGORY_LABELS = {
