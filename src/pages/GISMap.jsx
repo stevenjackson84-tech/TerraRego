@@ -610,6 +610,50 @@ export default function GISMap() {
       });
   }, [showSchoolDistricts, schoolDistrictData]);
 
+  // Lehi City Planning - Zoning
+  useEffect(() => {
+    if (!showLehiZoning || lehiZoningData) return;
+    setLehiZoningLoading(true);
+    fetch("https://services5.arcgis.com/rObWD7PYeLl9jJPT/arcgis/rest/services/Lehi_Zoning/FeatureServer/0/query?where=1%3D1&outFields=Zone,Acres&outSR=4326&f=geojson&resultRecordCount=5000")
+      .then(r => r.json())
+      .then(data => { if (data?.features) setLehiZoningData(data); })
+      .catch(err => console.warn("Lehi Zoning fetch failed:", err))
+      .finally(() => setLehiZoningLoading(false));
+  }, [showLehiZoning, lehiZoningData]);
+
+  // Lehi City Planning - General Plan
+  useEffect(() => {
+    if (!showLehiGeneralPlan || lehiGeneralPlanData) return;
+    setLehiGeneralPlanLoading(true);
+    fetch("https://services5.arcgis.com/rObWD7PYeLl9jJPT/arcgis/rest/services/Lehi_General_Plan/FeatureServer/0/query?where=1%3D1&outFields=*&outSR=4326&f=geojson&resultRecordCount=5000")
+      .then(r => r.json())
+      .then(data => { if (data?.features) setLehiGeneralPlanData(data); })
+      .catch(err => console.warn("Lehi General Plan fetch failed:", err))
+      .finally(() => setLehiGeneralPlanLoading(false));
+  }, [showLehiGeneralPlan, lehiGeneralPlanData]);
+
+  // Lehi City Planning - Subdivisions
+  useEffect(() => {
+    if (!showLehiSubdivisions || lehiSubdivisionsData) return;
+    setLehiSubdivisionsLoading(true);
+    fetch("https://services5.arcgis.com/rObWD7PYeLl9jJPT/arcgis/rest/services/Lehi_Subdivisions/FeatureServer/0/query?where=1%3D1&outFields=*&outSR=4326&f=geojson&resultRecordCount=5000")
+      .then(r => r.json())
+      .then(data => { if (data?.features) setLehiSubdivisionsData(data); })
+      .catch(err => console.warn("Lehi Subdivisions fetch failed:", err))
+      .finally(() => setLehiSubdivisionsLoading(false));
+  }, [showLehiSubdivisions, lehiSubdivisionsData]);
+
+  // Lehi City Planning - City Boundary
+  useEffect(() => {
+    if (!showLehiBoundary || lehiBoundaryData) return;
+    setLehiBoundaryLoading(true);
+    fetch("https://services5.arcgis.com/rObWD7PYeLl9jJPT/arcgis/rest/services/Lehi_City_Boundary/FeatureServer/0/query?where=1%3D1&outFields=*&outSR=4326&f=geojson&resultRecordCount=100")
+      .then(r => r.json())
+      .then(data => { if (data?.features) setLehiBoundaryData(data); })
+      .catch(err => console.warn("Lehi Boundary fetch failed:", err))
+      .finally(() => setLehiBoundaryLoading(false));
+  }, [showLehiBoundary, lehiBoundaryData]);
+
   // Load utilities data when toggled on
   useEffect(() => {
     if (!showUtilities || utilitiesData) return;
