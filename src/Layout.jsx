@@ -49,6 +49,7 @@ const navigation = [
   { name: "CAD Drafter", icon: Pencil, page: "CADDrafter" },
   { name: "Bid Marketplace", icon: Briefcase, page: "Marketplace" },
   { name: "Project Takeoff", icon: Ruler, page: "Takeoff" },
+  { name: "Unit Cost Library", icon: BookOpen, page: "UnitCostLibrary" },
 ];
 
 export default function Layout({ children, currentPageName }) {
