@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Map, Loader2, ChevronDown, ChevronUp, Wand2, RefreshCw, MapPin, X, Search, CheckCircle2, AlertCircle } from "lucide-react";
+import { Map, Loader2, ChevronDown, ChevronUp, Wand2, RefreshCw, MapPin, X, Search, CheckCircle2, AlertCircle, Database, ExternalLink, Info } from "lucide-react";
 import ParcelMapPicker from "@/components/siteanalysis/ParcelMapPicker";
 import { base44 as b44 } from "@/api/base44Client";
 
