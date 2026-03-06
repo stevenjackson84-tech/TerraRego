@@ -7,6 +7,7 @@ import { Plus, ScanSearch, ChevronRight, Trash2, Home, Ruler } from "lucide-reac
 import ParcelInputForm from "@/components/siteanalysis/ParcelInputForm";
 import AnalysisResults from "@/components/siteanalysis/AnalysisResults";
 import ParcelMapPicker from "@/components/siteanalysis/ParcelMapPicker";
+import PlatUploader from "@/components/siteanalysis/PlatUploader";
 import { createPageUrl } from "@/utils";
 import { useNavigate } from "react-router-dom";
 
@@ -179,7 +180,6 @@ export default function SiteAnalysisPage() {
   }
 
   const handleParcelSelected = (parcelData) => {
-    // Build prefill from map selection — address, area, zoning hint
     setMapPrefill(prev => ({
       ...(prev || {}),
       address: parcelData.address || prev?.address || "",
@@ -187,6 +187,10 @@ export default function SiteAnalysisPage() {
       gross_site_area_sf: parcelData.gross_site_area_sf ?? prev?.gross_site_area_sf ?? null,
       zoning_code: parcelData.zoning_hint || prev?.zoning_code || "",
     }));
+  };
+
+  const handlePlatExtracted = (platData) => {
+    setMapPrefill(prev => ({ ...(prev || {}), ...platData }));
   };
 
   // Input form view
@@ -210,6 +214,7 @@ export default function SiteAnalysisPage() {
           {/* Form panel */}
           <div className="w-[420px] flex-shrink-0 overflow-y-auto bg-white">
             <div className="p-5">
+              <PlatUploader onExtracted={handlePlatExtracted} />
               <ParcelInputForm onAnalyze={handleAnalyze} initialData={mapPrefill || {}} key={JSON.stringify(mapPrefill)} />
             </div>
           </div>
