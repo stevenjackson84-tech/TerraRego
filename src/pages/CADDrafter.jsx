@@ -605,8 +605,8 @@ export default function CADDrafter() {
         )}
       </div>
 
-      {/* Canvas */}
-      <div className="flex-1 flex flex-col">
+      {/* Canvas + optional right panel */}
+      <div className="flex-1 flex flex-col min-w-0">
         {/* Top bar */}
         <div className="h-12 bg-white border-b border-slate-200 flex items-center px-4 gap-4">
           <span className="font-semibold text-slate-900 text-sm">CAD Drafter</span>
