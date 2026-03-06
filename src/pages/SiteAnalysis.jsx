@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Plus, ScanSearch, ChevronRight, Trash2, Home, Ruler } from "lucide-react";
 import ParcelInputForm from "@/components/siteanalysis/ParcelInputForm";
 import AnalysisResults from "@/components/siteanalysis/AnalysisResults";
+import ParcelMapPicker from "@/components/siteanalysis/ParcelMapPicker";
 import { createPageUrl } from "@/utils";
 import { useNavigate } from "react-router-dom";
 
@@ -24,6 +25,7 @@ export default function SiteAnalysisPage() {
   const [view, setView] = useState("list"); // "list" | "new" | "results" | "saved"
   const [pendingData, setPendingData] = useState(null);
   const [selectedAnalysis, setSelectedAnalysis] = useState(null);
+  const [mapPrefill, setMapPrefill] = useState(null); // data auto-filled from map
 
   const { data: analyses = [], isLoading } = useQuery({
     queryKey: ["site-analyses"],
@@ -176,17 +178,40 @@ export default function SiteAnalysisPage() {
     );
   }
 
+  const handleParcelSelected = (parcelData) => {
+    // Build prefill from map selection — address, area, zoning hint
+    setMapPrefill(prev => ({
+      ...(prev || {}),
+      address: parcelData.address || prev?.address || "",
+      gross_site_area_acres: parcelData.gross_site_area_acres ?? prev?.gross_site_area_acres ?? "",
+      gross_site_area_sf: parcelData.gross_site_area_sf ?? prev?.gross_site_area_sf ?? null,
+      zoning_code: parcelData.zoning_hint || prev?.zoning_code || "",
+    }));
+  };
+
   // Input form view
   if (view === "new") {
     return (
-      <div className="min-h-screen bg-slate-50 p-6">
-        <div className="max-w-2xl mx-auto">
-          <div className="flex items-center gap-3 mb-6">
-            <button onClick={() => setView("list")} className="text-sm text-slate-400 hover:text-slate-700">← Back</button>
-            <h1 className="text-xl font-bold text-slate-900">New Site Analysis</h1>
+      <div className="h-screen flex flex-col bg-slate-50 overflow-hidden">
+        {/* Header */}
+        <div className="flex items-center gap-3 px-6 py-3 border-b border-slate-200 bg-white flex-shrink-0">
+          <button onClick={() => setView("list")} className="text-sm text-slate-400 hover:text-slate-700">← Back</button>
+          <h1 className="text-lg font-bold text-slate-900">New Site Analysis</h1>
+          <span className="text-xs text-slate-400 ml-2">Search or draw on the map to auto-fill parcel data, then complete the form</span>
+        </div>
+
+        {/* Split panel */}
+        <div className="flex flex-1 min-h-0">
+          {/* Map panel */}
+          <div className="flex-1 min-w-0 border-r border-slate-200 flex flex-col">
+            <ParcelMapPicker onParcelSelected={handleParcelSelected} />
           </div>
-          <div className="bg-white rounded-xl border border-slate-200 p-6">
-            <ParcelInputForm onAnalyze={handleAnalyze} />
+
+          {/* Form panel */}
+          <div className="w-[420px] flex-shrink-0 overflow-y-auto bg-white">
+            <div className="p-5">
+              <ParcelInputForm onAnalyze={handleAnalyze} initialData={mapPrefill || {}} key={JSON.stringify(mapPrefill)} />
+            </div>
           </div>
         </div>
       </div>
