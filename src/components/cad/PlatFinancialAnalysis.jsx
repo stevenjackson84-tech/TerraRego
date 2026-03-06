@@ -349,30 +349,10 @@ Return realistic current market data for this location based on your knowledge. 
                 </div>
               </div>
 
-              {/* Quick sensitivity */}
-              <div className="bg-slate-50 rounded-lg p-3">
-                <p className="text-xs font-semibold text-slate-600 mb-2 flex items-center gap-1">
-                  <Info className="h-3 w-3" /> Price Sensitivity
-                </p>
-                <div className="space-y-1">
-                  {[-10, -5, 0, 5, 10].map(delta => {
-                    const adjPrice = avgSalePrice * (1 + delta / 100);
-                    const adjRev = adjPrice * lotCount * (1 - commissionPct / 100);
-                    const adjProfit = adjRev - totalCost;
-                    const adjMargin = adjRev > 0 ? (adjProfit / adjRev) * 100 : 0;
-                    return (
-                      <div key={delta} className={`flex justify-between text-xs px-2 py-0.5 rounded ${delta === 0 ? "bg-white border border-slate-200 font-semibold" : ""}`}>
-                        <span className={delta < 0 ? "text-red-500" : delta > 0 ? "text-emerald-600" : "text-slate-700"}>
-                          {delta > 0 ? "+" : ""}{delta}% price
-                        </span>
-                        <span className="text-slate-500">{fmtMoney(adjPrice)}/unit</span>
-                        <span className={adjMargin >= 15 ? "text-emerald-600 font-medium" : "text-red-500 font-medium"}>
-                          {fmtPct(adjMargin)}
-                        </span>
-                      </div>
-                    );
-                  })}
-                </div>
+              {/* Interactive Sensitivity Analysis */}
+              <div className="border border-slate-200 rounded-lg p-3">
+                <p className="text-xs font-semibold text-slate-600 mb-3">Sensitivity Analysis</p>
+                <SensitivityTable baseInputs={inputs} lotCount={lotCount} />
               </div>
             </div>
           )}
