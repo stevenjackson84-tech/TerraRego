@@ -69,10 +69,10 @@ import ProjectDetails from './pages/ProjectDetails';
 import Projects from './pages/Projects';
 import PropertyDetails from './pages/PropertyDetails';
 import Reports from './pages/Reports';
+import SiteAnalysis from './pages/SiteAnalysis';
 import Takeoff from './pages/Takeoff';
 import Tasks from './pages/Tasks';
 import UnitCostLibrary from './pages/UnitCostLibrary';
-import SiteAnalysis from './pages/SiteAnalysis';
 import __Layout from './Layout.jsx';
 
 
@@ -99,10 +99,10 @@ export const PAGES = {
     "Projects": Projects,
     "PropertyDetails": PropertyDetails,
     "Reports": Reports,
+    "SiteAnalysis": SiteAnalysis,
     "Takeoff": Takeoff,
     "Tasks": Tasks,
     "UnitCostLibrary": UnitCostLibrary,
-    "SiteAnalysis": SiteAnalysis,
 }
 
 export const pagesConfig = {

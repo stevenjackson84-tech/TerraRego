@@ -9,6 +9,7 @@ import {
   Grid3x3, CopyPlus, Spline, Eraser, PanelRight
 } from "lucide-react";
 import ConceptPlatPanel from "@/components/cad/ConceptPlatPanel";
+import PlatFinancialAnalysis from "@/components/cad/PlatFinancialAnalysis";
 
 const TOOLS = {
   SELECT: "select",
