@@ -138,9 +138,9 @@ export default function Contacts() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {filteredContacts.map((contact) => (
-              <div key={contact.id} className="relative">
+              <div key={contact.id} className="flex flex-col">
                 <ContactCard contact={contact} />
-                <div className="absolute top-2 right-2 flex gap-1">
+                <div className="flex gap-1 justify-end px-2 py-1.5 bg-white border border-t-0 border-slate-200 rounded-b-xl -mt-1">
                   <Button
                     size="sm"
                     variant="ghost"
@@ -148,27 +148,27 @@ export default function Contacts() {
                       setSelectedContactForEmail(contact);
                       setShowEmailComposer(true);
                     }}
-                    className="h-8 w-8 p-0"
+                    className="h-8 px-2 text-xs text-slate-500 hover:text-slate-900"
                     title="Send email"
                   >
-                    <Mail className="h-4 w-4" />
+                    <Mail className="h-4 w-4 mr-1" /> Email
                   </Button>
                   <Button
                     size="sm"
                     variant="ghost"
                     onClick={() => handleEdit(contact)}
-                    className="h-8 w-8 p-0"
+                    className="h-8 px-2 text-xs text-slate-500 hover:text-slate-900"
                   >
-                    ✏️
+                    ✏️ Edit
                   </Button>
                   <Button
                     size="sm"
                     variant="ghost"
                     onClick={() => handleDelete(contact.id)}
                     disabled={deleteMutation.isPending}
-                    className="h-8 w-8 p-0 text-red-600 hover:text-red-700"
+                    className="h-8 px-2 text-xs text-red-500 hover:text-red-700"
                   >
-                    <Trash2 className="h-4 w-4" />
+                    <Trash2 className="h-3.5 w-3.5 mr-1" /> Delete
                   </Button>
                 </div>
               </div>
