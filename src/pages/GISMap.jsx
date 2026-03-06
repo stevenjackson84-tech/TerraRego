@@ -20,6 +20,7 @@ import GISFilterPanel from "@/components/gis/GISFilterPanel";
 import HeatmapLayer from "@/components/gis/HeatmapLayer";
 import ClusterMarkers from "@/components/gis/ClusterMarkers";
 import VisualizationPanel from "@/components/gis/VisualizationPanel";
+import LehiCityLayers from "@/components/gis/LehiCityLayers";
 
 // Fix default marker icons
 delete L.Icon.Default.prototype._getIconUrl;
