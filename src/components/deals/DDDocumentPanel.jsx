@@ -94,6 +94,16 @@ export default function DDDocumentPanel({ dealId }) {
   const handleSummarize = async (doc) => {
     setSummarizing(doc.id);
     try {
+      // Verify document still exists before running LLM
+      let freshDoc;
+      try {
+        freshDoc = await base44.entities.Document.get(doc.id);
+      } catch {
+        toast.error("Document no longer exists. Refreshing list…");
+        queryClient.invalidateQueries({ queryKey: ["dd_documents", dealId] });
+        return;
+      }
+
       const result = await base44.integrations.Core.InvokeLLM({
         prompt: `You are a real estate due diligence expert. Analyze this document and provide a concise summary of key findings.
 
