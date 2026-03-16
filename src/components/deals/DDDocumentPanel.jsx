@@ -129,7 +129,7 @@ Keep the response concise and focused on what matters for a real estate acquisit
         }
       });
 
-      await base44.entities.Document.update(doc.id, {
+      await base44.entities.Document.update(freshDoc.id, {
         ai_extracted_info: {
           dates: [],
           parties: [],
