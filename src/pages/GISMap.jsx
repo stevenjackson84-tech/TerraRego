@@ -227,6 +227,20 @@ async function geocodeAddress(address, city, state) {
   return null;
 }
 
+const FLOOD_ZONE_META = {
+  A:   { label: "Zone A",   color: "#1d4ed8", sfha: true,  desc: "1% annual chance flood — no BFE determined" },
+  AE:  { label: "Zone AE",  color: "#2563eb", sfha: true,  desc: "1% annual chance flood — BFE determined" },
+  AH:  { label: "Zone AH",  color: "#3b82f6", sfha: true,  desc: "1% annual chance flood — shallow ponding" },
+  AO:  { label: "Zone AO",  color: "#60a5fa", sfha: true,  desc: "1% annual chance flood — sheet flow 1–3 ft" },
+  AR:  { label: "Zone AR",  color: "#818cf8", sfha: true,  desc: "Temporary increased risk during levee restoration" },
+  VE:  { label: "Zone VE",  color: "#0891b2", sfha: true,  desc: "Coastal 1% annual chance flood with wave action" },
+  V:   { label: "Zone V",   color: "#0e7490", sfha: true,  desc: "Coastal flood with wave action — no BFE" },
+  X:   { label: "Zone X",   color: "#16a34a", sfha: false, desc: "0.2% annual chance flood or minimal hazard" },
+  B:   { label: "Zone B",   color: "#4ade80", sfha: false, desc: "Moderate flood hazard (0.2%–1% annual chance)" },
+  C:   { label: "Zone C",   color: "#86efac", sfha: false, desc: "Minimal flood hazard" },
+  D:   { label: "Zone D",   color: "#fbbf24", sfha: null,  desc: "Possible but undetermined flood hazard" },
+};
+
 export default function GISMap() {
   const [searchQuery, setSearchQuery] = useState("");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -238,6 +252,8 @@ export default function GISMap() {
   const [showDeals, setShowDeals] = useState(true);
   const [showSensitiveLands, setShowSensitiveLands] = useState(false);
   const [showFloodZones, setShowFloodZones] = useState(false);
+  const [floodInfo, setFloodInfo] = useState(null);
+  const [floodInfoLoading, setFloodInfoLoading] = useState(false);
   const [showGeologicalHazards, setShowGeologicalHazards] = useState(false);
   const [showPlanDocs, setShowPlanDocs] = useState(true);
   const [showWUI, setShowWUI] = useState(false);
@@ -815,6 +831,30 @@ export default function GISMap() {
     }
   };
 
+  const fetchFloodInfo = async (latlng) => {
+    setFloodInfoLoading(true);
+    setFloodInfo(null);
+    const base = "https://hazards.fema.gov/arcgis/rest/services/public/NFHL/MapServer";
+    const params = (fields) =>
+      `geometry=${latlng.lng},${latlng.lat}&geometryType=esriGeometryPoint&spatialRel=esriSpatialRelIntersects&inSR=4326&outFields=${fields}&returnGeometry=false&f=json`;
+    try {
+      const [zoneRes, panelRes] = await Promise.all([
+        fetch(`${base}/28/query?${params("FLD_ZONE,ZONE_SUBTY,SFHA_TF,STATIC_BFE,V_DATUM,DEPTH,STUDY_TYP")}`),
+        fetch(`${base}/3/query?${params("FIRM_PAN,EFF_DATE,PANEL_TYP,STUDY_TYP,FIRM_ID")}`),
+      ]);
+      const [zoneData, panelData] = await Promise.all([zoneRes.json(), panelRes.json()]);
+      setFloodInfo({
+        zone: zoneData.features?.[0]?.attributes || null,
+        panel: panelData.features?.[0]?.attributes || null,
+      });
+    } catch (e) {
+      console.warn("FEMA flood info fetch failed:", e);
+      setFloodInfo({ zone: null, panel: null });
+    } finally {
+      setFloodInfoLoading(false);
+    }
+  };
+
   const handleMapClick = async (latlng) => {
     if (radiusSearchActive) {
       handleRadiusSearch(latlng);
@@ -823,7 +863,10 @@ export default function GISMap() {
 
     setClickedLocation(latlng);
     setParcelInfo(null);
+    setFloodInfo(null);
+    setFloodInfoLoading(false);
     setIsAnalyzing(true);
+    if (showFloodZones) fetchFloodInfo(latlng);
     try {
       // If parcels layer is on, try to get real ownership data from Utah County GIS first
       let parcelOwnerData = null;
@@ -1246,16 +1289,27 @@ Generate a realistic land parcel analysis. Include:
 
           {/* FEMA Flood Zones - official FEMA WMS service */}
           {showFloodZonesFiltered && (
-            <WMSTileLayer
-              url="https://hazards.fema.gov/arcgis/services/public/NFHLWMS/MapServer/WMSServer"
-              layers="28"
-              format="image/png"
-              transparent={true}
-              opacity={0.6}
-              version="1.3.0"
-              attribution='<a href="https://msc.fema.gov">FEMA NFHL</a>'
-              zIndex={10}
-            />
+            <>
+              <WMSTileLayer
+                url="https://hazards.fema.gov/arcgis/services/public/NFHLWMS/MapServer/WMSServer"
+                layers="28"
+                format="image/png"
+                transparent={true}
+                opacity={0.6}
+                version="1.3.0"
+                attribution='<a href="https://msc.fema.gov">FEMA NFHL</a>'
+                zIndex={10}
+              />
+              <WMSTileLayer
+                url="https://hazards.fema.gov/arcgis/services/public/NFHLWMS/MapServer/WMSServer"
+                layers="16"
+                format="image/png"
+                transparent={true}
+                opacity={0.8}
+                version="1.3.0"
+                zIndex={11}
+              />
+            </>
           )}
 
           {/* Sensitive Lands - Utah Geological Survey Wetlands */}
@@ -1909,7 +1963,7 @@ Generate a realistic land parcel analysis. Include:
                     <span className="font-semibold text-sm text-slate-900">Parcel Analysis</span>
                   </div>
                   <button
-                    onClick={() => { setParcelInfo(null); setClickedLocation(null); }}
+                    onClick={() => { setParcelInfo(null); setClickedLocation(null); setFloodInfo(null); }}
                     className="text-slate-400 hover:text-slate-600"
                   >
                     <X className="h-4 w-4" />
@@ -1980,6 +2034,92 @@ Generate a realistic land parcel analysis. Include:
                         <div className="text-xs text-blue-700">{parcelInfo.infrastructure}</div>
                       </div>
                     )}
+                    {/* FEMA Flood Zone Section */}
+                    {(floodInfoLoading || floodInfo) && (() => {
+                      if (floodInfoLoading) {
+                        return (
+                          <div className="flex items-center gap-2 text-xs text-slate-500 py-1">
+                            <div className="h-3 w-3 border-2 border-blue-400 border-t-transparent rounded-full animate-spin" />
+                            Loading FEMA flood data…
+                          </div>
+                        );
+                      }
+                      const zone = floodInfo?.zone;
+                      const panel = floodInfo?.panel;
+                      if (!zone && !panel) {
+                        return (
+                          <div className="text-xs text-slate-400 italic">
+                            No FEMA flood zone data found for this location.
+                          </div>
+                        );
+                      }
+                      const fldZone = zone?.FLD_ZONE || "";
+                      const meta = FLOOD_ZONE_META[fldZone];
+                      const isSFHA = zone?.SFHA_TF === "T" || meta?.sfha === true;
+                      const bfe = zone?.STATIC_BFE;
+                      const depth = zone?.DEPTH;
+                      const datum = zone?.V_DATUM;
+                      const firmPan = panel?.FIRM_PAN;
+                      const effDate = panel?.EFF_DATE
+                        ? new Date(panel.EFF_DATE).toLocaleDateString()
+                        : null;
+                      const studyType = zone?.STUDY_TYP || panel?.STUDY_TYP;
+                      return (
+                        <div className="rounded-lg border border-blue-100 bg-blue-50 p-2.5 space-y-2">
+                          <div className="flex items-center justify-between gap-2 flex-wrap">
+                            <span
+                              className="text-xs font-bold px-2 py-0.5 rounded text-white"
+                              style={{ backgroundColor: meta?.color || "#64748b" }}
+                            >
+                              {meta?.label || fldZone || "Unknown Zone"}
+                            </span>
+                            {isSFHA ? (
+                              <span className="text-xs font-semibold px-2 py-0.5 rounded bg-red-100 text-red-700">
+                                Special Flood Hazard Area
+                              </span>
+                            ) : meta?.sfha === false ? (
+                              <span className="text-xs font-semibold px-2 py-0.5 rounded bg-green-100 text-green-700">
+                                Outside SFHA
+                              </span>
+                            ) : null}
+                          </div>
+                          {meta?.desc && (
+                            <p className="text-xs text-blue-700">{meta.desc}</p>
+                          )}
+                          {(bfe != null || depth != null || datum) && (
+                            <div className="grid grid-cols-2 gap-1.5">
+                              {bfe != null && bfe > 0 && (
+                                <div className="bg-white rounded p-1.5">
+                                  <div className="text-xs text-slate-400">Base Flood Elev.</div>
+                                  <div className="text-xs font-semibold">{bfe} ft {datum || ""}</div>
+                                </div>
+                              )}
+                              {depth != null && depth > 0 && (
+                                <div className="bg-white rounded p-1.5">
+                                  <div className="text-xs text-slate-400">Depth</div>
+                                  <div className="text-xs font-semibold">{depth} ft</div>
+                                </div>
+                              )}
+                            </div>
+                          )}
+                          {(firmPan || effDate) && (
+                            <div className="text-xs text-slate-600 space-y-0.5">
+                              {firmPan && <div><span className="text-slate-400">FIRM Panel: </span>{firmPan}</div>}
+                              {effDate && <div><span className="text-slate-400">Effective: </span>{effDate}</div>}
+                              {studyType && <div><span className="text-slate-400">Study: </span>{studyType}</div>}
+                            </div>
+                          )}
+                          <a
+                            href={`https://msc.fema.gov/portal/search${firmPan ? `?AddressQuery=${firmPan}` : ""}#searchresultsanchor`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 hover:underline"
+                          >
+                            View FIRM Panel on FEMA MSC ↗
+                          </a>
+                        </div>
+                      );
+                    })()}
                     <SendToClickUp parcelInfo={parcelInfo} location={clickedLocation} />
                   </div>
                 )}

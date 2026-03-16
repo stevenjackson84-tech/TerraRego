@@ -10,9 +10,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, Calendar, CheckCircle2, Clock, AlertCircle, TrendingUp, Edit, Trash2, FileText } from "lucide-react";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Plus, Calendar, CheckCircle2, Clock, AlertCircle, TrendingUp, Edit, Trash2, FileText, GanttChartSquare } from "lucide-react";
 import { format } from "date-fns";
+import GanttChart from "@/components/development/GanttChart";
 import { cn } from "@/lib/utils";
 
 const statusConfig = {
@@ -51,6 +52,7 @@ export default function Development() {
   const [showForm, setShowForm] = useState(false);
   const [editingUpdate, setEditingUpdate] = useState(null);
   const [filterStatus, setFilterStatus] = useState("all");
+  const [viewMode, setViewMode] = useState("list");
   const [formData, setFormData] = useState(defaultUpdate);
 
   const queryClient = useQueryClient();
@@ -275,20 +277,42 @@ export default function Development() {
           </div>
         )}
 
-        {/* Filters */}
-        <div className="mb-6">
-          <h2 className="text-xl font-semibold text-slate-900 mb-4">Deal Development Milestones</h2>
-          <Tabs value={filterStatus} onValueChange={setFilterStatus}>
+        {/* View Mode Tabs */}
+        <Tabs value={viewMode} onValueChange={setViewMode} className="mb-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-semibold text-slate-900">Deal Development Milestones</h2>
             <TabsList className="bg-white border">
-              <TabsTrigger value="all">All</TabsTrigger>
-              <TabsTrigger value="active">Active</TabsTrigger>
-              <TabsTrigger value="planned">Planned</TabsTrigger>
-              <TabsTrigger value="in_progress">In Progress</TabsTrigger>
-              <TabsTrigger value="completed">Completed</TabsTrigger>
-              <TabsTrigger value="delayed">Delayed</TabsTrigger>
+              <TabsTrigger value="list" className="flex items-center gap-1.5">
+                <FileText className="h-3.5 w-3.5" />
+                List
+              </TabsTrigger>
+              <TabsTrigger value="gantt" className="flex items-center gap-1.5">
+                <GanttChartSquare className="h-3.5 w-3.5" />
+                Gantt Chart
+              </TabsTrigger>
             </TabsList>
-          </Tabs>
-        </div>
+          </div>
+
+          <TabsContent value="gantt">
+            <GanttChart
+              updates={updates}
+              projectPhases={projectPhases}
+              projects={projects}
+            />
+          </TabsContent>
+
+          <TabsContent value="list">
+            {/* Status filter */}
+            <Tabs value={filterStatus} onValueChange={setFilterStatus} className="mb-4">
+              <TabsList className="bg-white border">
+                <TabsTrigger value="all">All</TabsTrigger>
+                <TabsTrigger value="active">Active</TabsTrigger>
+                <TabsTrigger value="planned">Planned</TabsTrigger>
+                <TabsTrigger value="in_progress">In Progress</TabsTrigger>
+                <TabsTrigger value="completed">Completed</TabsTrigger>
+                <TabsTrigger value="delayed">Delayed</TabsTrigger>
+              </TabsList>
+            </Tabs>
 
         {/* Development Updates List */}
         <div className="space-y-4">
@@ -369,6 +393,8 @@ export default function Development() {
             </div>
           )}
         </div>
+          </TabsContent>
+        </Tabs>
 
         {/* Form Dialog */}
         <Dialog open={showForm} onOpenChange={(open) => {

@@ -67,7 +67,7 @@ export default function SendToClickUp({ parcelInfo, location }) {
       parcelInfo.opportunities ? `\n**Opportunities:**\n${parcelInfo.opportunities}` : null,
       parcelInfo.risks ? `\n**Risks:**\n${parcelInfo.risks}` : null,
       "",
-      `*Created from TerraRego GIS Map*`,
+      `*Created from Parcelr GIS Map*`,
     ];
     return lines.filter(Boolean).join("\n");
   };

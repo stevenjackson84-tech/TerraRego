@@ -12,6 +12,7 @@ import { format, isPast, isToday } from "date-fns";
 import { cn } from "@/lib/utils";
 import TaskForm from "@/components/tasks/TaskForm";
 import TaskKanban from "@/components/tasks/TaskKanban";
+import ClickUpTasksPanel from "@/components/clickup/ClickUpTasksPanel";
 
 const priorityStyles = {
   low: "bg-slate-100 text-slate-600",
@@ -28,6 +29,7 @@ const statusStyles = {
 };
 
 export default function Tasks() {
+  const [source, setSource] = useState("parcelr"); // "parcelr" | "clickup"
   const [search, setSearch] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
@@ -128,11 +130,49 @@ export default function Tasks() {
             <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Tasks</h1>
             <p className="text-slate-500 mt-1">Track your to-dos and project tasks</p>
           </div>
-          <Button onClick={() => setShowForm(true)} className="bg-slate-900 hover:bg-slate-800">
-            <Plus className="h-4 w-4 mr-2" />
-            Add Task
-          </Button>
+          <div className="flex items-center gap-3">
+            {/* Source toggle */}
+            <div className="flex bg-slate-100 rounded-lg p-1">
+              <button
+                onClick={() => setSource("parcelr")}
+                className={cn(
+                  "px-3 py-1.5 text-sm font-medium rounded-md transition-all",
+                  source === "parcelr"
+                    ? "bg-white text-slate-900 shadow-sm"
+                    : "text-slate-500 hover:text-slate-700"
+                )}
+              >
+                Parcelr
+              </button>
+              <button
+                onClick={() => setSource("clickup")}
+                className={cn(
+                  "px-3 py-1.5 text-sm font-medium rounded-md transition-all flex items-center gap-1.5",
+                  source === "clickup"
+                    ? "bg-white text-slate-900 shadow-sm"
+                    : "text-slate-500 hover:text-slate-700"
+                )}
+              >
+                <div className="w-3.5 h-3.5 rounded flex items-center justify-center shrink-0" style={{ backgroundColor: "#7B68EE" }}>
+                  <span className="text-white font-bold" style={{ fontSize: "8px" }}>C</span>
+                </div>
+                ClickUp
+              </button>
+            </div>
+            {source === "parcelr" && (
+              <Button onClick={() => setShowForm(true)} className="bg-slate-900 hover:bg-slate-800">
+                <Plus className="h-4 w-4 mr-2" />
+                Add Task
+              </Button>
+            )}
+          </div>
         </div>
+
+        {/* ClickUp Tasks */}
+        {source === "clickup" && <ClickUpTasksPanel />}
+
+        {/* Parcelr Tasks */}
+        {source === "parcelr" && <>
 
         {/* Filters */}
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
@@ -407,6 +447,8 @@ export default function Tasks() {
           onSave={handleSave}
           isLoading={createMutation.isPending || updateMutation.isPending}
         />
+
+        </>}
       </div>
     </div>
   );

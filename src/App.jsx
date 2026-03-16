@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Toaster } from "@/components/ui/toaster"
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClientInstance } from '@/lib/query-client'
@@ -7,6 +8,8 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
+import AuthWall from '@/components/auth/AuthWall';
+import { getSession } from '@/lib/localAuth';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -65,6 +68,11 @@ const AuthenticatedApp = () => {
 
 
 function App() {
+  const [localUser, setLocalUser] = useState(() => getSession());
+
+  if (!localUser) {
+    return <AuthWall onAuth={(user) => setLocalUser(user)} />;
+  }
 
   return (
     <AuthProvider>

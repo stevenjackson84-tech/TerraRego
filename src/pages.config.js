@@ -47,9 +47,10 @@
  *
  * The mainPage value must match a key in the PAGES object exactly.
  */
-import Analytics from './pages/Analytics';
-import BusinessPlan from './pages/BusinessPlan';
 import CADDrafter from './pages/CADDrafter';
+import StrategyHub from './pages/StrategyHub';
+import UserManagement from './pages/UserManagement';
+import Organization from './pages/Organization';
 import Calendar from './pages/Calendar';
 import Contacts from './pages/Contacts';
 import Dashboard from './pages/Dashboard';
@@ -59,16 +60,13 @@ import Development from './pages/Development';
 import EmailTemplates from './pages/EmailTemplates';
 import Entitlements from './pages/Entitlements';
 import Favorites from './pages/Favorites';
-import FinancialDashboard from './pages/FinancialDashboard';
 import FloorPlansLibrary from './pages/FloorPlansLibrary';
 import GISMap from './pages/GISMap';
-import LeanSixSigma from './pages/LeanSixSigma';
 import Marketplace from './pages/Marketplace';
 import PlanCheck from './pages/PlanCheck';
 import ProjectDetails from './pages/ProjectDetails';
 import Projects from './pages/Projects';
 import PropertyDetails from './pages/PropertyDetails';
-import Reports from './pages/Reports';
 import SiteAnalysis from './pages/SiteAnalysis';
 import Takeoff from './pages/Takeoff';
 import Tasks from './pages/Tasks';
@@ -77,8 +75,7 @@ import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
-    "Analytics": Analytics,
-    "BusinessPlan": BusinessPlan,
+    "StrategyHub": StrategyHub,
     "CADDrafter": CADDrafter,
     "Calendar": Calendar,
     "Contacts": Contacts,
@@ -89,20 +86,19 @@ export const PAGES = {
     "EmailTemplates": EmailTemplates,
     "Entitlements": Entitlements,
     "Favorites": Favorites,
-    "FinancialDashboard": FinancialDashboard,
     "FloorPlansLibrary": FloorPlansLibrary,
     "GISMap": GISMap,
-    "LeanSixSigma": LeanSixSigma,
     "Marketplace": Marketplace,
     "PlanCheck": PlanCheck,
     "ProjectDetails": ProjectDetails,
     "Projects": Projects,
     "PropertyDetails": PropertyDetails,
-    "Reports": Reports,
     "SiteAnalysis": SiteAnalysis,
     "Takeoff": Takeoff,
     "Tasks": Tasks,
     "UnitCostLibrary": UnitCostLibrary,
+    "UserManagement": UserManagement,
+    "Organization": Organization,
 }
 
 export const pagesConfig = {

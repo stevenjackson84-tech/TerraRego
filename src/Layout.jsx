@@ -1,32 +1,31 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { base44 } from "@/api/base44Client";
 import NotificationCenter from "@/components/shared/NotificationCenter";
-import { 
-  LayoutDashboard, 
-  Building2, 
-  Users, 
-  ClipboardList, 
+import { getSession, logout, getDomain, getOrgName } from "@/lib/localAuth";
+import {
+  LayoutDashboard,
+  Building2,
+  Users,
+  ClipboardList,
   FileCheck,
   HardHat,
   TrendingUp,
-  FileText,
   Menu,
   X,
   ChevronRight,
   Folder,
-  Sigma,
   Map,
   Pencil,
-  DollarSign,
   Calendar,
   Briefcase,
   Ruler,
   BookOpen,
-  ScanSearch
+  ScanSearch,
+  LogOut,
+  Shield
 } from "lucide-react";
 
 
@@ -40,11 +39,7 @@ const navigation = [
   { name: "Entitlements", icon: FileCheck, page: "Entitlements" },
   { name: "Development", icon: HardHat, page: "Development" },
   { name: "Floor Plans", icon: Building2, page: "FloorPlansLibrary" },
-  { name: "Business Plan", icon: FileText, page: "BusinessPlan" },
-  { name: "Analytics", icon: TrendingUp, page: "Analytics" },
-  { name: "Financial Dashboard", icon: DollarSign, page: "FinancialDashboard" },
-  { name: "Reports", icon: FileText, page: "Reports" },
-  { name: "Process Improvement", icon: Sigma, page: "LeanSixSigma" },
+  { name: "Strategy Hub", icon: TrendingUp, page: "StrategyHub" },
   { name: "GIS Map", icon: Map, page: "GISMap" },
   { name: "Favorites", icon: Building2, page: "Favorites" },
   { name: "Plan Check", icon: FileCheck, page: "PlanCheck" },
@@ -53,19 +48,23 @@ const navigation = [
   { name: "Site Analysis", icon: ScanSearch, page: "SiteAnalysis" },
   { name: "Project Takeoff", icon: Ruler, page: "Takeoff" },
   { name: "Unit Cost Library", icon: BookOpen, page: "UnitCostLibrary" },
+  { name: "User Management", icon: Users, page: "UserManagement" },
+  { name: "Organization", icon: Shield, page: "Organization" },
 ];
 
 export default function Layout({ children, currentPageName }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [userEmail, setUserEmail] = useState(null);
+  const currentUser = getSession();
+  const userEmail = currentUser?.email || null;
+  const userInitials = currentUser?.name
+    ? currentUser.name.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase()
+    : "?";
+  const orgName = currentUser ? getOrgName(getDomain(currentUser.email)) : null;
 
-  useEffect(() => {
-    const getUser = async () => {
-      const user = await base44.auth.me();
-      if (user) setUserEmail(user.email);
-    };
-    getUser();
-  }, []);
+  const handleLogout = () => {
+    logout();
+    window.location.href = "/";
+  };
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -84,7 +83,7 @@ export default function Layout({ children, currentPageName }) {
       )}>
         <div className="flex items-center justify-between h-14 px-4 border-b border-slate-200">
           <Link to={createPageUrl("Dashboard")} className="flex items-center gap-2">
-            <img src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/698a2099619afaafce3010e1/0ca6c9084_5e0b1807-ab54-444a-a52e-281f71d72e74.png" alt="Parcelr" className="w-8 h-8 object-contain" />
+            <img src="/parcelr-logo.png" alt="Parcelr" className="w-8 h-8 object-contain" />
             <span className="text-sm font-semibold text-slate-900">Parcelr</span>
           </Link>
           <Button 
@@ -134,17 +133,33 @@ export default function Layout({ children, currentPageName }) {
               <Menu className="h-5 w-5" />
             </Button>
             <Link to={createPageUrl("Dashboard")} className="flex items-center gap-2">
-              <img src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/698a2099619afaafce3010e1/0ca6c9084_5e0b1807-ab54-444a-a52e-281f71d72e74.png" alt="Parcelr" className="w-10 h-10 object-contain" />
+              <img src="/parcelr-logo.png" alt="Parcelr" className="w-10 h-10 object-contain" />
               <span className="text-lg font-semibold text-slate-900">Parcelr</span>
             </Link>
             {userEmail && <NotificationCenter userEmail={userEmail} />}
           </div>
         </header>
 
-        {/* Desktop header with notification center */}
+        {/* Desktop header with user info + logout */}
         <header className="hidden lg:flex sticky top-0 z-30 bg-white border-b border-slate-200 h-16 px-4 items-center justify-between">
           <div className="flex-1" />
-          {userEmail && <NotificationCenter userEmail={userEmail} />}
+          <div className="flex items-center gap-3">
+            {userEmail && <NotificationCenter userEmail={userEmail} />}
+            {currentUser && (
+              <div className="flex items-center gap-2 pl-3 border-l border-slate-200">
+                <div className="text-right">
+                  <p className="text-xs font-semibold text-slate-900 leading-tight">{currentUser.name}</p>
+                  {orgName && <p className="text-xs text-slate-400 leading-tight">{orgName}</p>}
+                </div>
+                <div className="w-8 h-8 rounded-full bg-slate-900 flex items-center justify-center text-white text-xs font-bold">
+                  {userInitials}
+                </div>
+                <Button variant="ghost" size="icon" onClick={handleLogout} className="h-8 w-8 text-slate-400 hover:text-red-600">
+                  <LogOut className="h-4 w-4" />
+                </Button>
+              </div>
+            )}
+          </div>
         </header>
 
         {/* Page content */}
