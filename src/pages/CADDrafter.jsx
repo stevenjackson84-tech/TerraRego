@@ -9,6 +9,7 @@ import {
   Grid3x3, CopyPlus, Spline, Eraser, PanelRight
 } from "lucide-react";
 import ConceptPlatPanel from "@/components/cad/ConceptPlatPanel";
+import PDFtoDWGConverter from "@/components/cad/PDFtoDWGConverter";
 import PlatFinancialAnalysis from "@/components/cad/PlatFinancialAnalysis";
 
 const TOOLS = {
@@ -54,6 +55,7 @@ export default function CADDrafter() {
   const [filletRadius, setFilletRadius] = useState(10);
   const [filletFirst, setFilletFirst] = useState(null); // id of first line for fillet
   const [showPlatPanel, setShowPlatPanel] = useState(false);
+  const [showPDFConverter, setShowPDFConverter] = useState(false);
   const [rightPanelTab, setRightPanelTab] = useState("plat"); // "plat" | "financial"
   const [platMeta, setPlatMeta] = useState(null);
   const svgRef = useRef(null);
@@ -694,6 +696,10 @@ export default function CADDrafter() {
               className={`text-xs gap-1 ${showPlatPanel ? "bg-indigo-600 text-white border-indigo-600" : ""}`}>
               <PanelRight className="h-3 w-3" /> Concept Plat
             </Button>
+            <Button size="sm" variant="outline" onClick={() => setShowPDFConverter(true)}
+              className="text-xs gap-1 border-orange-200 text-orange-700 hover:bg-orange-50">
+              <Download className="h-3 w-3" /> PDF → DXF
+            </Button>
             <div className="w-px h-5 bg-slate-200" />
             <Button size="sm" variant="outline" onClick={exportSVG} className="text-xs gap-1">
               <Download className="h-3 w-3" /> SVG
@@ -783,6 +789,8 @@ export default function CADDrafter() {
           </div>
         </div>
       )}
+
+      <PDFtoDWGConverter open={showPDFConverter} onClose={() => setShowPDFConverter(false)} />
     </div>
   );
 }
