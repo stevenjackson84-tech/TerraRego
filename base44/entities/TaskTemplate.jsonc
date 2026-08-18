@@ -1,0 +1,65 @@
+{
+  "name": "TaskTemplate",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Template name"
+    },
+    "deal_stage": {
+      "type": "string",
+      "enum": [
+        "prospecting",
+        "loi",
+        "controlled_not_approved",
+        "controlled_approved",
+        "owned",
+        "entitlements",
+        "development",
+        "closed"
+      ],
+      "description": "Deal stage this template applies to"
+    },
+    "task_name_template": {
+      "type": "string",
+      "description": "Template for task name (use {deal_name}, {deal_address} as placeholders)"
+    },
+    "description_template": {
+      "type": "string",
+      "description": "Template for task description"
+    },
+    "priority": {
+      "type": "number",
+      "enum": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "default": 3,
+      "description": "ClickUp priority (1=Urgent, 4=Low)"
+    },
+    "due_date_offset_days": {
+      "type": "number",
+      "default": 7,
+      "description": "Days from now to set as due date"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this template is active"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Tags to apply to tasks"
+    }
+  },
+  "required": [
+    "name",
+    "deal_stage",
+    "task_name_template"
+  ]
+}

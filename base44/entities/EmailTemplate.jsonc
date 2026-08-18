@@ -1,0 +1,42 @@
+{
+  "name": "EmailTemplate",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Template name"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "follow_up",
+        "offer",
+        "status_update",
+        "introduction",
+        "negotiation",
+        "closing",
+        "general"
+      ],
+      "default": "general",
+      "description": "Email category"
+    },
+    "subject": {
+      "type": "string",
+      "description": "Email subject template"
+    },
+    "body": {
+      "type": "string",
+      "description": "Email body template (use {contact_name}, {deal_name}, {deal_address} as placeholders)"
+    },
+    "is_system": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this is a built-in template"
+    }
+  },
+  "required": [
+    "name",
+    "subject",
+    "body"
+  ]
+}

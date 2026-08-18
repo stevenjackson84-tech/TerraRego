@@ -1,0 +1,82 @@
+{
+  "name": "BurnSchedule",
+  "type": "object",
+  "properties": {
+    "deal_id": {
+      "type": "string",
+      "description": "Related deal ID"
+    },
+    "name": {
+      "type": "string",
+      "description": "Burn schedule name/version"
+    },
+    "rows": {
+      "type": "array",
+      "description": "Each row represents a product/plat combination",
+      "items": {
+        "type": "object",
+        "properties": {
+          "village": {
+            "type": "string",
+            "description": "Village or phase identifier (e.g. V7, V8)"
+          },
+          "plat": {
+            "type": "string",
+            "description": "Plat identifier (e.g. N1, W1)"
+          },
+          "product_type": {
+            "type": "string",
+            "description": "Product type name"
+          },
+          "lot_type": {
+            "type": "string",
+            "description": "Lot type (e.g. TH, 30x80, 45x100)"
+          },
+          "total_units": {
+            "type": "number"
+          },
+          "absorption_pace": {
+            "type": "number",
+            "description": "Units per month"
+          },
+          "dev_start_date": {
+            "type": "string",
+            "format": "date"
+          },
+          "dev_duration_months": {
+            "type": "number"
+          },
+          "plat_record_date": {
+            "type": "string",
+            "format": "date"
+          },
+          "hb_start_date": {
+            "type": "string",
+            "format": "date"
+          },
+          "monthly_starts": {
+            "type": "array",
+            "description": "Array of {month: 'YYYY-MM', count: number}",
+            "items": {
+              "type": "object",
+              "properties": {
+                "month": {
+                  "type": "string"
+                },
+                "count": {
+                  "type": "number"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "deal_id"
+  ]
+}

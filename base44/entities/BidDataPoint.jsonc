@@ -1,0 +1,75 @@
+{
+  "name": "BidDataPoint",
+  "type": "object",
+  "properties": {
+    "bid_upload_id": {
+      "type": "string",
+      "description": "Source BidUpload record ID"
+    },
+    "takeoff_id": {
+      "type": "string",
+      "description": "Source Takeoff ID"
+    },
+    "takeoff_name": {
+      "type": "string",
+      "description": "Takeoff / project name (cached)"
+    },
+    "contractor_name": {
+      "type": "string"
+    },
+    "bid_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "grading",
+        "paving",
+        "curb_gutter",
+        "storm_drain",
+        "sanitary_sewer",
+        "water",
+        "dry_utilities",
+        "street_lights",
+        "landscaping",
+        "walls_fencing",
+        "offsite_improvements",
+        "permits_fees",
+        "engineering_survey",
+        "general_conditions",
+        "other"
+      ]
+    },
+    "description": {
+      "type": "string"
+    },
+    "unit_of_measure": {
+      "type": "string",
+      "enum": [
+        "per_lot",
+        "per_lf",
+        "per_sf",
+        "lump_sum",
+        "per_unit"
+      ]
+    },
+    "unit_cost": {
+      "type": "number"
+    },
+    "quantity": {
+      "type": "number"
+    },
+    "total_cost": {
+      "type": "number"
+    },
+    "development_type": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "category",
+    "unit_cost",
+    "bid_date"
+  ]
+}

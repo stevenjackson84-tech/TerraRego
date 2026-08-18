@@ -1,0 +1,131 @@
+{
+  "name": "Deal",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Deal/Property name"
+    },
+    "address": {
+      "type": "string",
+      "description": "Property address"
+    },
+    "city": {
+      "type": "string"
+    },
+    "state": {
+      "type": "string"
+    },
+    "parcel_number": {
+      "type": "string",
+      "description": "APN/Parcel ID"
+    },
+    "number_of_lots": {
+      "type": "number",
+      "description": "Number of lots"
+    },
+    "acreage": {
+      "type": "number"
+    },
+    "zoning_current": {
+      "type": "string"
+    },
+    "zoning_target": {
+      "type": "string"
+    },
+    "asking_price": {
+      "type": "number"
+    },
+    "offer_price": {
+      "type": "number"
+    },
+    "purchase_price": {
+      "type": "number"
+    },
+    "estimated_value": {
+      "type": "number"
+    },
+    "latitude": {
+      "type": "number",
+      "description": "Latitude coordinate"
+    },
+    "longitude": {
+      "type": "number",
+      "description": "Longitude coordinate"
+    },
+    "stage": {
+      "type": "string",
+      "enum": [
+        "prospecting",
+        "loi",
+        "controlled_not_approved",
+        "controlled_approved",
+        "owned",
+        "entitlements",
+        "development",
+        "closed",
+        "dead"
+      ],
+      "default": "prospecting"
+    },
+    "deal_type": {
+      "type": "string",
+      "enum": [
+        "acquisition",
+        "disposition",
+        "joint_venture",
+        "option"
+      ],
+      "default": "acquisition"
+    },
+    "property_type": {
+      "type": "string",
+      "enum": [
+        "residential",
+        "commercial",
+        "industrial",
+        "mixed_use",
+        "land",
+        "multifamily"
+      ],
+      "default": "land"
+    },
+    "lead_source": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "image_url": {
+      "type": "string"
+    },
+    "contract_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "close_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "due_diligence_deadline": {
+      "type": "string",
+      "format": "date"
+    },
+    "assigned_to": {
+      "type": "string"
+    },
+    "priority": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ],
+      "default": "medium"
+    }
+  },
+  "required": [
+    "name"
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "name": "Comment",
+  "type": "object",
+  "properties": {
+    "entity_type": {
+      "type": "string",
+      "enum": [
+        "deal",
+        "task",
+        "entitlement"
+      ],
+      "description": "Type of entity being commented on"
+    },
+    "entity_id": {
+      "type": "string",
+      "description": "ID of the entity being commented on"
+    },
+    "content": {
+      "type": "string",
+      "description": "Comment text"
+    },
+    "mentions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Emails of mentioned users"
+    },
+    "is_pinned": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this comment is pinned to the top"
+    }
+  },
+  "required": [
+    "entity_type",
+    "entity_id",
+    "content"
+  ]
+}

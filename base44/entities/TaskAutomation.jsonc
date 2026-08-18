@@ -1,0 +1,156 @@
+{
+  "name": "TaskAutomation",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Name of the automation rule"
+    },
+    "description": {
+      "type": "string",
+      "description": "Description of what this rule does"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this automation is enabled"
+    },
+    "trigger_type": {
+      "type": "string",
+      "enum": [
+        "deal_stage_change",
+        "date_trigger",
+        "deal_criteria"
+      ],
+      "description": "Type of trigger that activates this rule"
+    },
+    "trigger_config": {
+      "type": "object",
+      "description": "Configuration for the trigger (varies by trigger_type)",
+      "properties": {
+        "stages": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "For deal_stage_change: which stages trigger this"
+        },
+        "date_field": {
+          "type": "string",
+          "description": "For date_trigger: which date field to monitor"
+        },
+        "days_before": {
+          "type": "number",
+          "description": "For date_trigger: how many days before the date"
+        },
+        "criteria": {
+          "type": "object",
+          "description": "For deal_criteria: field conditions to match"
+        }
+      }
+    },
+    "action_type": {
+      "type": "string",
+      "enum": [
+        "create_task",
+        "assign_task",
+        "update_task"
+      ],
+      "description": "Type of action to perform"
+    },
+    "action_config": {
+      "type": "object",
+      "description": "Configuration for the action",
+      "properties": {
+        "task_title_template": {
+          "type": "string",
+          "description": "Template for task title (use {deal_name}, {deal_address} as placeholders)"
+        },
+        "task_description_template": {
+          "type": "string",
+          "description": "Template for task description"
+        },
+        "priority": {
+          "type": "string",
+          "enum": [
+            "low",
+            "medium",
+            "high",
+            "urgent"
+          ],
+          "description": "Task priority"
+        },
+        "category": {
+          "type": "string",
+          "enum": [
+            "due_diligence",
+            "legal",
+            "financial",
+            "entitlement",
+            "construction",
+            "marketing",
+            "general"
+          ],
+          "description": "Task category"
+        },
+        "days_from_trigger": {
+          "type": "number",
+          "description": "Days from trigger to set as due date"
+        },
+        "assigned_to": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Emails of users to assign task to"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "todo",
+            "in_progress",
+            "blocked",
+            "completed"
+          ],
+          "description": "Status to update task to"
+        }
+      }
+    },
+    "execution_history": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "deal_id": {
+            "type": "string"
+          },
+          "executed_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "task_id": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "failed"
+            ]
+          },
+          "error": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "History of executions"
+    }
+  },
+  "required": [
+    "name",
+    "trigger_type",
+    "trigger_config",
+    "action_type",
+    "action_config"
+  ]
+}

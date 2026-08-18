@@ -1,0 +1,118 @@
+{
+  "name": "FloorPlan",
+  "type": "object",
+  "properties": {
+    "community": {
+      "type": "string",
+      "description": "Community name (e.g. Salem_SF, Harmony_SF)"
+    },
+    "name": {
+      "type": "string",
+      "description": "Floor plan name (e.g. Redwood, Granite)"
+    },
+    "image_url": {
+      "type": "string",
+      "description": "URL of the floor plan elevation image"
+    },
+    "square_footage": {
+      "type": "number",
+      "description": "Square footage"
+    },
+    "bedrooms": {
+      "type": "number",
+      "description": "Number of bedrooms"
+    },
+    "bathrooms": {
+      "type": "number",
+      "description": "Number of bathrooms"
+    },
+    "garage_count": {
+      "type": "number",
+      "description": "Number of garage spaces"
+    },
+    "product_type": {
+      "type": "string",
+      "description": "Product type (e.g. Single Family, 4plex, 6plex)"
+    },
+    "base_price": {
+      "type": "number",
+      "description": "Base price"
+    },
+    "incentives": {
+      "type": "number",
+      "description": "Incentives amount (negative = discount)"
+    },
+    "options": {
+      "type": "number",
+      "description": "Average options amount"
+    },
+    "asp": {
+      "type": "number",
+      "description": "Average Selling Price (base + options + incentives)"
+    },
+    "lot_cost": {
+      "type": "number",
+      "description": "Lot cost"
+    },
+    "permit_cost": {
+      "type": "number",
+      "description": "Permit fee"
+    },
+    "directs_per_sqft": {
+      "type": "number",
+      "description": "Direct construction cost per sqft"
+    },
+    "directs_total": {
+      "type": "number",
+      "description": "Total direct construction cost"
+    },
+    "option_cost": {
+      "type": "number",
+      "description": "Option cost (direct cost of options)"
+    },
+    "indirects": {
+      "type": "number",
+      "description": "Indirect costs"
+    },
+    "outside_sales_commission": {
+      "type": "number",
+      "description": "Outside sales commission"
+    },
+    "inside_sales_commission": {
+      "type": "number",
+      "description": "Inside sales commission"
+    },
+    "warranty": {
+      "type": "number",
+      "description": "Warranty cost"
+    },
+    "loan_fees": {
+      "type": "number",
+      "description": "Loan fees / interest"
+    },
+    "closing_misc": {
+      "type": "number",
+      "description": "Closing / miscellaneous fees"
+    },
+    "gross_margin": {
+      "type": "number",
+      "description": "Gross margin ($)"
+    },
+    "gross_margin_pct": {
+      "type": "number",
+      "description": "Gross margin percentage"
+    },
+    "net_pct": {
+      "type": "number",
+      "description": "Net margin percentage after SG&A"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Additional notes"
+    }
+  },
+  "required": [
+    "community",
+    "name"
+  ]
+}

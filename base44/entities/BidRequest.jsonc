@@ -1,0 +1,86 @@
+{
+  "name": "BidRequest",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Bid request title"
+    },
+    "description": {
+      "type": "string",
+      "description": "Scope of work / bid details"
+    },
+    "entity_type": {
+      "type": "string",
+      "enum": [
+        "deal",
+        "project"
+      ],
+      "description": "Whether this bid is linked to a deal or project"
+    },
+    "entity_id": {
+      "type": "string",
+      "description": "ID of the linked deal or project"
+    },
+    "entity_name": {
+      "type": "string",
+      "description": "Cached name of the linked entity"
+    },
+    "bid_category": {
+      "type": "string",
+      "enum": [
+        "surveying",
+        "civil_engineering",
+        "grading",
+        "utilities",
+        "entitlement_consulting",
+        "legal",
+        "architecture",
+        "environmental",
+        "geotechnical",
+        "general_contractor",
+        "other"
+      ],
+      "default": "other",
+      "description": "Category of work being bid"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "open",
+        "awarded",
+        "closed"
+      ],
+      "default": "draft",
+      "description": "Bid request status"
+    },
+    "due_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Bid submission deadline"
+    },
+    "budget_estimate": {
+      "type": "number",
+      "description": "Estimated budget (optional)"
+    },
+    "invited_contacts": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Array of contact IDs invited to bid"
+    },
+    "awarded_contact_id": {
+      "type": "string",
+      "description": "Contact ID of awarded bidder"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "title",
+    "bid_category"
+  ]
+}

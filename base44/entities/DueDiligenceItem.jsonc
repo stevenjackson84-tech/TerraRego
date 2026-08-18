@@ -1,0 +1,55 @@
+{
+  "name": "DueDiligenceItem",
+  "type": "object",
+  "properties": {
+    "deal_id": {
+      "type": "string",
+      "description": "Related deal ID"
+    },
+    "category": {
+      "type": "string",
+      "description": "Category of the checklist item"
+    },
+    "item_code": {
+      "type": "string",
+      "description": "Item code (e.g., 1a, 2b)"
+    },
+    "description": {
+      "type": "string",
+      "description": "Description of the checklist item"
+    },
+    "applicable": {
+      "type": "boolean",
+      "description": "Whether this item applies to the deal",
+      "default": true
+    },
+    "document_received": {
+      "type": "boolean",
+      "description": "Whether the required document has been received",
+      "default": false
+    },
+    "potential_problems": {
+      "type": "boolean",
+      "description": "Whether there are potential problems with this item",
+      "default": false
+    },
+    "comments": {
+      "type": "string",
+      "description": "Additional comments or notes"
+    },
+    "completed_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date when the item was completed"
+    },
+    "order": {
+      "type": "number",
+      "description": "Display order within category"
+    }
+  },
+  "required": [
+    "deal_id",
+    "category",
+    "description"
+  ]
+}

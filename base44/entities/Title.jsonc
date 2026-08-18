@@ -1,0 +1,61 @@
+{
+  "name": "Title",
+  "type": "object",
+  "properties": {
+    "deal_id": {
+      "type": "string",
+      "description": "Related deal ID"
+    },
+    "parcel_number": {
+      "type": "string",
+      "description": "Property parcel/APN number"
+    },
+    "county": {
+      "type": "string",
+      "description": "County name"
+    },
+    "state": {
+      "type": "string",
+      "description": "State abbreviation"
+    },
+    "current_owner": {
+      "type": "string",
+      "description": "Current property owner name"
+    },
+    "previous_owner": {
+      "type": "string",
+      "description": "Previous property owner name"
+    },
+    "transfer_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date of last ownership transfer"
+    },
+    "deed_type": {
+      "type": "string",
+      "description": "Type of deed (e.g., Warranty Deed, Quitclaim, Grant)"
+    },
+    "price": {
+      "type": "number",
+      "description": "Transfer/sale price"
+    },
+    "last_sync_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Last time title data was synced from public records"
+    },
+    "ownership_changed": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether ownership has changed since last sync"
+    },
+    "raw_data": {
+      "type": "object",
+      "description": "Full response data from public records API"
+    }
+  },
+  "required": [
+    "deal_id",
+    "parcel_number"
+  ]
+}

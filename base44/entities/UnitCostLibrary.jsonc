@@ -1,0 +1,78 @@
+{
+  "name": "UnitCostLibrary",
+  "type": "object",
+  "properties": {
+    "category": {
+      "type": "string",
+      "enum": [
+        "grading",
+        "paving",
+        "curb_gutter",
+        "storm_drain",
+        "sanitary_sewer",
+        "water",
+        "dry_utilities",
+        "street_lights",
+        "landscaping",
+        "walls_fencing",
+        "offsite_improvements",
+        "permits_fees",
+        "engineering_survey",
+        "general_conditions",
+        "other"
+      ],
+      "description": "Work category"
+    },
+    "description": {
+      "type": "string",
+      "description": "Line item description"
+    },
+    "unit_of_measure": {
+      "type": "string",
+      "enum": [
+        "per_lot",
+        "per_lf",
+        "per_sf",
+        "lump_sum",
+        "per_unit"
+      ],
+      "description": "Unit of measure"
+    },
+    "avg_unit_cost": {
+      "type": "number",
+      "description": "Running average unit cost across all bids"
+    },
+    "min_unit_cost": {
+      "type": "number",
+      "description": "Lowest unit cost seen"
+    },
+    "max_unit_cost": {
+      "type": "number",
+      "description": "Highest unit cost seen"
+    },
+    "bid_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of bids contributing to this average"
+    },
+    "development_types": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Development types this cost has been seen in"
+    },
+    "last_bid_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date of the most recent bid contributing to this entry"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "category",
+    "unit_of_measure"
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "name": "Takeoff",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Takeoff name / project identifier"
+    },
+    "deal_id": {
+      "type": "string",
+      "description": "Linked deal ID (optional)"
+    },
+    "project_id": {
+      "type": "string",
+      "description": "Linked project ID (optional)"
+    },
+    "development_type": {
+      "type": "string",
+      "enum": [
+        "single_family",
+        "townhome",
+        "multifamily",
+        "mixed_use",
+        "custom"
+      ],
+      "default": "single_family",
+      "description": "Type of residential development"
+    },
+    "lot_count": {
+      "type": "number",
+      "description": "Total number of lots"
+    },
+    "total_site_area_sf": {
+      "type": "number",
+      "description": "Total site area in square feet"
+    },
+    "total_street_lf": {
+      "type": "number",
+      "description": "Total street frontage / street length in linear feet"
+    },
+    "total_utility_lf": {
+      "type": "number",
+      "description": "Total utility run length in linear feet"
+    },
+    "avg_lot_size_sf": {
+      "type": "number",
+      "description": "Average lot size in square feet"
+    },
+    "avg_unit_size_sf": {
+      "type": "number",
+      "description": "Average unit / home size in square feet"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "active",
+        "complete"
+      ],
+      "default": "draft"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "name"
+  ]
+}

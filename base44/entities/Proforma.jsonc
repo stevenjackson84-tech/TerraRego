@@ -1,0 +1,235 @@
+{
+  "name": "Proforma",
+  "type": "object",
+  "properties": {
+    "deal_id": {
+      "type": "string",
+      "description": "Related deal ID"
+    },
+    "purchase_price": {
+      "type": "number",
+      "description": "Land purchase price"
+    },
+    "purchase_takedowns": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "amount": {
+            "type": "number"
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "development_costs": {
+      "type": "number",
+      "description": "Total development/construction costs"
+    },
+    "development_cost_phases": {
+      "type": "array",
+      "description": "Development costs broken down by phase",
+      "items": {
+        "type": "object",
+        "properties": {
+          "phase_name": {
+            "type": "string",
+            "description": "Phase name (e.g., Grading, Utilities)"
+          },
+          "amount": {
+            "type": "number"
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "offsite_improvements": {
+      "type": "array",
+      "description": "Offsite improvement costs",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Improvement name"
+          },
+          "amount": {
+            "type": "number"
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "master_infrastructure": {
+      "type": "array",
+      "description": "Master infrastructure improvement costs",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Infrastructure item name"
+          },
+          "amount": {
+            "type": "number"
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "soft_costs": {
+      "type": "number",
+      "description": "Soft costs (permits, engineering, etc.)"
+    },
+    "financing_costs": {
+      "type": "number",
+      "description": "Interest and financing costs (calculated or manual)"
+    },
+    "loan_interest_rate": {
+      "type": "number",
+      "description": "Annual interest rate for development loan (%)"
+    },
+    "loan_term_months": {
+      "type": "number",
+      "description": "Loan term in months"
+    },
+    "construction_draws": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "amount": {
+            "type": "number"
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "product_types": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "number_of_units": {
+            "type": "number"
+          },
+          "sales_price_per_unit": {
+            "type": "number"
+          },
+          "direct_cost_per_unit": {
+            "type": "number"
+          },
+          "building_permit_cost": {
+            "type": "number"
+          },
+          "absorption_pace": {
+            "type": "number"
+          },
+          "average_sqft": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "timeline_events": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "event_type": {
+            "type": "string",
+            "enum": [
+              "development_spend",
+              "home_start",
+              "home_sale",
+              "home_closing"
+            ]
+          },
+          "amount": {
+            "type": "number"
+          },
+          "units": {
+            "type": "number"
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "contingency_percentage": {
+      "type": "number",
+      "default": 5
+    },
+    "sales_commission_percentage": {
+      "type": "number",
+      "default": 3
+    },
+    "entitlement_start_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "entitlement_approval_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "development_start_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "development_completion_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "first_home_start": {
+      "type": "string",
+      "format": "date"
+    },
+    "first_home_sale": {
+      "type": "string",
+      "format": "date"
+    },
+    "first_home_closing": {
+      "type": "string",
+      "format": "date"
+    },
+    "final_home_closing": {
+      "type": "string",
+      "format": "date"
+    },
+    "absorption_pace": {
+      "type": "number"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "deal_id"
+  ]
+}

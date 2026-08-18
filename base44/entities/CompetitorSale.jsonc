@@ -1,0 +1,60 @@
+{
+  "name": "CompetitorSale",
+  "type": "object",
+  "properties": {
+    "deal_id": {
+      "type": "string",
+      "description": "Related deal ID"
+    },
+    "competitor_name": {
+      "type": "string",
+      "description": "Name of competitor or development"
+    },
+    "subdivision_name": {
+      "type": "string",
+      "description": "Subdivision name"
+    },
+    "product_type": {
+      "type": "string",
+      "description": "Type of home (e.g., Single Family, Townhome)"
+    },
+    "sale_price": {
+      "type": "number",
+      "description": "Sale price of the home"
+    },
+    "square_footage": {
+      "type": "number",
+      "description": "Square footage"
+    },
+    "bedrooms": {
+      "type": "number",
+      "description": "Number of bedrooms"
+    },
+    "bathrooms": {
+      "type": "number",
+      "description": "Number of bathrooms"
+    },
+    "sale_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date of sale"
+    },
+    "location": {
+      "type": "string",
+      "description": "Location/address"
+    },
+    "source": {
+      "type": "string",
+      "description": "Data source (e.g., MLS, Zillow, AI Auto-fetch)"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "deal_id",
+    "competitor_name",
+    "product_type",
+    "sale_price"
+  ]
+}

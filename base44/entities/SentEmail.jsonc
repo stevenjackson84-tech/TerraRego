@@ -1,0 +1,57 @@
+{
+  "name": "SentEmail",
+  "type": "object",
+  "properties": {
+    "to": {
+      "type": "string",
+      "description": "Recipient email address"
+    },
+    "subject": {
+      "type": "string",
+      "description": "Email subject"
+    },
+    "body": {
+      "type": "string",
+      "description": "Email body content"
+    },
+    "contact_id": {
+      "type": "string",
+      "description": "Related contact ID (optional)"
+    },
+    "deal_id": {
+      "type": "string",
+      "description": "Related deal ID (optional)"
+    },
+    "template_id": {
+      "type": "string",
+      "description": "Template used (optional)"
+    },
+    "sent_by": {
+      "type": "string",
+      "description": "Email of the user who sent it"
+    },
+    "sent_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the email was sent"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "sent",
+        "failed"
+      ],
+      "default": "sent",
+      "description": "Email delivery status"
+    },
+    "error_message": {
+      "type": "string",
+      "description": "Error message if failed"
+    }
+  },
+  "required": [
+    "to",
+    "subject",
+    "body"
+  ]
+}

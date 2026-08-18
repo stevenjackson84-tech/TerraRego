@@ -1,0 +1,55 @@
+{
+  "name": "FavoriteProperty",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "Email of the user who favorited the property"
+    },
+    "property_url": {
+      "type": "string",
+      "description": "URL of the property on Redfin"
+    },
+    "address": {
+      "type": "string",
+      "description": "Full address of the property"
+    },
+    "price": {
+      "type": "number",
+      "description": "Property price"
+    },
+    "beds": {
+      "type": "number",
+      "description": "Number of bedrooms"
+    },
+    "baths": {
+      "type": "number",
+      "description": "Number of bathrooms"
+    },
+    "sqft": {
+      "type": "number",
+      "description": "Square footage"
+    },
+    "latitude": {
+      "type": "number",
+      "description": "Property latitude"
+    },
+    "longitude": {
+      "type": "number",
+      "description": "Property longitude"
+    },
+    "notes": {
+      "type": "string",
+      "description": "User notes about the property"
+    },
+    "cached_data": {
+      "type": "object",
+      "description": "Cached property details for quick display"
+    }
+  },
+  "required": [
+    "user_email",
+    "property_url",
+    "address"
+  ]
+}

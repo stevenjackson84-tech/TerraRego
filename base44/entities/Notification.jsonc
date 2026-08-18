@@ -1,0 +1,62 @@
+{
+  "name": "Notification",
+  "type": "object",
+  "properties": {
+    "recipient_email": {
+      "type": "string",
+      "description": "Email of the user receiving the notification"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "comment",
+        "assignment",
+        "status_change",
+        "mention",
+        "task_update"
+      ],
+      "description": "Type of notification"
+    },
+    "title": {
+      "type": "string",
+      "description": "Notification title"
+    },
+    "message": {
+      "type": "string",
+      "description": "Notification message"
+    },
+    "entity_type": {
+      "type": "string",
+      "enum": [
+        "deal",
+        "task",
+        "entitlement"
+      ],
+      "description": "Type of entity the notification relates to"
+    },
+    "entity_id": {
+      "type": "string",
+      "description": "ID of the related entity"
+    },
+    "related_user_email": {
+      "type": "string",
+      "description": "Email of the user who triggered the notification"
+    },
+    "is_read": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the notification has been read"
+    },
+    "action_url": {
+      "type": "string",
+      "description": "URL to navigate to when clicking the notification"
+    }
+  },
+  "required": [
+    "recipient_email",
+    "type",
+    "title",
+    "entity_type",
+    "entity_id"
+  ]
+}

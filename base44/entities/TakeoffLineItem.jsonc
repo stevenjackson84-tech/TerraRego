@@ -1,0 +1,75 @@
+{
+  "name": "TakeoffLineItem",
+  "type": "object",
+  "properties": {
+    "takeoff_id": {
+      "type": "string",
+      "description": "Parent takeoff ID"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "grading",
+        "paving",
+        "curb_gutter",
+        "storm_drain",
+        "sanitary_sewer",
+        "water",
+        "dry_utilities",
+        "street_lights",
+        "landscaping",
+        "walls_fencing",
+        "offsite_improvements",
+        "permits_fees",
+        "engineering_survey",
+        "general_conditions",
+        "other"
+      ],
+      "description": "Work category"
+    },
+    "description": {
+      "type": "string",
+      "description": "Line item description"
+    },
+    "unit_of_measure": {
+      "type": "string",
+      "enum": [
+        "per_lot",
+        "per_lf",
+        "per_sf",
+        "lump_sum",
+        "per_unit"
+      ],
+      "default": "per_lot",
+      "description": "Unit of measure for pricing"
+    },
+    "quantity": {
+      "type": "number",
+      "description": "Quantity (lots, LF, SF, etc.)"
+    },
+    "estimated_unit_cost": {
+      "type": "number",
+      "description": "Estimated cost per unit (manually entered or from historical avg)"
+    },
+    "historical_avg_unit_cost": {
+      "type": "number",
+      "description": "Historical average unit cost from uploaded bids"
+    },
+    "bid_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of bids that contributed to historical average"
+    },
+    "total_cost": {
+      "type": "number",
+      "description": "Total line item cost (quantity x unit cost)"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "takeoff_id",
+    "category"
+  ]
+}

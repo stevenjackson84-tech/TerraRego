@@ -1,0 +1,82 @@
+{
+  "name": "Entitlement",
+  "type": "object",
+  "properties": {
+    "deal_id": {
+      "type": "string",
+      "description": "Related deal ID"
+    },
+    "name": {
+      "type": "string",
+      "description": "Entitlement/Permit name"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "zoning_change",
+        "variance",
+        "conditional_use",
+        "site_plan",
+        "subdivision",
+        "environmental",
+        "traffic_study",
+        "utility",
+        "building_permit",
+        "grading_permit",
+        "other"
+      ],
+      "default": "other"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "not_started",
+        "in_progress",
+        "submitted",
+        "under_review",
+        "approved",
+        "denied",
+        "expired"
+      ],
+      "default": "not_started"
+    },
+    "agency": {
+      "type": "string",
+      "description": "Reviewing agency/department"
+    },
+    "submission_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "approval_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "expiration_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "estimated_cost": {
+      "type": "number"
+    },
+    "actual_cost": {
+      "type": "number"
+    },
+    "assigned_to": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "documents": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": [
+    "name",
+    "deal_id"
+  ]
+}

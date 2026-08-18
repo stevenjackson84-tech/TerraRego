@@ -1,0 +1,121 @@
+{
+  "name": "ImprovementProject",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Project name"
+    },
+    "phase": {
+      "type": "string",
+      "enum": [
+        "define",
+        "measure",
+        "analyze",
+        "improve",
+        "control"
+      ],
+      "default": "define",
+      "description": "Current DMAIC phase"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "on_hold",
+        "completed",
+        "cancelled"
+      ],
+      "default": "active"
+    },
+    "problem_statement": {
+      "type": "string",
+      "description": "Clear description of the problem"
+    },
+    "goal_statement": {
+      "type": "string",
+      "description": "Measurable project goal"
+    },
+    "scope": {
+      "type": "string",
+      "description": "Project scope and boundaries"
+    },
+    "process_area": {
+      "type": "string",
+      "enum": [
+        "deal_acquisition",
+        "entitlement",
+        "development",
+        "sales",
+        "general"
+      ],
+      "default": "general",
+      "description": "Process area being improved"
+    },
+    "team_members": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Team member names or emails"
+    },
+    "champion": {
+      "type": "string",
+      "description": "Project champion / sponsor"
+    },
+    "baseline_metric": {
+      "type": "number",
+      "description": "Baseline measurement value"
+    },
+    "target_metric": {
+      "type": "number",
+      "description": "Target metric value"
+    },
+    "actual_metric": {
+      "type": "number",
+      "description": "Actual achieved metric value"
+    },
+    "metric_unit": {
+      "type": "string",
+      "description": "Unit of measurement (e.g., days, %, $)"
+    },
+    "estimated_savings": {
+      "type": "number",
+      "description": "Estimated annual cost savings ($)"
+    },
+    "actual_savings": {
+      "type": "number",
+      "description": "Actual realized savings ($)"
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "target_completion": {
+      "type": "string",
+      "format": "date"
+    },
+    "completion_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "root_causes": {
+      "type": "string",
+      "description": "Identified root causes"
+    },
+    "solutions": {
+      "type": "string",
+      "description": "Implemented solutions"
+    },
+    "control_plan": {
+      "type": "string",
+      "description": "Control plan to sustain improvements"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "name"
+  ]
+}

@@ -1,0 +1,90 @@
+{
+  "name": "BidUpload",
+  "type": "object",
+  "properties": {
+    "takeoff_id": {
+      "type": "string",
+      "description": "Related takeoff ID"
+    },
+    "contractor_name": {
+      "type": "string",
+      "description": "Contractor / bidder name"
+    },
+    "development_type": {
+      "type": "string",
+      "enum": [
+        "single_family",
+        "townhome",
+        "multifamily",
+        "mixed_use",
+        "custom"
+      ],
+      "description": "Development type this bid applies to"
+    },
+    "file_url": {
+      "type": "string",
+      "description": "URL of uploaded bid PDF"
+    },
+    "file_name": {
+      "type": "string",
+      "description": "Original file name"
+    },
+    "bid_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date bid was received"
+    },
+    "total_bid_amount": {
+      "type": "number",
+      "description": "Total bid amount"
+    },
+    "lot_count": {
+      "type": "number",
+      "description": "Number of lots in this bid"
+    },
+    "extracted_line_items": {
+      "type": "array",
+      "description": "AI-extracted line items from the bid PDF",
+      "items": {
+        "type": "object",
+        "properties": {
+          "category": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "unit_of_measure": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "number"
+          },
+          "unit_cost": {
+            "type": "number"
+          },
+          "total_cost": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "extracted",
+        "applied"
+      ],
+      "default": "pending",
+      "description": "Processing status"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "contractor_name",
+    "file_url"
+  ]
+}

@@ -1,0 +1,64 @@
+{
+  "name": "DevelopmentUpdate",
+  "type": "object",
+  "properties": {
+    "phase_id": {
+      "type": "string",
+      "description": "Related phase ID"
+    },
+    "milestone": {
+      "type": "string",
+      "description": "Milestone or phase name"
+    },
+    "description": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "planned",
+        "in_progress",
+        "completed",
+        "delayed",
+        "on_hold"
+      ],
+      "default": "planned"
+    },
+    "progress_percentage": {
+      "type": "number",
+      "description": "Completion percentage (0-100)",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "target_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "completion_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "site_work",
+        "foundation",
+        "framing",
+        "utilities",
+        "infrastructure",
+        "landscaping",
+        "permits",
+        "inspection",
+        "other"
+      ],
+      "default": "other"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "phase_id",
+    "milestone"
+  ]
+}

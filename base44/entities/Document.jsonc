@@ -1,0 +1,140 @@
+{
+  "name": "Document",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Document name"
+    },
+    "file_url": {
+      "type": "string",
+      "description": "URL to the uploaded file"
+    },
+    "file_size": {
+      "type": "number",
+      "description": "File size in bytes"
+    },
+    "file_type": {
+      "type": "string",
+      "description": "MIME type or file extension"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "contract",
+        "permit",
+        "plan",
+        "report",
+        "financial",
+        "legal",
+        "photo",
+        "other"
+      ],
+      "default": "other"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Tags for categorization"
+    },
+    "description": {
+      "type": "string"
+    },
+    "entity_type": {
+      "type": "string",
+      "enum": [
+        "deal",
+        "project",
+        "entitlement",
+        "task"
+      ],
+      "description": "Type of entity this document is associated with"
+    },
+    "entity_id": {
+      "type": "string",
+      "description": "ID of the associated entity"
+    },
+    "sub_entity_type": {
+      "type": "string",
+      "enum": [
+        "phase",
+        "milestone"
+      ],
+      "description": "Optional sub-entity type (phase or milestone within a project)"
+    },
+    "sub_entity_id": {
+      "type": "string",
+      "description": "ID of the associated sub-entity (phase or milestone)"
+    },
+    "ai_extracted_info": {
+      "type": "object",
+      "description": "AI-extracted key information from the document",
+      "properties": {
+        "dates": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "parties": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "values": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "permit_numbers": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "deadlines": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "addresses": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "other": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "version": {
+      "type": "number",
+      "default": 1,
+      "description": "Document version number"
+    },
+    "parent_document_id": {
+      "type": "string",
+      "description": "ID of the parent document if this is a new version"
+    },
+    "is_latest_version": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this is the latest version"
+    }
+  },
+  "required": [
+    "name",
+    "file_url",
+    "entity_type",
+    "entity_id"
+  ]
+}

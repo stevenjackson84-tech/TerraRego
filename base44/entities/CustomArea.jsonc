@@ -1,0 +1,48 @@
+{
+  "name": "CustomArea",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Name of the custom area"
+    },
+    "description": {
+      "type": "string",
+      "description": "Optional description"
+    },
+    "geometry": {
+      "type": "object",
+      "description": "GeoJSON geometry (Polygon or other)"
+    },
+    "area_type": {
+      "type": "string",
+      "enum": [
+        "polygon",
+        "rectangle",
+        "circle"
+      ],
+      "default": "polygon",
+      "description": "Type of drawn area"
+    },
+    "associated_deal_id": {
+      "type": "string",
+      "description": "Optional ID of associated deal"
+    },
+    "color": {
+      "type": "string",
+      "description": "Display color (hex)",
+      "default": "#7c3aed"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Tags for categorization"
+    }
+  },
+  "required": [
+    "name",
+    "geometry"
+  ]
+}

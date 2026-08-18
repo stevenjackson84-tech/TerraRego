@@ -1,0 +1,36 @@
+{
+  "name": "Activity",
+  "type": "object",
+  "properties": {
+    "type": {
+      "type": "string",
+      "enum": [
+        "note",
+        "call",
+        "email",
+        "meeting",
+        "site_visit",
+        "document",
+        "status_change"
+      ],
+      "default": "note"
+    },
+    "description": {
+      "type": "string"
+    },
+    "deal_id": {
+      "type": "string"
+    },
+    "contact_id": {
+      "type": "string"
+    },
+    "date": {
+      "type": "string",
+      "format": "date"
+    }
+  },
+  "required": [
+    "type",
+    "description"
+  ]
+}

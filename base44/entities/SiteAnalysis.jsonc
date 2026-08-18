@@ -1,0 +1,148 @@
+{
+  "name": "SiteAnalysis",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Analysis name / project identifier"
+    },
+    "deal_id": {
+      "type": "string",
+      "description": "Linked deal ID (optional)"
+    },
+    "address": {
+      "type": "string",
+      "description": "Parcel address"
+    },
+    "parcel_number": {
+      "type": "string",
+      "description": "APN / parcel number"
+    },
+    "gross_site_area_sf": {
+      "type": "number",
+      "description": "Gross site area in square feet"
+    },
+    "gross_site_area_acres": {
+      "type": "number",
+      "description": "Gross site area in acres"
+    },
+    "zoning_code": {
+      "type": "string",
+      "description": "Current zoning designation (e.g. R-2, R-4)"
+    },
+    "zoning_description": {
+      "type": "string",
+      "description": "Description of zoning"
+    },
+    "development_type": {
+      "type": "string",
+      "enum": [
+        "single_family",
+        "townhome",
+        "multifamily",
+        "mixed_use",
+        "custom"
+      ],
+      "default": "single_family"
+    },
+    "min_lot_size_sf": {
+      "type": "number",
+      "description": "Minimum lot size required by zoning (SF)"
+    },
+    "max_density_du_per_acre": {
+      "type": "number",
+      "description": "Maximum density in dwelling units per acre"
+    },
+    "front_setback_ft": {
+      "type": "number",
+      "description": "Front yard setback in feet"
+    },
+    "rear_setback_ft": {
+      "type": "number",
+      "description": "Rear yard setback in feet"
+    },
+    "side_setback_ft": {
+      "type": "number",
+      "description": "Side yard setback in feet (each side)"
+    },
+    "max_lot_coverage_pct": {
+      "type": "number",
+      "description": "Maximum lot coverage percentage (0-100)"
+    },
+    "max_building_height_ft": {
+      "type": "number",
+      "description": "Maximum building height in feet"
+    },
+    "max_far": {
+      "type": "number",
+      "description": "Maximum floor area ratio"
+    },
+    "street_dedication_pct": {
+      "type": "number",
+      "description": "Estimated % of gross area lost to streets/ROW",
+      "default": 20
+    },
+    "open_space_pct": {
+      "type": "number",
+      "description": "Estimated % of gross area for open space/parks",
+      "default": 10
+    },
+    "utility_easement_pct": {
+      "type": "number",
+      "description": "Estimated % of gross area for utility easements",
+      "default": 2
+    },
+    "slope_constraint_pct": {
+      "type": "number",
+      "description": "Estimated % of gross area constrained by slope/topography",
+      "default": 0
+    },
+    "wetland_constraint_pct": {
+      "type": "number",
+      "description": "Estimated % of gross area constrained by wetlands/floodplain",
+      "default": 0
+    },
+    "calculated_net_area_sf": {
+      "type": "number",
+      "description": "Calculated net developable area in SF"
+    },
+    "calculated_max_units": {
+      "type": "number",
+      "description": "Calculated maximum dwelling units"
+    },
+    "calculated_probable_units": {
+      "type": "number",
+      "description": "Probable realistic unit count (80% of max)"
+    },
+    "avg_unit_sf": {
+      "type": "number",
+      "description": "Average unit size in SF"
+    },
+    "estimated_asp": {
+      "type": "number",
+      "description": "Estimated average sale price per unit"
+    },
+    "estimated_land_cost": {
+      "type": "number",
+      "description": "Estimated land cost / purchase price"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "complete"
+      ],
+      "default": "draft"
+    },
+    "ai_summary": {
+      "type": "string",
+      "description": "AI-generated analysis summary"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "name"
+  ]
+}

@@ -1,0 +1,117 @@
+{
+  "name": "Task",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "deal_id": {
+      "type": "string",
+      "description": "Related deal ID (optional)"
+    },
+    "project_id": {
+      "type": "string",
+      "description": "Related project ID (optional)"
+    },
+    "entitlement_id": {
+      "type": "string",
+      "description": "Related entitlement ID (optional)"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "todo",
+        "in_progress",
+        "blocked",
+        "completed"
+      ],
+      "default": "todo"
+    },
+    "priority": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "urgent"
+      ],
+      "default": "medium"
+    },
+    "due_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "assigned_to": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Array of team member emails assigned to this task"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "due_diligence",
+        "legal",
+        "financial",
+        "entitlement",
+        "construction",
+        "marketing",
+        "general"
+      ],
+      "default": "general"
+    },
+    "completed_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "parent_task_id": {
+      "type": "string",
+      "description": "ID of parent task if this is a subtask"
+    },
+    "depends_on": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Array of task IDs this task depends on"
+    },
+    "is_recurring": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this is a recurring task"
+    },
+    "recurrence_pattern": {
+      "type": "string",
+      "enum": [
+        "daily",
+        "weekly",
+        "biweekly",
+        "monthly",
+        "quarterly",
+        "yearly"
+      ],
+      "description": "Recurrence pattern"
+    },
+    "recurrence_interval": {
+      "type": "number",
+      "description": "Interval for recurrence (e.g., every 2 weeks)",
+      "default": 1
+    },
+    "recurrence_end_date": {
+      "type": "string",
+      "format": "date",
+      "description": "When to stop creating recurring instances"
+    },
+    "original_task_id": {
+      "type": "string",
+      "description": "ID of the original task if this is a recurring instance"
+    }
+  },
+  "required": [
+    "title"
+  ]
+}
